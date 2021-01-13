@@ -1350,9 +1350,35 @@ let m = getProperty(obj, "m"); // 错误
 
 ​		为了解决这个问题，我们需要将这些JavaScript库中的函数和方法进行移除，只保留需要对外导出的类型声明即可。这个类型声明就是声明文件，扩展名是d.ts。声明文件可以描述JavaScript库的模块信息。通过引用这个声明文件，可以利用TypeScript的静态类型检查来为我们调用这些库服务。
 
+​		声明文件模板：https://www.tslang.cn/docs/handbook/declaration-files/templates.html
+
 ### 9.1.1 全局库
 
+全局库就是在顶层全局对象window下访问的库，比如jquery库中的$符号就是一个全局变量。
+
+声明文件扩展名必须是d.ts。
+
 声明文件中的类型用declare关键字来声明。
+
+<center>jTools.d.ts</center>
+
+```typescript
+/**
+ * 全局库jTools.js
+ */
+declare namespace jTools {
+    const version: string;
+    const author: string;
+    function toString(obj:any):string;
+    /**
+     * 根据ID获取DOM元素
+     * @param id DomID注意不带#
+     */
+    function $(id:string):any;
+}
+```
+
+
 
 ### 9.1.2 模块化库
 
