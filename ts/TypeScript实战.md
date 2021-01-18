@@ -8,6 +8,22 @@
 
 TypeScript函数命名采用camelCase命名规则。
 
+### 1.4.3 编译TypeScript文件
+
+这里使用windows命令行工具调用tsc命令编译helloworld.ts
+
+```bash
+tsc helloworld.ts
+```
+
+编译成功后，会在helloworld.ts同一目录下生成一个helloworld.js文件。
+
+可以同时编译多个.ts文件：
+
+```bash
+tsc file1.ts file2.ts
+```
+
 
 
 # 第2章 TypeScript基本语法
@@ -1392,9 +1408,62 @@ npm install --save @types/jquery
 
 ​		大多数情况下，类型声明包的名字总是与它们在npm上的包的名字相同，但是有@types/前缀。
 
+## 9.2 项目配置
+
+如果一个目录中存在tsconfig.json文件，就意味着这个目录是TypeScript项目的根目录。
+
+<center>常用tsc编译器选项</center>
+
+| 选项     | 类型   | 默认值            | 描述                                                         |
+| -------- | ------ | ----------------- | ------------------------------------------------------------ |
+| --module | string | "es6"或"commonjs" | 指定生成模块系统。当target为es6时，默认为es6，否则默认为commonjs. |
+| --target | string | "ES3"             | 指定ECMAScript目标版本"ES3"（默认）、"ES5"、"ES6"/"ES2015"、"ES2016"、"ES2017"或"ESNext" |
+|          |        |                   |                                                              |
+
+
+
 ## 9.3 项目引用
 
+​		tsconfig.json的顶层属性references是一个数组，可以用来指定要引用的项目。references中的path属性可以指向包含tsconfig.json文件的目录，或者直接指向项目配置文件本身。
+
+```json
+{
+    "references": [{
+        "path": "./common"
+    },
+    {
+        "path": "./server"
+    },
+    {
+        "path": "./client"
+    }],
+    "compilerOptions": {
+        "module": "commonjs",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "sourceMap": true
+  
+    }
+}
+```
+
+
+
 ## 9.4 三斜线指令
+
+​		三线指令可以作为编译器指令使用，reference三线指令主要用来确定依赖关系。
+
+```typescript
+/// <reference path="..." />
+
+/// <reference types="..." />
+
+/// <reference no-default-lib="true" />
+
+/// <amd-module />
+```
+
+
 
 # 第10章 实战：使用TypeScript+Node创建列表APP
 
