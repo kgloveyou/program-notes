@@ -24,7 +24,7 @@ tsc helloworld.ts
 tsc file1.ts file2.ts
 ```
 
-
+在有tsconfig.json的目录中执行`tsc`命令，则使用该配置文件进行编译。
 
 # 第2章 TypeScript基本语法
 
