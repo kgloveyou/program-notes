@@ -1467,3 +1467,17 @@ npm install --save @types/jquery
 
 # 第10章 实战：使用TypeScript+Node创建列表APP
 
+## 10.4 列表APP的服务端设计与开发
+
+server.ts
+
+```typescript
+//require 需要安装@types/node  (npm i @types/node) 
+//var 不能用静态类型检查
+//var express = require("express");
+//用import载入的模块可以享用强类型检查，以及代码自动补全，预编译检查等。
+import express = require("express");
+```
+
+提示：用import载入的模块可以享用强类型检查，以及代码自动补全和预编译检查等。用var则不行。
+
