@@ -361,8 +361,49 @@ const something = () => childrenRef.current.hello();
 
 还是可以查看一下实现方法的关键点： `useRef`, `useImperativeHandle`, `forwardRef`。其实是利用了 `ref` 不变的性质，将子组件的方法保存着，父组件可以调用。可以说，`ref` 作为父组件和子组件的一座由父组件到达子组件的桥梁（单向的，父->子）。
 
-
 作者：活抓一只小机灵
 链接：https://juejin.cn/post/6844903937468792846
 来源：掘金
 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+
+
+
+# [Storing non-state variables in functional components](https://stackoverflow.com/questions/53146575/storing-non-state-variables-in-functional-components)
+
+The [`useRef`](https://reactjs.org/docs/hooks-faq.html#is-there-something-like-instance-variables) hook is not just for DOM refs, but can store any mutable value you like.
+
+**Example**
+
+```js
+function FunctionalBar(props) {
+  const [foo] = useState(new Animated.Value(0));
+  const _foo = useRef(0);
+
+  function showFoo() {
+    let anim = Animated.timing(foo, { toValue: 1, duration: 1000, useNativeDriver: true });
+    anim.start(() => console.log(_foo.current));
+  }
+
+  useEffect(() => {
+    function _onChangeFoo({ value }) {
+      _foo.current = value;
+    }
+
+    foo.addListener(_onChangeFoo);
+    showFoo();
+    return () => foo.removeListener(_onChangeFoo);
+  }, []);
+
+  return <View />;
+}
+```
+
+# [react functional component let variable doesn't changed](https://stackoverflow.com/questions/58344165/react-functional-component-let-variable-doesnt-changed)
+
+`isDirty` is neither a `prop` nor a `state`. So it doesn't persist. On re-render, it will initialize back to `false`.
+
+Make it a `state` instead.
+
+```js
+const [isDirty, setDirty] = useState(false)
+```
