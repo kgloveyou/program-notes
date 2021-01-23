@@ -407,3 +407,7 @@ Make it a `state` instead.
 ```js
 const [isDirty, setDirty] = useState(false)
 ```
+
+# React的memo和useMemo的作用
+
+https://juejin.cn/post/6897038904914870286
