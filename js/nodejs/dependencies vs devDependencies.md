@@ -26,3 +26,10 @@ Yarn will not install any package listed in `devDependencies` if the `NODE_ENV` 
 
 **Dependencies** should contain libs and framewors your app is built on, such as Vue, React, Angular, Express, JQuery and etc. You will agree with me, if I say, that your project wont work without these packages(if you are using them, of course).
 
+
+
+"dependencies": Packages required by your application in production. 项目生产中使用的依赖包。
+
+"devDependencies": Packages that are only needed for local development and testing. 本地开发和测试过程中需要的依赖包。
+
+https://stackoverflow.com/questions/18875674/whats-the-difference-between-dependencies-devdependencies-and-peerdependencies
