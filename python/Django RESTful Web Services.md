@@ -1,0 +1,7 @@
+# Django RESTful Web Services  
+
+First published: January 2018  
+
+django==1.11.5  
+
+djangorestframework==3.6.4  
