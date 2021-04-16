@@ -6,4 +6,4 @@ First published: February 2021
 
 Django REST Framework  
 
-P575
+P582
