@@ -115,7 +115,7 @@ templates](https://tools.ietf.org/html/rfc6570), [json-home](https://mnot.github
 
 Iframe在布局上有一大缺陷：外部的document需要知道Iframe内容的确切高度，以免出现滚动条或者空格。
 
-对于静态布局，这可能不是问题，但是如果您要构建响应式网站，会变得棘手。 内容的高度可能会根据设备大小的变化而变化。
+对于静态布局，这可能不是问题，但是如果你要构建响应式网站，会变得棘手。 内容的高度可能会根据设备大小的变化而变化。
 
 另一个问题是，Team Inspire 现在绑定了Team Decide定义的高度。 例如，他们无法添加第3条建议图片，而不必与其他团队交谈。 [JavaScript库](https://github.com/davidjbradshaw/iframe-resizer)可以在内容更改时自动更新iframe的大小。
 
@@ -129,7 +129,7 @@ Iframe在布局上有一大缺陷：外部的document需要知道Iframe内容的
 
 **性能开销**
 
-大量使用iframe对性能有严重影响。从浏览器的角度来看，在页面上添加iframe成本很高进。 每个iframe都会创建一个新的浏览上下文，这会导致额外的内存和CPU使用率。 如果您打算在网页上包含很多iframe，则应测试它们带来的性能影响。
+大量使用iframe对性能有严重影响。从浏览器的角度来看，在页面上添加iframe成本很高进。 每个iframe都会创建一个新的浏览上下文，这会导致额外的内存和CPU使用率。 如果你打算在网页上包含很多iframe，则应测试它们带来的性能影响。
 
 **对视觉障碍者不友好**
 
@@ -139,7 +139,7 @@ Iframe在布局上有一大缺陷：外部的document需要知道Iframe内容的
 
 ##### 2.3.4 什么时候使用iframe
 
-如果您要建立面向客户的网站，并且加载性能，可访问性和SEO至关重要，则不应使用iframe。 但是对于内部工具而言，它们可以是入门微前端架构的绝佳且直接的选择。
+如果你要建立面向客户的网站，并且加载性能，可访问性和SEO至关重要，则不应使用iframe。 但是对于内部工具而言，它们可以是入门微前端架构的绝佳且直接的选择。
 
 #### 2.4 接下来是什么
 
@@ -323,7 +323,7 @@ Ajax 集成是一种容易实现和理解的技术。与iframe方法相比，有
 
 #### 3.1.7 总结
 
-### 3.2 使用Nginx进行 服务端路由
+### 3.2 使用Nginx进行服务端路由
 
 这里的路由web服务器称为前端代理。
 
@@ -508,4 +508,38 @@ Tailor is a  Node.js library that parses the page’s HTML for special fragment 
 
 Finn.no released its Node.js-based integration library called Podium at the beginning of 2019. It takes concepts from Tailor and improves them. In Podium, fragments are called *podlets*, and pages are *layouts* .
 
-P81
+#### 4.4.4 哪种解决方案适合我？
+
+### 4.5  服务端组合的好处与坏处
+
+​		如果你想构建一个可以快速响应用户输入的交互式应用程序，纯粹的服务器端解决方案并不能解决问题。 你需要将其与诸如Ajax或Web组件等客户端集成方法进行结合。
+
+#### 4.5.3服务器端集成何时才有意义？
+
+​		如果良好的加载性能和搜索引擎排名是你的项目的首要任务，服务器端集成无法解决。
+
+​		如果你的项目需要类似应用的用户界面，并且可以立即对用户做出反应输入，服务器端集成不适合你。纯粹的客户端解决方案可能更容易实施。
+
+### 总结
+
+# 第5章 客户端组合
+
+- 介绍客户端组合技术之Web组件
+- Investigating how to use micro frontends, built with different frameworks, on the same page  
+- Exploring how Shadow DOM can help safely introduce a micro frontend into a legacy system without having style conflicts  
+
+
+
+indispensable  必不可少
+
+## 5.1 Wrapping micro frontends using Web Components  
+
+### 5.1.1 如何实现
+
+Web Components  
+
+#### WEB COMPONENTS AND CUSTOM ELEMENTS  
+
+Web组件是一个总称。它描述了3个不同的新的APIs：Custom Elements, Shadow DOM, 和 HTML Templates.  
+
+P88
