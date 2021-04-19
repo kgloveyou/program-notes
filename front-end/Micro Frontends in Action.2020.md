@@ -376,6 +376,8 @@ See the `proxy_pass` directive in the location block? It advises Nginx to forwar
 
 在本章中，我们将基于这些内容并查看服务器端集成。
 
+Composition of fragments happens on the server. The client receives an already assembled page.  
+
 服务器端集成最大的好处是，页面在到达客户浏览器之前已经完成了组装。相比于客户端渲染技术，可以实现更好的首页加载速度体验。
 
 ### 4.1 Composition via Nginx and Server-Side Includes (SSI)  
@@ -406,6 +408,104 @@ Nginx  的SSI功能默认不可用。可以在`nginx.conf`配置文件的 `serve
     ...
   }
 ```
+Listing 4.2 team-decide/product/porsche.html
+
+```html
+<aside class="decide_recos">
+    <!--#include virtual="/inspire/fragment/recommendations/porsche" -->
+</aside>
+```
+
+
+
+```ssh
+npm run 05_ssi  
+```
+
+代码路径不能包含汉字字符（Nginx无法识别）。
 
 #### 4.1.2 更少的加载时间
 
+network throttling（网络节流）
+
+latency  （延迟）
+
+
+
+### 4.2 Dealing with unreliable fragments
+
+#### 4.2.1 The flaky fragment  
+
+#### 4.2.2 Integrating the Near You fragment  
+
+#### 4.2.3 Timeouts and fallbacks  
+
+#### 4.2.4 Fallback content  
+
+​		Nginx has a built-in mechanism to deal with failed includes. The SSI command has a parameter called **stub**. It lets you define a reference to a block. Nginx uses the content of the block when something goes wrong with the include. We can define the fallback content by wrapping it in **block** and **endblock** comments. Here’s the fallback markup Team Decide has configured for the recommendations.  
+
+Listing 4.6 team-decide/product/eicher.html  
+
+```html
+<aside class="decide_recos">
+    <!--# block name="reco_fallback" -->
+    <a href="/recommendations/eicher">
+        Show Recommendations
+    </a>
+    <!--# endblock -->
+    <!--#include virtual="/inspire/fragment/recommendations/eicher" stub="reco_fallback" -->
+</aside>
+```
+
+在实现服务器端组合时，考虑回退(fallbacks  )和超时(timeouts  )至关重要。
+
+### 4.3 Markup assembly performance in depth  
+
+#### 4.3.1 Parallel loading  
+
+Nginx fetches multiple SSI includes in parallel.  
+
+#### 4.3.2 Nested fragments  
+
+#### 4.3.3 延迟加载
+
+延迟加载减少了客户端所需加载的初始标记的大小，并使浏览器能够更早地开始渲染页面。
+
+If you want the fragment in the initial markup, you specify it as an SSI directive:
+```html
+<div class="banner">
+<!--#include virtual="/fragment-a" -->
+</div>
+```
+If you want to lazy-load it, you can omit the include directive and fetch the content using an Ajax call via client-side JavaScript instead:
+```html
+const banner = document.querySelector(".banner"):
+window
+.fetch("/fragment-a")
+.then(res => res.text())
+.then(html => { banner.innerHTML = html; });  
+```
+
+#### 4.3.4 Time to first byte and streaming  
+
+This **partial sending** would be beneficial for performance because the browser can start loading assets and rendering the first parts of the page earlier. The ESI mechanism in Varnish, an Nginx alternative, works like this. You’ll learn more about ESI in the next section.  
+
+In the next section, we’ll look at **Tailor** and **Podium**, which both support streaming composition.  
+
+Different ways a server-side integration solution can handle fragment loading and markup concatenation internally. The partial sending and streaming approach provides a better time to first byte. This way, the browser receives the content earlier and can start rendering sooner.  
+
+### 4.4 快速了解其他解决方案
+
+#### 4.4.1 Edge-Side Includes  
+
+(ESI) 是一种简单的标记语言，用于定义网页组件，以便在互联网边缘以动态方式组装和交付 Web 应用程序。
+
+#### 4.4.2 Zalando Tailor  
+
+Tailor is a  Node.js library that parses the page’s HTML for special fragment tags, fetches the referenced content, and puts it into the page’s markup.  
+
+#### 4.4.3 Podium  
+
+Finn.no released its Node.js-based integration library called Podium at the beginning of 2019. It takes concepts from Tailor and improves them. In Podium, fragments are called *podlets*, and pages are *layouts* .
+
+P81
