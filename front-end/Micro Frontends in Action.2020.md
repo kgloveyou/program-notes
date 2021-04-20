@@ -532,14 +532,139 @@ Finn.no released its Node.js-based integration library called Podium at the begi
 
 indispensable  必不可少
 
-## 5.1 Wrapping micro frontends using Web Components  
+## 5.1 使用Web组件包装微前端
 
 ### 5.1.1 如何实现
 
 Web Components  
 
-#### WEB COMPONENTS AND CUSTOM ELEMENTS  
+#### Web组件与定制元素
 
 Web组件是一个总称。它描述了3个不同的新的APIs：Custom Elements, Shadow DOM, 和 HTML Templates.  
 
-P88
+GitHub以github-elements的名义发布了以系列此类控件。（https://www.webcomponents.org/author/github）
+
+#### WEB COMPONENTS AS A CONTAINER FORMAT  
+
+*SKU*=Stock Keeping Unit(库存量单位)
+
+#### 定义定制元素（DEFINING A CUSTOM ELEMENT  ）
+
+```js
+class CheckoutBuy extends HTMLElement {
+  connectedCallback() {
+    const sku = this.getAttribute("sku");
+    this.innerHTML = `
+      <button type="button">buy for $${prices[sku]}</button>
+    `;
+    this.querySelector("button").addEventListener("click", () => {
+      alert("Thank you ❤️");
+    });
+  }
+  disconnectedCallback() {
+    this.querySelector("button").removeEventListener("click");
+  }
+}
+window.customElements.define("checkout-buy", CheckoutBuy);
+```
+
+您可以为“自定义元素”选择任何名称。规格中唯一的要求是它必须包含至少一个连字符（-）。这样就不会与HTML未来可能添加的新元素发生冲突。
+
+#### 使用自定义元素
+
+```html
+...
+    <link
+      href="http://localhost:3003/static/fragment.css"
+      rel="stylesheet"
+    />
+    ...
+    <div class="decide_details">
+      <checkout-buy sku="porsche"></checkout-buy>
+    </div>
+    ...
+    <script src="http://localhost:3003/static/fragment.js" async></script>
+...
+```
+
+请记住，自定义元素不能自动关闭。
+
+#### 通过属性进行参数化
+
+### 5.1.2 将framework包装在Web组件中（Wrapping your framework in a Web Component  )
+
+自定义组件引入一系列生命周期方法，如 constructor, connectedCallback, disconnectedCallback, 和attributeChangedCallback.   
+
+Custom Elements introduce lifecycle methods. You need to map these to the specific technology of your micro frontend.  
+
+Vue.js provides a similar solution via the official @vue/web-component-wrapper package. Since Web Components are a web standard, there are comparable libraries or tutorials for all popular frameworks out there.  
+
+React application wrapped in a Custom Element  ，参考第11章。
+
+## 5.2 使用Shadow DOM实现样式隔离
+
+Style isolation using Shadow DOM  
+
+### 5.2.1 Creating a shadow root  
+
+可以通过JavaScript在HTML元素上调用.*attachShadow()*  ，来创建一个隔离的DOM子树。
+
+```js
+class CheckoutBuy extends HTMLElement {
+    connectedCallback() {
+        const sku = this.getAttribute("sku");
+        this.attachShadow({ mode: "open" });
+        this.shadowRoot.innerHTML = "buy ...";
+    }
+}
+```
+
+**Open versus closed**  
+
+除非有特殊的需求，否则建议使用*open*模式。
+
+### 5.2.2 样式作用域（Scoping styles）
+
+定义在Shadow DOM 中的样式，只在Shadow DOM  中起作用，不会影响到页面其他部分。反之亦然，外部文档定义的css也不会在Shadow DOM 中起作用(Except for a few inherited properties like **font-family** and root **font-size**.  )。
+
+```js
+...
+    class CheckoutBuy extends HTMLElement {
+        connectedCallback() {
+            const sku = this.getAttribute("sku");
+            this.attachShadow({ mode: "open" });
+            this.shadowRoot.innerHTML = `
+            <style>
+                button {}
+                button:hover {}
+            </style>
+            <button type="button">
+            	buy for $${prices[sku]}
+            </button>
+            `;
+        ...
+        }
+    ...
+    }
+...
+```
+
+The shadow root creates a border called the *shadow boundary*. It provides isolation in both ways. Styles don’t leak out of the component. Styles on the page also don’t affect the Shadow DOM.  
+
+### 5.2.3 什么时候使用Shadow DOM  
+
+​		您可以了解有关Shadow DOM的许多详细信息。当事件从Shadow DOM冒泡到常规DOM时，它们的行为也有所不同。但是由于这是一本有关微前端而不是Web组件的书，所以我们不会更深入地讨论这个主题。
+
+**优点**
+
+**缺点**
+
+## 5.3 使用Web组件进行组合的利弊
+
+### 5.3.1 优点
+
+### 5.3.2 缺点
+
+### 5.3.3 客户端集成什么时候适用
+
+P97
