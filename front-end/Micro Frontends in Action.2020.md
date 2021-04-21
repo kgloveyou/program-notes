@@ -668,3 +668,9 @@ The shadow root creates a border called the *shadow boundary*. It provides isola
 ### 5.3.3 客户端集成什么时候适用
 
 P97
+
+## 总结
+
+a canonical way   规范的方式
+
+# 第6章  通信模式（Communication patterns  ）
