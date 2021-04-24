@@ -667,10 +667,64 @@ The shadow root creates a border called the *shadow boundary*. It provides isola
 
 ### 5.3.3 客户端集成什么时候适用
 
-P97
-
 ## 总结
 
 a canonical way   规范的方式
 
 # 第6章  通信模式（Communication patterns  ）
+
+## 6.1 User interface communication（UI通信）
+
+​		多数情况情况下，跨团队通信是通过URL进行的（URL path或 query string  ）。
+
+​		如果你正在构建一个更丰富的用户界面（比如，在一个页面包含多个用例），链接方式会变得不太合适。你需要一个标准的方式，来实现不同UI部分的通信。
+
+​		三种类型的通信模式（Parent to fragment  、Fragment to parent  、Fragment to fragment  ）。
+
+### 6.1.1 Parent to fragment  
+
+platinum edition  铂金版本
+
+premium  优质的
+
+**UPDATING ON ATTRIBUTE CHANGE**  
+
+```js
+const prices = {
+  porsche: { standard: 66, platinum: 966 },
+  fendt: { standard: 54, platinum: 945 },
+  eicher: { standard: 58, platinum: 958 },
+};
+
+class CheckoutBuy extends HTMLElement {
+  static get observedAttributes() {
+    return ["sku", "edition"];
+  }
+  connectedCallback() {
+    this.render();
+  }
+  attributeChangedCallback() {
+    this.render();
+  }
+  render() {
+    const sku = this.getAttribute("sku");
+    const edition = this.getAttribute("edition") || "standard";
+    this.innerHTML = `
+      <button type="button">buy for $${prices[sku][edition]}</button>
+    `;
+    this.querySelector("button").addEventListener("click", () => {
+      alert("Thank you ❤️");
+    });
+  }
+}
+window.customElements.define("checkout-buy", CheckoutBuy);
+
+```
+
+你可以通过将所需的上下文信息作为属性显式传递下来，从而实现父子通信。 片段可以对此更改做出反应。
+
+这遵循了单向数据流（unidirectional dataflow ） 模式。React和Redux普及了“属性向下，事件向上”的方法。根据需要，已更新的状态以属性方式，通过树向下传递到子组件。其他方向的通信是通过事件进行的。
+
+### 6.1.2 Fragment to parent  
+
+p104
