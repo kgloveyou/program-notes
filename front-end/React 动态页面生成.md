@@ -91,3 +91,9 @@ A complete react form builder that interfaces with a json endpoint to load and s
 
 NB！！！
 
+## 10、Automatically generate your own React components with plop.js
+
+https://blog.logrocket.com/automatically-generate-your-own-react-components-with-plop-js-2da3b39914f3/
+
+使用plop.js自动生成react项目的pages、components、styles、actions、hooks、reducers等文件。
+
