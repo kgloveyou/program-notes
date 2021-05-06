@@ -727,4 +727,23 @@ window.customElements.define("checkout-buy", CheckoutBuy);
 
 ### 6.1.2 Fragment to parent  
 
-p104
+**EMITTING CUSTOM EVENTS**  
+
+We’ll use the browser’s native `CustomEvents` API.   
+
+**LISTENING FOR CUSTOM EVENTS**  
+
+```js
+  const element = document.querySelector(".decide_product");
+  buyButton.addEventListener("checkout:item_added", e => {
+    element.classList.add("decide_product--confirm");
+  });
+  element.addEventListener("animationend", () => {
+    element.classList.remove("decide_product--confirm");
+  });
+```
+
+### 6.1.3 Fragment to fragment  
+
+p107
+
