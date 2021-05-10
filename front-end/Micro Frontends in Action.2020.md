@@ -727,4 +727,35 @@ window.customElements.define("checkout-buy", CheckoutBuy);
 
 ### 6.1.2 Fragment to parent  
 
-p104
+**EMITTING CUSTOM EVENTS**  
+
+We’ll use the browser’s native `CustomEvents` API.   
+
+**LISTENING FOR CUSTOM EVENTS**  
+
+```js
+  const element = document.querySelector(".decide_product");
+  buyButton.addEventListener("checkout:item_added", e => {
+    element.classList.add("decide_product--confirm");
+  });
+  element.addEventListener("animationend", () => {
+    element.classList.remove("decide_product--confirm");
+  });
+```
+
+### 6.1.3 Fragment to fragment  
+
+***Event-Bus/broadcasting***—With this model, you introduce a global communication channel. Fragments can publish events to the channel. Other fragments can subscribe to these events and react to them. The publish/subscribe mechanism reduces coupling.   
+
+The product page, in our example, wouldn’t have to know or  care about the communication between the Buy button and the mini-basket fragment. You can implement this with Custom Events. Most browsers also support the new *Broadcast Channel API*, which creates a message bus that also spans across browser windows, tabs, and iframes.  
+
+###  6.1.4 Publish/Subscribe with the Broadcast Channel API  
+
+与基于DOM的自定义事件相比，此方法的最大好处是：你可以实现跨窗口的消息交换。如果你需要跨多个tab同步状态或决定使用iframe，该方式可以派上用场。
+
+### 6.1.5 When UI communication is a good fit  
+
+## 6.2 其他的通信机制
+
+p113 
+
