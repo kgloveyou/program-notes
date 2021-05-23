@@ -124,3 +124,15 @@ malignant：恶性的
 
 - GraphQL面临一些挑战，尤其是在安全性和优化领域。 由于它提供的灵活性，保护GraphQL API需要考虑更多的漏洞。 缓存灵活的GraphQL API也比缓存固定API端点（如REST API）要困难得多。 GraphQL的学习曲线也比许多其他选择更陡峭。
 
+# 第2章 探索GraphQL API
+
+## 2.1 GraphiQL编辑器
+
+GraphiQL  
+
+az.dev/swapi-graphql  -------》https://graphql.org/swapi-graphql
+
+## 2.2 GraphQL语言基础
+
+## 2.3来自GitHub API的示例
+
