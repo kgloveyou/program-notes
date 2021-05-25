@@ -136,3 +136,69 @@ az.dev/swapi-graphql  -------》https://graphql.org/swapi-graphql
 
 ## 2.3来自GitHub API的示例
 
+https://docs.github.com/en/graphql/overview/explorer
+
+### 2.3.3 内省查询（Introspective queries ）
+
+
+
+# 第3章 定制和组织GraphQL操作
+
+## 3.1使用参数自定义字段
+
+https://docs.github.com/en/graphql/overview/explorer
+
+### 3.1.1标识要返回的单个记录
+
+Listing 3.1 Using field arguments  
+
+```json
+query UserInfo {
+  user(email: "jane@doe.name") {
+    firstName
+    lastName
+    username
+  }
+}
+```
+
+某些GraphQL API甚至对系统中的每个对象都有一个记录字段。在GraphQL世界中，这通常称为Node interface ：由Relay框架（也起源于Facebook）推广的概念。
+
+### 3.1.2限制列表字段返回的记录数
+
+```json
+query First10Repos {
+  organization(login: "jscomplete") {
+    name
+    description
+    websiteUrl
+    repositories(first: 10) {
+      nodes {
+        name
+      }
+    }
+  }
+}
+```
+
+### 3.1.3 对列表字段返回的记录排序
+
+```json
+query orgReposByName {
+  organization(login: "jscomplete") {
+    repositories(first: 10, orderBy: {field: NAME, direction: ASC}) {
+      nodes {
+        name
+      }
+    }
+  }
+}
+
+```
+
+### 3.1.4 记录列表分页
+
+### 3.1.5 查询和过滤
+
+### 3.1.6 为变更提供输入
+
