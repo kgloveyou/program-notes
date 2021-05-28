@@ -202,3 +202,46 @@ query orgReposByName {
 
 ### 3.1.6 为变更提供输入
 
+## 3.2 使用别名重命名字段
+
+语法：
+
+```js
+aliasName: fieldName  
+```
+
+示例3.14
+
+```js
+query ProfileInfoWithAlias {
+    user(login: "samerbuna") {
+        name
+        companyName: company
+        bio
+    }
+}
+```
+
+## 3.3 使用指令自定义响应
+
+查询schema支持的指令列表：
+
+```js
+query AllDirectives {
+  __schema {
+    directives {
+      name
+      description
+      locations
+      args {
+        name
+        description
+        defaultValue
+      }
+    }
+  }
+}
+```
+
+### 3.3.1 变量和输入值
+
