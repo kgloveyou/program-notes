@@ -245,3 +245,214 @@ query AllDirectives {
 
 ### 3.3.1 变量和输入值
 
+```js
+query OrgInfo($orgLogin: String!) {
+  organization(login: $orgLogin) {
+    name
+    description
+    websiteUrl
+  }
+}
+
+```
+
+查询变量
+
+```json
+{
+  "orgLogin": "jscomplete"
+}
+```
+
+Listing 3.17 变量默认值
+
+```js
+query OrgInfoWithDefault($orgLogin: String = "jscomplete") {
+  organization(login: $orgLogin) {
+    name
+    description
+    websiteUrl
+  }
+}
+
+```
+
+### 3.3.2 @include 指令
+
+Listing 3.18 @include指令
+
+查询语句
+
+```js
+query OrgInfo($orgLogin: String!, $fullDetails: Boolean!) {
+  organization(login: $orgLogin) {
+    name
+    description
+    websiteUrl @include(if: $fullDetails)
+  }
+}
+
+```
+
+查询变量
+
+```json
+{
+  "orgLogin": "jscomplete",
+  "fullDetails": false
+}
+```
+
+查询结果
+
+```json
+{
+  "data": {
+    "organization": {
+      "name": "jsComplete",
+      "description": "Learn Full-stack JavaScript Development with Node, React, GraphQL, and more."
+    }
+  }
+}
+```
+
+### 3.3.3 @skip指令
+
+`@include`  指令的反义词。
+
+查询语句
+
+```
+query OrgInfo($orgLogin: String!, $partialDetails: Boolean!) {
+  organization(login: $orgLogin) {
+    name
+    description
+    websiteUrl @skip(if: $partialDetails)
+  }
+}
+
+```
+
+查询变量
+
+```json
+{
+  "orgLogin": "jscomplete",
+  "partialDetails": true
+}
+```
+
+查询结果
+
+```json
+{
+  "data": {
+    "organization": {
+      "name": "jsComplete",
+      "description": "Learn Full-stack JavaScript Development with Node, React, GraphQL, and more."
+    }
+  }
+}
+```
+
+当include条件为true，且skip条件为false，返回该字段；
+
+当include条件为false，或skip条件为true，不返回该字段。
+
+查询语句
+
+```js
+query OrgInfo($orgLogin: String!, $partialDetails: Boolean!) {
+  organization(login: $orgLogin) {
+    name
+    description
+    websiteUrl @skip(if: $partialDetails) @include(if: false)
+  }
+}
+
+```
+
+查询变量
+
+```json
+{
+  "orgLogin": "jscomplete",
+  "partialDetails": true
+}
+```
+
+查询结果
+
+```json
+{
+  "data": {
+    "organization": {
+      "name": "jsComplete",
+      "description": "Learn Full-stack JavaScript Development with Node, React, GraphQL, and more."
+    }
+  }
+}
+```
+
+### 3.3.4 @deprecated指令
+
+Listing 3.21 The @deprecated directive  
+
+```js
+type User {
+  emailAddress: String
+  email: String @deprecated(reason: "Use 'emailAddress'.")
+}
+
+```
+
+
+
+## 3.4 GraphQL fragments  
+
+### 3.4.1 为什么使用fragments?  
+
+A fragment in GraphQL is simply a reusable piece of any GraphQL operation.  
+
+### 3.4.2 定义并使用fragments  
+
+例如，让我们以简单的GitHub组织信息查询示例为例：
+
+```
+query OrgInfo {
+  organization(login: "jscomplete") {
+    name
+    description
+    websiteUrl
+  }
+}
+```
+
+使用fragment改写该查询，需要先定义fragment。
+
+```
+fragment orgFields on Organization {
+  name
+  description
+  websiteUrl
+}
+
+```
+
+This defines an `orgFields` fragment that can be used within a selection set that expands an `organization` field. The `on Organization` part of the definition is called the `type condition` of the fragment. Since a fragment is essentially a selection set, you can only define fragments on object types. You cannot define a fragment on a scalar value.  
+
+To use the fragment, you “spread” its name where the fields were originally used in the query.  
+
+```
+query OrgInfoWithFragment {
+  organization(login: "jscomplete") {
+    ...orgFields
+  }
+}
+
+```
+
+The three-dotted fragment name (`...orgFields`) is called a `fragment spread`.  
+
+### 3.4.3 Fragments and DRY  
+
