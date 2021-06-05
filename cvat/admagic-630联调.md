@@ -546,3 +546,242 @@ async function getAnnotations(session, frame, allTracks, filters) {
 }
 ```
 
+
+
+- 切换帧
+
+  dispatch(changeFrameAsync(frameNumber, false));
+
+```js
+export function changeFrameAsync(toFrame: number, fillBuffer?: boolean, frameStep?: number): ThunkAction {
+    return async (dispatch: ActionCreator<Dispatch>): Promise<void> => {
+        const state: CombinedState = getStore().getState();
+        const { instance: job } = state.annotation.job;
+        const { filters, frame, showAllInterpolationTracks } = receiveAnnotationsParameters();
+
+        try {
+            if (toFrame < job.startFrame || toFrame > job.stopFrame) {
+                throw Error(`Required frame ${toFrame} is out of the current job`);
+            }
+
+            if (toFrame === frame) {
+                dispatch({
+                    type: AnnotationActionTypes.CHANGE_FRAME_SUCCESS,
+                    payload: {
+                        number: state.annotation.player.frame.number,
+                        data: state.annotation.player.frame.data,
+                        filename: state.annotation.player.frame.filename,
+                        delay: state.annotation.player.frame.delay,
+                        changeTime: state.annotation.player.frame.changeTime,
+                        states: state.annotation.annotations.states,
+                        minZ: state.annotation.annotations.zLayer.min,
+                        maxZ: state.annotation.annotations.zLayer.max,
+                        curZ: state.annotation.annotations.zLayer.cur,
+                    },
+                });
+
+                return;
+            }
+
+            // Start async requests
+            dispatch({
+                type: AnnotationActionTypes.CHANGE_FRAME,
+                payload: {},
+            });
+
+            await job.logger.log(LogType.changeFrame, {
+                from: frame,
+                to: toFrame,
+            });
+            const data = await job.frames.get(toFrame, fillBuffer, frameStep);
+            const states = await job.annotations.get(toFrame, showAllInterpolationTracks, filters);
+            const [minZ, maxZ] = computeZRange(states);
+            const currentTime = new Date().getTime();
+            let frameSpeed;
+            switch (state.settings.player.frameSpeed) {
+                case FrameSpeed.Fast: {
+                    frameSpeed = (FrameSpeed.Fast as number) / 2;
+                    break;
+                }
+                case FrameSpeed.Fastest: {
+                    frameSpeed = (FrameSpeed.Fastest as number) / 3;
+                    break;
+                }
+                default: {
+                    frameSpeed = state.settings.player.frameSpeed as number;
+                }
+            }
+            const delay = Math.max(
+                0,
+                Math.round(1000 / frameSpeed) - currentTime + (state.annotation.player.frame.changeTime as number),
+            );
+
+            dispatch({
+                type: AnnotationActionTypes.CHANGE_FRAME_SUCCESS,
+                payload: {
+                    number: toFrame,
+                    data,
+                    filename: data.filename,
+                    states,
+                    minZ,
+                    maxZ,
+                    curZ: maxZ,
+                    changeTime: currentTime + delay,
+                    delay,
+                },
+            });
+        } catch (error) {
+            if (error !== 'not needed') {
+                dispatch({
+                    type: AnnotationActionTypes.CHANGE_FRAME_FAILED,
+                    payload: {
+                        number: toFrame,
+                        error,
+                    },
+                });
+            }
+        }
+    };
+}
+```
+
+receiveAnnotationsParameters
+
+从store中获取相关参数
+
+```js
+function receiveAnnotationsParameters(): AnnotationsParameters {
+    if (store === null) {
+        store = getCVATStore();
+    }
+
+    const state: CombinedState = getStore().getState();
+    const {
+        annotation: {
+            annotations: { filters },
+            player: {
+                frame: { number: frame },
+            },
+            job: { instance: jobInstance },
+        },
+        settings: {
+            workspace: { showAllInterpolationTracks },
+        },
+    } = state;
+
+    return {
+        filters,
+        frame,
+        jobInstance,
+        showAllInterpolationTracks,
+    };
+}
+```
+
+const [minZ, maxZ] = computeZRange(states);
+
+计算ZOrder的范围值
+
+```tsx
+export function computeZRange(states: any[]): number[] {
+    const filteredStates = states.filter((state: any): any => state.objectType !== ObjectType.TAG);
+    let minZ = filteredStates.length ? filteredStates[0].zOrder : 0;
+    let maxZ = filteredStates.length ? filteredStates[0].zOrder : 0;
+    filteredStates.forEach((state: any): void => {
+        minZ = Math.min(minZ, state.zOrder);
+        maxZ = Math.max(maxZ, state.zOrder);
+    });
+
+    return [minZ, maxZ];
+}
+```
+
+
+
+### annot-ui\src\containers\annotation-page\standard-workspace\canvas-wrapper.tsx
+
+### components/annotation-page/standard-workspace/canvas-wrapper
+
+更新canvas（加载图片及标注）
+
+```tsx
+    private updateCanvas(): void {
+        const { curZLayer, annotations, frameData, canvasInstance } = this.props;
+
+        if (frameData !== null) {
+            canvasInstance.setup(
+                frameData,
+                annotations.filter((e) => e.objectType !== ObjectType.TAG),
+                curZLayer,
+            );
+        }
+    }
+```
+
+canvasInstance.setup实际定义在：
+
+annot-canvas\src\typescript\canvas.ts
+
+annot-canvas\src\typescript\canvasModel.ts
+
+```ts
+    public setup(frameData: any, objectStates: any[], zLayer: number): void {
+        if (this.data.imageID !== frameData.number) {
+            if ([Mode.EDIT, Mode.DRAG, Mode.RESIZE].includes(this.data.mode)) {
+                throw Error(`Canvas is busy. Action: ${this.data.mode}`);
+            }
+        }
+
+        if (frameData.number === this.data.imageID) {
+            this.data.zLayer = zLayer;
+            this.data.objects = objectStates;
+            this.notify(UpdateReasons.OBJECTS_UPDATED);
+            return;
+        }
+
+        this.data.imageID = frameData.number;
+        frameData
+            .data((): void => {
+                this.data.image = null;
+                this.notify(UpdateReasons.IMAGE_CHANGED);
+            })
+            .then((data: Image): void => {
+                if (frameData.number !== this.data.imageID) {
+                    // already another image
+                    return;
+                }
+
+                this.data.imageSize = {
+                    height: frameData.height as number,
+                    width: frameData.width as number,
+                };
+
+                this.data.image = data;
+                this.notify(UpdateReasons.IMAGE_CHANGED);
+                this.data.zLayer = zLayer;
+                this.data.objects = objectStates;
+                this.notify(UpdateReasons.OBJECTS_UPDATED);
+            })
+            .catch((exception: any): void => {
+                throw exception;
+            });
+    }
+```
+
+frameData这里的方法调用重点（*）
+
+从cvat-ui的components/annotation-page/standard-workspace/canvas-wrapper中传过来的。
+
+![image-20210605190440782](admagic-630联调.assets/image-20210605190440782.png)
+
+
+
+在cvat-ui\src\containers\annotation-page\standard-workspace\canvas-wrapper.tsx中，从state中获取。
+
+```js
+player: {
+    frame: { data: frameData, number: frame, fetching: frameFetching },
+        frameAngles,
+},
+```
+
