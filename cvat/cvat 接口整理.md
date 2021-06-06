@@ -2065,7 +2065,31 @@ PATCH
 
 ## 进入标注界面
 
-### 提交日志
+### 接口调用顺序
+
+进入主界面后，系统依次调用了下面前4个接口。
+
+http://182.138.104.162:16480/annotations/api/v1/server/logs
+
+POST
+
+http://182.138.104.162:16480/annotations/api/v1/tasks/46/data/meta
+
+GET
+
+http://182.138.104.162:16480/annotations/api/v1/tasks/46/data?type=chunk&number=0&quality=compressed
+
+GET
+
+http://182.138.104.162:16480/annotations/api/v1/jobs/48/annotations
+
+GET
+
+
+
+**各个接口详细内容如下：**
+
+### 1、提交日志
 
 http://182.138.104.162:16480/annotations/api/v1/server/logs
 
@@ -2087,7 +2111,9 @@ POST
 ]
 ```
 
-### 获取任务元数据
+### 2、获取任务元数据
+
+读取任务的所有帧的元数据信息。
 
 ```js
 response = await Axios.get(`${backendAPI}/tasks/${tid}/data/meta`, {
@@ -2152,7 +2178,7 @@ GET
 }
 ```
 
-### 获取任务数据
+### 3、获取任务数据
 
 http://182.138.104.162:16480/annotations/api/v1/tasks/28/data?type=chunk&number=0&quality=compressed
 
@@ -2162,7 +2188,11 @@ GET
 
 二进制数据（用浏览器打开，显示data.zip压缩包）
 
-### 获取任务/作业的标注
+### 4、获取任务/作业的标注
+
+获取作业的所有标注内容。
+
+
 
 前端调用代码：
 
@@ -2179,7 +2209,7 @@ http://182.138.104.162:16480/annotations/api/v1/jobs/25/annotations
 
 GET
 
-**响应体（图像分类）**
+#### 响应体（图像分类）
 
 ```json
 {
@@ -2319,53 +2349,127 @@ GET
 }
 ```
 
-**响应体（目标检测）**
+#### 响应体（物体检测）
 
 ```json
 {
-  "version": 3,
-  "tags": [],
+  "version": 9,
+  "tags": [
+    
+  ],
   "shapes": [
     {
       "type": "rectangle",
       "occluded": false,
       "z_order": 0,
       "points": [
-        179.533203125,
-        16.115234375,
-        832.0947265625,
-        807.31103515625
+        450.6025390625,
+        301.5654296875,
+        534.6985397338867,
+        480.6587677001953
       ],
-      "id": 158,
+      "id": 173,
       "frame": 0,
-      "label_id": 34,
+      "label_id": 64,
       "group": 0,
       "source": "manual",
-      "attributes": []
+      "attributes": [
+        {
+          "spec_id": 15,
+          "value": "red"
+        },
+        {
+          "spec_id": 14,
+          "value": ""
+        }
+      ]
     },
     {
       "type": "rectangle",
       "occluded": false,
       "z_order": 0,
       "points": [
-        43.611328125,
-        22.712890625,
-        460.9483947753906,
-        745.7510375976562
+        523.4296875,
+        166.3603515625,
+        563.0840072631836,
+        202.40973663330078
       ],
-      "id": 159,
+      "id": 174,
       "frame": 1,
-      "label_id": 34,
+      "label_id": 64,
       "group": 0,
       "source": "manual",
-      "attributes": []
+      "attributes": [
+        {
+          "spec_id": 15,
+          "value": "red"
+        },
+        {
+          "spec_id": 14,
+          "value": ""
+        }
+      ]
+    },
+    {
+      "type": "rectangle",
+      "occluded": false,
+      "z_order": 0,
+      "points": [
+        463.046875,
+        3.236328125,
+        532.4419403076172,
+        75.33509826660156
+      ],
+      "id": 175,
+      "frame": 2,
+      "label_id": 64,
+      "group": 0,
+      "source": "manual",
+      "attributes": [
+        {
+          "spec_id": 15,
+          "value": "red"
+        },
+        {
+          "spec_id": 14,
+          "value": ""
+        }
+      ]
+    },
+    {
+      "type": "rectangle",
+      "occluded": false,
+      "z_order": 0,
+      "points": [
+        210.0107421875,
+        130.6669921875,
+        310.5274124145508,
+        210.8336639404297
+      ],
+      "id": 176,
+      "frame": 3,
+      "label_id": 64,
+      "group": 0,
+      "source": "manual",
+      "attributes": [
+        {
+          "spec_id": 15,
+          "value": "red"
+        },
+        {
+          "spec_id": 14,
+          "value": ""
+        }
+      ]
     }
   ],
-  "tracks": []
+  "tracks": [
+    
+  ]
 }
 ```
 
-**响应体（图像分割）**
+#### 响应体（图像分割）
 
 ```json
 {
@@ -2528,13 +2632,19 @@ GET
 }
 ```
 
+#### 响应体（文本检测）
+
+```json
+
+```
+
 
 
 ### 保存标注
 
 调用了4次接口（前3个实际是同一个接口，传参不同）：
 
-1、保存新增标注
+#### 1、保存新增标注
 
 http://192.168.1.18/annotations/api/v1/jobs/112/annotations?action=create
 
@@ -2544,159 +2654,45 @@ PATCH
 
 ```json
 {
+  "version": 10,
+  "tags": [
+    
+  ],
   "shapes": [
     {
       "type": "rectangle",
       "occluded": false,
       "z_order": 0,
       "points": [
-        247.490234375,
-        168.279296875,
-        351.8026351928711,
-        266.0721664428711
+        503.6025390625,
+        252.337890625,
+        576.6025390625,
+        282.9798641204834
       ],
-      "attributes": [],
-      "frame": 0,
-      "label_id": 161,
-      "group": 0,
-      "source": "manual"
-    },
-    {
-      "type": "rectangle",
-      "occluded": false,
-      "z_order": 0,
-      "points": [
-        385.216796875,
-        211.470703125,
-        429.1828422546387,
-        274.2211265563965
-      ],
-      "attributes": [],
-      "frame": 0,
-      "label_id": 161,
-      "group": 0,
-      "source": "manual"
-    },
-    {
-      "type": "rectangle",
-      "occluded": false,
-      "z_order": 0,
-      "points": [
-        533.126953125,
-        266.884765625,
-        603.1710968017578,
-        339.0070114135742
-      ],
-      "attributes": [],
-      "frame": 0,
-      "label_id": 161,
-      "group": 0,
-      "source": "manual"
-    },
-    {
-      "type": "rectangle",
-      "occluded": false,
-      "z_order": 0,
-      "points": [
-        302.458984375,
-        190.28125,
-        336.727237701416,
-        230.62080764770508
-      ],
-      "attributes": [],
+      "id": 191,
       "frame": 1,
-      "label_id": 161,
+      "label_id": 64,
       "group": 0,
-      "source": "manual"
-    },
-    {
-      "type": "rectangle",
-      "occluded": false,
-      "z_order": 0,
-      "points": [
-        346.505859375,
-        203.3203125,
-        372.1764888763428,
-        236.3254051208496
-      ],
-      "attributes": [],
-      "frame": 1,
-      "label_id": 161,
-      "group": 0,
-      "source": "manual"
-    },
-    {
-      "type": "rectangle",
-      "occluded": false,
-      "z_order": 0,
-      "points": [
-        475.673828125,
-        239.177734375,
-        518.8656768798828,
-        277.47994232177734
-      ],
-      "attributes": [],
-      "frame": 1,
-      "label_id": 161,
-      "group": 0,
-      "source": "manual"
-    },
-    {
-      "type": "rectangle",
-      "occluded": false,
-      "z_order": 0,
-      "points": [
-        353.1171875,
-        180.572265625,
-        877.5314331054688,
-        572.9661560058594
-      ],
-      "attributes": [],
-      "frame": 2,
-      "label_id": 161,
-      "group": 0,
-      "source": "manual"
-    },
-    {
-      "type": "rectangle",
-      "occluded": false,
-      "z_order": 0,
-      "points": [
-        997.6328125,
-        131.982421875,
-        1532.1319580078125,
-        531.7107849121094
-      ],
-      "attributes": [],
-      "frame": 2,
-      "label_id": 161,
-      "group": 0,
-      "source": "manual"
-    },
-    {
-      "type": "rectangle",
-      "occluded": false,
-      "z_order": 0,
-      "points": [
-        114.6796875,
-        136.591796875,
-        275.12110900878906,
-        453.8074035644531
-      ],
-      "attributes": [],
-      "frame": 2,
-      "label_id": 161,
-      "group": 0,
-      "source": "manual"
+      "source": "manual",
+      "attributes": [
+        {
+          "spec_id": 14,
+          "value": ""
+        },
+        {
+          "spec_id": 15,
+          "value": "red"
+        }
+      ]
     }
   ],
-  "tracks": [],
-  "tags": [],
-  "version": 0
+  "tracks": [
+    
+  ]
 }
 ```
 
-2、保存更新标注
+#### 2、保存更新标注
 
 http://192.168.1.18/annotations/api/v1/jobs/112/annotations?action=update
 
@@ -2706,14 +2702,45 @@ PATCH
 
 ```json
 {
-  "shapes": [],
-  "tracks": [],
-  "tags": [],
-  "version": 1
+  "version": 11,
+  "tags": [
+    
+  ],
+  "shapes": [
+    {
+      "type": "rectangle",
+      "occluded": false,
+      "z_order": 0,
+      "points": [
+        463.046875,
+        3.236328125,
+        532.4419403076172,
+        75.33509826660156
+      ],
+      "id": 175,
+      "frame": 2,
+      "label_id": 64,
+      "group": 0,
+      "source": "manual",
+      "attributes": [
+        {
+          "spec_id": 14,
+          "value": "yes"
+        },
+        {
+          "spec_id": 15,
+          "value": "red"
+        }
+      ]
+    }
+  ],
+  "tracks": [
+    
+  ]
 }
 ```
 
-3、保存删除标注
+#### 3、保存删除标注
 
 http://192.168.1.18/annotations/api/v1/jobs/112/annotations?action=delete
 
@@ -2723,14 +2750,45 @@ PATCH
 
 ```json
 {
-  "shapes": [],
-  "tracks": [],
-  "tags": [],
-  "version": 2
+  "version": 12,
+  "tags": [
+    
+  ],
+  "shapes": [
+    {
+      "type": "rectangle",
+      "occluded": false,
+      "z_order": 0,
+      "points": [
+        450.6025390625,
+        301.5654296875,
+        534.6985397338867,
+        480.6587677001953
+      ],
+      "id": 173,
+      "frame": 0,
+      "label_id": 64,
+      "group": 0,
+      "source": "manual",
+      "attributes": [
+        {
+          "spec_id": 14,
+          "value": ""
+        },
+        {
+          "spec_id": 15,
+          "value": "red"
+        }
+      ]
+    }
+  ],
+  "tracks": [
+    
+  ]
 }
 ```
 
-4、保存日志
+#### 4、保存日志
 
 http://192.168.1.18/annotations/api/v1/server/logs
 
