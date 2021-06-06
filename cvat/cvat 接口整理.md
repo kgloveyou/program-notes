@@ -2113,7 +2113,7 @@ POST
 
 ### 2、获取任务元数据
 
-读取任务的所有帧的元数据信息。
+读取任务的所有帧的元数据信息。任务被分割成多个作业后，还是一次请求所有的图片信息。
 
 ```js
 response = await Axios.get(`${backendAPI}/tasks/${tid}/data/meta`, {
@@ -2208,6 +2208,25 @@ response = await Axios.get(`${backendAPI}/${session}s/${id}/annotations`, {
 http://182.138.104.162:16480/annotations/api/v1/jobs/25/annotations
 
 GET
+
+#### 响应体（未标注）
+
+```json
+{
+  "version": 0,
+  "tags": [
+    
+  ],
+  "shapes": [
+    
+  ],
+  "tracks": [
+    
+  ]
+}
+```
+
+
 
 #### 响应体（图像分类）
 
