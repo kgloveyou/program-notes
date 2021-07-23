@@ -17,3 +17,4 @@ Much of Concurrent Mode and Suspense for data fetching are on the experimental c
 ### 2.2.1 Assigning new values to variables doesn’t update the UI  
 
 P39
+
