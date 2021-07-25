@@ -82,3 +82,84 @@ React gives us the `useReducer` hook to help us manage this collocation of state
 ## 3.2 Managing more complicated state with useReducer  
 
 ### 3.2.1 Updating state using a reducer with a predefined set of actions  
+
+### 3.2.3 Accessing component state and dispatching actions with useReducer  
+
+```js
+const [ state, dispatch ] = useReducer( reducer, initialState );
+```
+
+## 3.3 Generating the initial state with a functio  
+
+```js
+const [state, dispatch] = useReducer(reducer, initArgument, initFunction);
+```
+
+The initialization function uses the initialization argument to generate the initial state  
+
+### 3.3.2 Creating utility functions to work with dates and weeks  
+
+### 3.3.3 Building the reducer to manage dates for the component  
+
+## 3.4 Reviewing some useReducer concepts  
+
+# 4、Working with side effects  
+
+side effect  包括如下：
+
+- 强制设置页面标题
+
+- Working with timers like `setInterval` or `setTimeout`  
+
+- Measuring the width, height, or position of elements in the DOM  
+
+- Logging messages to the console or other service  
+
+- Setting or getting values in local storage  
+
+- Fetching data or subscribing and unsubscribing to services  
+
+  
+
+The `useEffect` hook is our gateway to safe interactions with the outside world.  
+
+## 4.1 Exploring the useEffect API with simple examples  
+
+### 4.1.1 Running side effects after every render  
+
+Reaching out to a browser API in this way is considered a side effect.  
+
+```js
+useEffect(() => {
+	document.title = "Bonjour";
+});  
+```
+
+When you call the `useEffect` hook in this way, without a second argument, React runs the effect after every render.   
+
+### 4.1.2 Running an effect only when a component mounts  
+
+```js
+useEffect( () => {
+// perform a side effect
+}, [ ] );
+```
+
+### 4.1.3 Cleaning up side effects by returning a function  
+
+We have to be careful not to make a mess when we set up long-running side effects like **subscriptions, data requests, timers, and event listeners.**   
+
+```js
+useEffect( () => {
+    // perform a side effect
+    return function () { /* clean up side effect */ };
+}, [ ] );
+```
+
+Cleanup function: Return a function to clean up  after the effect (e.g., unsubscribe,  stop timers, remove listeners, etc.).  
+
+​		React runs the cleanup function when it unmounts the component. But that’s not the only time it runs it. Whenever the component re-renders, React calls the cleanup function before running the effect function, **if the effect runs again**. If multiple effects need to run again, React calls all of the cleanup functions for those effects. Once the cleanup is finished, React reruns the effect functions as needed.  
+
+### 4.1.4 Controlling when an effect runs by specifying dependencies  
+
+P99
