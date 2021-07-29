@@ -162,4 +162,24 @@ Cleanup function: Return a function to clean up  after the effect (e.g., unsubsc
 
 ### 4.1.4 Controlling when an effect runs by specifying dependencies  
 
-P99
+```jsx
+useEffect( () => {
+    // do something with dep1 and dep2
+    return () => { /* clean up */ };
+}, [dep1, dep2] );
+```
+
+Cleanup function: Remove listeners, unsubscribe, etc.  
+
+### 4.1.5 Summarizing the ways to call the useEffect hook  
+
+### 4.1.6 Calling useLayoutEffect to run an effect before the browser repaints  
+
+This hook has the same API as `useEffect` but runs synchronously after React updates the DOM and before the browser repaints.   If the effect makes further updates to the state, the intermediate state isn’t painted to the screen.  
+
+You generally won’t need `useLayoutEffect`, but if you come across problems (maybe with an element flickering between states), you could try switching from `useEffect` for the suspect effect.  
+
+## 4.2 获取数据
+
+P104
+
