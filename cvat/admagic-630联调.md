@@ -785,3 +785,9 @@ player: {
 },
 ```
 
+## 4、多边形移动
+
+Unable to move (drag with the mouse) track when it's a polygon
+
+https://github.com/openvinotoolkit/cvat/issues/2650
+
