@@ -791,3 +791,15 @@ Unable to move (drag with the mouse) track when it's a polygon
 
 https://github.com/openvinotoolkit/cvat/issues/2650
 
+修改文件：
+
+cvat-core\src\annotations-objects.js
+
+在
+
+```
+class PolygonShape extends PolyShape {
+```
+
+中，添加`this.pinned = false;`
+
