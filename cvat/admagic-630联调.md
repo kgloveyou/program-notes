@@ -785,7 +785,7 @@ player: {
 },
 ```
 
-## 4、多边形移动
+## 4、移动多边形
 
 Unable to move (drag with the mouse) track when it's a polygon
 
@@ -802,4 +802,10 @@ class PolygonShape extends PolyShape {
 ```
 
 中，添加`this.pinned = false;`
+
+## 5、多选shape
+
+Selecting more than one object - Moving/Copying/Pasting or Assigning Label - Enhancement
+
+https://github.com/openvinotoolkit/cvat/issues/2340
 

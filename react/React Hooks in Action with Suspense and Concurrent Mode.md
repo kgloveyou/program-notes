@@ -181,5 +181,132 @@ You generally won’t need `useLayoutEffect`, but if you come across problems (m
 
 ## 4.2 获取数据
 
-P104
+使用`json-server` 包安装JSON server  
 
+### 4.2.1 创建新的db.json文件
+
+​		In later chapters, we’ll start updating the database file by sending POST and PUT requests. The `create-react-app` development server restarts whenever files within the src folder change. Having the db.json file outside src avoids unnecessary restarts as we test adding new bookables and making bookings.  
+
+### 4.2.2 设置 JSON 服务器
+
+`json-server` 包是提供 JSON 数据作为模拟 REST API 的一种非常方便、简单的方法。
+
+全局安装
+
+```shell
+npm install -g json-server  
+```
+
+在本项目的根路径，启动服务器
+
+```sh
+json-server --watch db.json --port 3001  
+```
+
+此时便可以通过`localhost:3001`  查询数据。
+
+### 4.2.3 使用useEffect存取数据
+
+延迟响应
+
+```sh
+json-server --watch db.json --port 3001 --delay 3000  
+```
+
+### 4.2.4 Working with async and await  （※）
+
+```jsx
+useEffect(async () => {
+    const resp = await fetch("http://localhost:3001/users");
+    const data = await (resp.json());
+    setUsers(data);
+}, []);
+```
+
+上面的代码会在控制台报警告信息。
+
+- Effect callbacks are synchronous to prevent race conditions. Put the async function inside.  
+
+  
+
+`async` functions return a promise by default. Setting the effect function as `async` will cause trouble because React is looking for the return value of an effect to be a cleanup function. To solve the issues, remember to put the `async` function inside the effect function, rather than making the effect function `async` itself:  
+
+```js
+useEffect(() => {
+    async function getUsers() {
+        const resp = await fetch(url);
+        const data = await (resp.json());
+        setUsers(data);
+    }
+    getUsers();
+}, []);
+```
+
+## 概述
+
+- Return a cleanup function from the effect that React will run before rerunning the effect function and when the component unmounts:  
+
+```js
+useEffect(() => {
+    // perform effect
+    return () => {/* clean-up */};
+}, [dep1, dep2]);
+```
+
+- If, on re-render, multiple effects are going to run, React will call all of the cleanup functions for the rerunning effects before it runs any effects themselves.  
+
+# 5 Managing component state with the useRef hook  
+
+## 5.1 Updating state without causing a re-render  
+
+With the `useState` hook, calling a state value’s updater function usually triggers a re-render. 
+
+With the `useRef` hook, we can update our value without a corresponding change to the UI.   
+
+### 5.1.1 Comparing useState and useRef when updating state values  
+
+`useState`  
+
+React persists the state across renders, each time passing it back to the component,where it is assigned to the `count` variable.  
+
+`useRef`  
+
+The hook returns an object, a `ref`, which we use to store the state value. Changing the value stored on the ref doesn’t trigger a re-render. React persists the state across renders, each time passing the same ref object back to the component, where it is assigned to the `ref` variable.  
+
+### 5.1.2 Calling useRef  
+
+Every time React runs the component code, each call to `useRef` will return the same ref object for that call.  
+
+```js
+const refObject = useRef( initialValue );  
+```
+
+`useRef` returns an object with a current property.  
+
+```jsx
+ref1.current = "Babel Fish";
+ref2.current = "1,000,000,000,000";  
+```
+
+Assigning new values to the `current` properties of the ref objects doesn’t trigger a rerender. But as React always returns the same ref objects, the new values are available when the component runs again.  
+
+## 5.2 Storing timer IDs with a ref  
+
+```js
+const timerRef = useRef(null);
+...
+useEffect(() => {
+    timerRef.current = setInterval(() => {
+        dispatch({ type: "NEXT_BOOKABLE" });
+        }, 3000);
+    return stopPresentation;
+}, []);
+...
+function stopPresentation () {
+	clearInterval(timerRef.current);
+}
+```
+
+## 5.3 Keeping references to DOM elements  
+
+P125
