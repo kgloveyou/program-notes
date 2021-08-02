@@ -809,3 +809,9 @@ Selecting more than one object - Moving/Copying/Pasting or Assigning Label - Enh
 
 https://github.com/openvinotoolkit/cvat/issues/2340
 
+## 11、Rotated bounding boxes
+
+https://github.com/openvinotoolkit/cvat/issues/1128
+
+https://github.com/NVIDIA/retinanet-examples/blob/master/TRAINING.md#dataset
+
