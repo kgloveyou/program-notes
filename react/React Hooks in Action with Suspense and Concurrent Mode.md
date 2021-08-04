@@ -309,4 +309,72 @@ function stopPresentation () {
 
 ## 5.3 Keeping references to DOM elements  
 
-P125
+### 5.3.1 Setting focus on an element in response to an event  
+
+```jsx
+const nextButtonRef = useRef();
+...
+
+<button
+    className="btn"
+    onClick={nextBookable}
+    ref={nextButtonRef}
+    autoFocus
+>
+</button>
+
+...
+nextButtonRef.current.focus();
+```
+
+#### 非受控组件
+
+Components that let the DOM manage their state in this way are called `uncontrolled components`.  
+
+#### 受控组件
+
+With controlled components, the data flow is from the component to the DOM, in line with the standard React approach.  
+
+## 概述
+
+- Call the `useRef` hook when you want React to manage a state value but don’t want changes to the value to trigger a re-render.  For example, use it for storing IDs for `setTimeout` and `setInterval` or for references to DOM elements. You
+  can pass it an initial value if required. It returns an object with a `current` property set to the initial value:  
+
+```jsx
+const ref = useRef(initialValue);
+ref.current; // initialValue
+```
+
+- A call to `useRef` will return the same ref object each time the component runs. Persist values in the ref across renders by assigning them to the ref’s `current` property:  
+
+```jsx
+ref.current = valueToStore;  
+```
+
+admagic中标注页面scenario刷新后改变的问题，是不是可以采用？
+
+- React can automatically assign DOM element references to your ref’s `current` property. Assign your ref variable to an element’s `ref` attribute in JSX:  
+
+```jsx
+const myRef = useRef();
+...
+return (
+	<button ref={myRef}>Click Me!</button>
+);
+...
+myRef.current;
+```
+
+- Use the ref to interact with the DOM element. For example, set focus on the element:  
+
+```jsx
+myRef.current.focus();
+```
+
+- Components that read their state from the DOM are called `uncontrolled components`. You can use refs to access and update the state.  
+
+- React recommends you use `controlled components.` Use the `useState` hook or the `useReducer` hook to manage the state and get React to update the DOM with the latest state values. Your component will be the one source of truth rather than splitting state between the component and the DOM.  
+
+# 6 Managing application state  
+
+p134
