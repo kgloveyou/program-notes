@@ -377,4 +377,37 @@ myRef.current.focus();
 
 # 6 Managing application state  
 
-p134
+## 6.1 Passing shared state to child components  
+
+### 6.1.1 Passing state from a parent by setting props on the children  
+
+### 6.1.2 Receiving state from a parent as a prop  
+
+The code here destructures the props, assigning the color prop to a local variable of the same name.  
+
+```jsx
+import React from "react";
+
+export default function ColorChoiceText({ color }) {
+  return color ? (
+    <p>The selected color is {color}!</p>
+  ) : (
+    <p>No color has been selected!</p>
+  );
+}
+
+```
+
+### 6.1.3 Receiving an updater function from a parent as a prop  
+
+## 6.2 Breaking components into smaller pieces  
+
+### 6.2.1 Seeing components as part of a bigger app  
+
+### 6.2.2 Organizing multiple components within a page’s UI  
+
+## 6.3 Sharing the state and dispatch function from useReducer  
+
+### 6.3.1 Managing state in the BookablesView component  
+
+p147
