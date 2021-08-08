@@ -410,4 +410,213 @@ export default function ColorChoiceText({ color }) {
 
 ### 6.3.1 Managing state in the BookablesView component  
 
-p147
+### 6.3.3 Receiving state and dispatch in the BookablesList component  
+
+## 6.4 从 useState 共享状态值和更新函数
+
+### 6.4.1 Managing the selected bookable in the BookablesView component  
+
+### 6.4.2 Receiving the bookable and updater function in BookablesList  
+
+*optional chaining operator*, ?., a recent addition to JavaScript:  
+
+If no bookable is selected, the expression *bookable?.group* returns *undefined*.   It saves us from checking whether the bookable exists before accessing the `group` property:  
+
+```jsx
+const group = bookable && bookable.group;  
+```
+
+**EFFECT**  
+
+```jsx
+useEffect(() => {
+    getData("http://localhost:3001/bookables")
+
+        .then(bookables => {
+        setBookable(bookables[0]);
+        setBookables(bookables);
+        setIsLoading(false);
+    })
+
+        .catch(error => {
+        setError(error);
+        setIsLoading(false);
+    });
+}, [setBookable]);
+```
+
+React doesn’t trust functions passed in as props to be the same on each render. In this version,  `BookingsView` passes in the `setBookable` function as a prop, so we include it in the dependency array for the first effect.   
+
+**HANDLER FUNCTIONS**  
+
+**UI**  
+
+## 6.5 将函数传递给 useCallback 以避免重新定义它们  
+
+If the functions are updater or dispatch functions from `useState` or `useReducer`, React guarantees that their identity will be stable. But for functions we define ourselves, the very nature of components as functions that React calls means our functions will be defined on every render.   In this section, we explore the problems such redefining can cause and look at a new hook, `useCallback`, that can help solve such problems.  
+
+### 6.5.1 Depending on functions we pass in as props  
+
+### 6.5.2 Maintaining function identity with the useCallback hook  
+
+When we want to use the same function from render to render but don’t want it to be redefined each time, we can pass the function to the `useCallback` hook. React will return the same function from the hook on every render, redefining it only if one of the function’s dependencies changes. Use the hook like this:  
+
+```jsx
+const stableFunction = useCallback(funtionToCache, dependencyList);
+```
+
+​	`useCallback` lets us memoize functions. To prevent the redefinition or recalculation of values more generally, React also provides the `useMemo` hook, and we’ll look at that in the next chapter.  
+
+## 概述
+
+- Destructure the props parameter, assigning properties to local variables:  
+
+```jsx
+export default function ColorPicker({colors = [], color, setColor}) {
+    return (
+    // UI that uses colors, color and setColor
+    );
+}
+```
+
+- Maintain the identity of functions across renders by wrapping them in calls to the `useCallback` hook. React will redefine the function only when the dependencies change:  
+
+```jsx
+const stableFunction = useCallback(functionToCache, dependencyList);
+```
+
+# 7、使用 useMemo 管理性能
+
+- 使用 useMemo hook避免重新运行昂贵的计算
+
+- 使用依赖数组控制 useMemo
+- 应用程序重新渲染时考虑用户体验
+- 获取数据时处理竞争条件
+- Using JavaScript’s optional chaining syntax with square brackets  
+
+React 提供了 `useMemo` 钩子来帮助我们避免不必要和浪费的工作。
+
+## 7.1 Breaking the cook’s heart by calling, “O, shortcake!”  
+
+### 7.1.1 Generating anagrams with an expensive algorithm  
+
+### 7.1.2 避免多余的函数调用
+
+```jsx
+  const anagrams = useMemo(() => getAnagrams(sourceText), [sourceText]);
+  const distinct = useMemo(() => getDistinct(anagrams), [anagrams]);
+```
+
+In this version, React should call `getAnagrams` only when `sourceText` changes, and should call `getDistinct` only when `anagrams` changes.   
+
+## 7.2 Memoizing expensive function calls with useMemo  
+
+```jsx
+const memoizedValue = useMemo( () => expensiveFn(a, b), [a, b] );
+```
+
+To reiterate, `useMemo` *may* return the stored value. React reserves the right to clear its store if it needs to free up memory. So, it might call the expensive function even if the dependencies are unchanged.  
+
+## 7.3 Organizing the components on the Bookings page  
+
+### 7.3.2 Managing the selected week and booking with useReducer and useState  
+
+## 7.4 Efficiently building the bookings grid with useMemo  
+
+### 7.4.5 Coping with racing responses when fetching data in useEffect  
+
+Before rerunning an effect, React calls any associated cleanup function for the previous invocation of the effect.   
+
+```jsx
+return () => doUpdate = false;
+```
+
+## 概述
+
+- Pass `useMemo` the expensive function you want to memoize:  
+
+  ```jsx
+  const value = useMemo(
+      () => expensiveFn(dep1, dep2),
+      [dep1, dep2]
+  );
+  ```
+
+  
+
+- If the values in the dependency array don’t change from one call to the next, `useMemo` can return its stored result for the expensive function.  
+
+- Don’t rely on `useMemo` to always use a memoized value. React may discard stored results if it needs to free up memory.  
+
+- When fetching data within a call to useEffect, combine a local variable and the cleanup function to match a data request with its response:  
+
+```jsx
+useEffect(() => {
+    let doUpdate = true;
+    fetch(url).then(resp => {
+        if (doUpdate) {
+        // perform update with resp
+        }
+    });
+    return () => doUpdate = false;
+}, [url]);
+```
+
+If the component re-renders with a new `url`, the cleanup function for the previous render will set the previous render’s `doUpdate` variable to `false`, preventing the previous `then` method callback from performing updates with stale data.  
+
+# 8、使用 Context API 管理状态
+
+## 8.1 Needing state from higher up the component tree  
+
+## 8.2 Working with custom providers and multiple contexts  
+
+### 8.2.1 Setting an object as the context provider’s value  
+
+### 8.2.2 Moving the state to a custom provider  
+
+Because `App` re-renders, `all of its children` rerender,   
+
+**CREATING A CUSTOM PROVIDER**  
+
+**USING THE CHILDREN PROP TO RENDER WRAPPED COMPONENTS**  
+
+**AVOIDING UNNECESSARY RE-RENDERS**  （※）
+
+**USING THE CUSTOM PROVIDER**  
+
+### 8.2.3 Working with multiple contexts  
+
+**SPLITTING THE CONTEXT VALUES ACROSS MULTIPLE PROVIDERS**  
+
+```jsx
+<ThemeContext.Provider value="lava">
+    <UserContext.Provider value=1>
+        <LanguageContext.Provider value="en">
+            <AnimalContext.Provider value="Red Panda">
+            </AnimalContext.Provider>
+        </LanguageContext.Provider>
+    </UserContext.Provider>
+</ThemeContext.Provider>
+```
+
+然后，嵌套组件只使用它们需要的值，并在它们选择的值发生变化时重新渲染。
+
+**USING A CUSTOM PROVIDER FOR MULTIPLE CONTEXTS**  
+
+**USING SEPARATE CONTEXTS FOR A STATE VALUE AND ITS UPDATER FUNCTION**  
+
+### 8.2.4 Specifying a default value for a context  
+
+```jsx
+const MyContext = createContext(defaultValue);  
+```
+
+## 概述
+
+# 9、创建自己的hooks
+
+## 9.1 Extracting functionality into custom hooks  
+
+### 9.1.1 Recognizing functionality that could be shared
+
+P223
