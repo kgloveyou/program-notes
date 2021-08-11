@@ -619,4 +619,12 @@ const MyContext = createContext(defaultValue);
 
 ### 9.1.1 Recognizing functionality that could be shared
 
-P223
+### 9.1.2 Defining custom hooks outside your components  
+
+### 9.1.3 Calling custom hooks from custom hooks  
+
+The hook returns a function so code that uses the hook can ask for the next title.  
+
+## 9.2 Following the Rules of Hooks  
+
+227
