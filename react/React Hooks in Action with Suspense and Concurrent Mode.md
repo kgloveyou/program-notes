@@ -627,4 +627,44 @@ The hook returns a function so code that uses the hook can ask for the next titl
 
 ## 9.2 Following the Rules of Hooks  
 
-227
+- Start the names of custom hooks with “use.”
+- Call hooks only at the top level.
+- Call hooks only from React functions.  
+
+### 9.2.1 仅在顶层调用hooks
+
+- Don’t put hooks inside conditionals.
+- Don’t put hooks inside loops.
+- Don’t put hooks inside nested functions.  
+
+​        If you have an effect that should run only under certain conditions, and the conditions aren’t covered by the dependency array, put the conditions inside the effect function.  
+
+```jsx
+useEffect(() => {
+    if (condition) {
+    // perform task.
+    }
+}, [dep1, dep2]);
+```
+
+### 9.2.2 仅从 React 函数调用hooks
+
+Keep your hook calls within **function components** and **custom hooks**.  
+
+### 9.2.3 Using an ESLint plugin for the rules of hooks  
+
+`eslint-plugin-react-hooks`  
+
+## 9.3 提取自定义hooks的更多示例
+
+### 9.3.1 使用 useWindowSize  hook访问窗口尺寸
+
+### 9.3.2 Getting and setting values with a useLocalStorage hook  
+
+## 9.4 Consuming a context value with a custom hook  
+
+## 9.5 Encapsulating data fetching with a custom hook  
+
+### 9.5.1 Creating the useFetch hook  
+
+236
