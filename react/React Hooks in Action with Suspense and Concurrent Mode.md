@@ -667,4 +667,165 @@ Keep your hook calls within **function components** and **custom hooks**.
 
 ### 9.5.1 Creating the useFetch hook  
 
-236
+### 9.5.2 Using the data, status, and error values the useFetch hook returns  
+
+```jsx
+const {data : bookables = [], status, error} = useFetch(
+	"http://localhost:3001/bookables"
+);
+```
+
+It assigns the `data` property to the `bookables` variable and includes a default value of an empty array for when the `data` property is `undefined`:  
+
+```jsx
+data : bookables = []
+```
+
+### 9.5.3 Creating a more specialized data-fetching hook: useBookings  
+
+# 10、Using third-party hooks  
+
+## 10.1 Accessing state in the URL with React Router  
+
+### 10.1.1 Setting up routes to enable nesting  
+
+### 10.1.2 Adding nested routes to the Bookables page  
+
+### 10.1.3 Accessing URL parameters with the useParams hook  
+
+### 10.1.4 Navigating with the useNavigate hook  
+
+```jsx
+const navigate = useNavigate();
+
+navigate("/bubbletea");
+```
+
+## 10.2 获取和设置查询字符串查询参数  
+
+### 10.2.1 从查询字符串中获取查询参数
+
+```jsx
+const [searchParams, setSearchParams] = useSearchParams();
+```
+
+**创建一个 useBookingsParams   Hook**
+
+**USING THE QUERY PARAMETERS IN THE BOOKINGSPAGE COMPONENT**  
+
+**USING THE DATE QUERY PARAMETER IN THE BOOKINGS COMPONENT**  
+
+### 10.2.2 设置查询字符串
+
+```jsx
+const [searchParams, setSearchParams] = useSearchParams();
+
+setSearchParams(params, {replace: true});
+```
+
+Components that consume the search parameters will re-render, using the fresh values as the latest state. The `{replace: true}` option causes the browser to replace the current URL in its history with the new one. This will prevent each visited date from
+appearing in the browser’s history. The browser’s Back button won’t step back through each date selected in the `WeekPicker`. If you think it would be useful for your app’s users to be able to navigate back through each selected date, you can omit the
+option argument.  
+
+## 10.3 使用 React Query 简化数据获取
+
+### 10.3.1 介绍 React Query
+
+React Query  特点：
+
+- Caching
+- Deduping multiple requests for the same data into a single request
+- Updating out-of-date data in the background
+- Knowing when data is out of date
+- Reflecting updates to data as quickly as possible  
+
+```sh
+npm install react-query
+```
+
+To prevent this data-fetching duplication, should we move all the data-fetching code into a central store and access that single source from the components that need it? With React Query, we don’t need to do any of the work involved in creating
+such a store. It lets us keep the data-fetching code in the components that need the data, but behind the scenes it manages a data cache, passing already-fetched data to components when they ask for them.  
+
+### 10.3.2 Giving components access to a React Query client  
+
+### 10.3.3 使用 useQuery 获取数据
+
+```jsx
+const {data, status, error} = useQuery(key, () => fetch(url));
+```
+
+`useQuery` uses the key to identify the data in its cache; it can return the data corresponding to existing keys straightaway and then fetch the latest data from the server in the background. The key can be a string or a more complicated array or object that
+can be serialized.  
+
+**USING A STRING AS THE QUERY KEY**  
+
+```jsx
+const {data: bookables = [], status, error} = useQuery(
+    "bookables",
+    () => getData("http://localhost:3001/bookables")
+);
+```
+
+**USING AN ARRAY AS THE QUERY KEY**  
+
+### 10.3.4 Accessing data in the query cache  
+
+​		React Query makes the cache available to components via the client object that we assigned to the provider in section 10.3.2. Call React Query’s `useQueryClient` hook to get ahold of the client object:  
+
+```jsx
+const queryClient = useQueryClient();
+```
+
+We can use the associated query key and the `getQueryData` method to access alreadyfetched data. For example, to get the list of bookables in the cache:
+
+```jsx
+const bookables = queryClient.getQueryData("bookables");
+```
+
+If we want a bookable with a specified ID, we call the `find` array method, like this:
+
+```jsx
+const bookable = bookables?.find(b => b.id === id);  
+```
+
+React Query’s `useQuery` hook accepts a config object as a third argument:
+
+```jsx
+const {data, isLoading} = useQuery(key, asyncFunction, config);  
+```
+
+The config lets the calling code control all kinds of query-related functionality, such as cache expiry, retry policies when fetching-errors occur, callback functions, whether to work with `Suspense` and error boundaries (see chapter 11), and the setting of initial data.  `BookableEdit` sets the `initialData` config property so that, when first called, and if the initial data exists, `useQuery` won’t bother fetching the data from the server:  
+
+```jsx
+const {data, isLoading} = useQuery(
+    ["bookable", id],
+    () => getData(`http://localhost:3001/bookables/${id}`),
+    {
+        initialData:
+        queryClient.getQueryData("bookables")
+        ?.find(b => b.id === parseInt(id, 10))
+    }
+);
+```
+
+### 10.3.5 使用 useMutation 更新服务器状态
+
+`useMutation`  
+
+```jsx
+const {mutate, status, error} = useMutation(asyncFunction, config);  
+```
+
+# 第2部分
+
+# 11、使用 Suspense 进行代码拆分
+
+`code splitting`  ：rather than loading all of an app’s code at once, we load it in `chunks`, as it’s needed.  
+
+`static imports`  
+
+`tree-shaking`  
+
+## 11.1 Importing code dynamically with the import function  
+
+p284
