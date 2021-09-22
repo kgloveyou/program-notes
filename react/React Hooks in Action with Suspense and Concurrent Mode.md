@@ -822,11 +822,55 @@ const {mutate, status, error} = useMutation(asyncFunction, config);
 
 `code splitting`  ：rather than loading all of an app’s code at once, we load it in `chunks`, as it’s needed.  
 
-`static imports`  
+`static imports`  ：一般页面中通过import引用代码方式。
 
-`tree-shaking`  
+`tree-shaking`  ：可以避免重复代码并丢弃未使用的代码，保持包的有序并尽可能小。
 
-## 11.1 Importing code dynamically with the import function  
+## 11.1 使用import函数动态引入代码
 
 p284
 
+### 11.1.3 Using static imports to load JavaScript  
+
+### 11.1.4 Calling the import function to dynamically load JavaScript  
+
+## 11.2 使用lazy和Suspense动态导入组件
+
+### 11.2.1 Converting a component to a lazy component with the lazy function  
+
+```js
+const LazyCalendar = lazy(() => import("./Calendar.js"));  
+```
+
+We pass `lazy` a function that returns a promise.   
+
+相当于：
+
+```js
+const getPromise = () => import(modulePath);
+
+const LazyComponent = lazy(getPromise);  // React.lazy
+```
+
+The `getPromise` function returns a promise that resolves to a module. The module’s default export must be a component.  
+
+### 11.2.2 Specifying fallback content with the Suspense component  
+
+Use the `Suspense` component to wrap UI that contains one or more lazy components in its tree:  
+
+```jsx
+<Suspense fallback={<div>Loading...</div>}>
+	<CalendarWrapper />
+</Suspense>
+```
+
+
+
+```jsx
+<Suspense fallback={<div>Loading...</div>}>
+    <CalendarWrapper />
+    <CalendarWrapper />
+</Suspense>
+```
+
+### 11.2.3 Understanding how lazy and Suspense work together  
