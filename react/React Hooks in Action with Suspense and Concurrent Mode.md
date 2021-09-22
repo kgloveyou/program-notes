@@ -874,3 +874,14 @@ Use the `Suspense` component to wrap UI that contains one or more lazy component
 ```
 
 ### 11.2.3 Understanding how lazy and Suspense work together  
+
+### 11.2.4 Code splitting an app on its routes  
+
+## 11.3 Catching errors with error boundaries  
+
+`error boundary`  
+
+### 11.3.1 Checking out the error boundary example in the React docs  
+
+### 11.3.2 Creating our own error boundary  
+
