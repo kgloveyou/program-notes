@@ -885,4 +885,10 @@ Use the `Suspense` component to wrap UI that contains one or more lazy component
 
 ### 11.3.2 Creating our own error boundary  
 
-300
+### 11.3.3 Recovering from errors  
+
+a prebuilt error boundary package from npm called `react-error-boundary`.  
+
+# 12、 Integrating data fetching with Suspense  
+
+305
