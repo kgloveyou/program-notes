@@ -26,4 +26,13 @@ not all of the APIs that exist in browser JavaScript behave the same way in Node
 
 ### Node.js  事件循环
 
-9
+#### 事件循环阶段
+
+**microtask queues**
+
+第一个微任务队列处理使用 process.nextTick() 注册的回调。
+
+第二个微任务队列处理 promises that reject or resolve.   
+
+微任务队列中的回调优先于阶段正常队列中的回调，next tick 微任务队列中的回调运行在promise微任务队列的回调之前。
+
