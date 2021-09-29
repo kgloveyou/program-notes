@@ -36,3 +36,4 @@ not all of the APIs that exist in browser JavaScript behave the same way in Node
 
 微任务队列中的回调优先于阶段正常队列中的回调，next tick 微任务队列中的回调运行在promise微任务队列的回调之前。
 
+12
