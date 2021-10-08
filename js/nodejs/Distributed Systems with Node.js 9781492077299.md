@@ -52,5 +52,14 @@ Remote Procedure Call (RPC)
 
 Transport Layer Security (TLS)  
 
-31
+### JSON over HTTP  
 
+### The Dangers of Serializing POJOs  
+
+## API Facade with GraphQL  
+
+GraphQL 并没有规定使用特定的底层协议。
+
+### GraphQL Schema  
+
+P37
