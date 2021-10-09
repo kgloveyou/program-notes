@@ -62,4 +62,21 @@ GraphQL 并没有规定使用特定的底层协议。
 
 ### GraphQL Schema  
 
-P37
+### GraphQL Producer  
+
+### GraphQL Consumer  
+
+## RPC with gRPC  
+
+Remote Procedure Call (RPC)  
+
+使用 RPC，您可以几乎以其原始形式向网络公开该方法，而不是完成创建不同接口的工作。
+
+通常，RPC 的工作方式是选择要公开应用程序中的哪些函数，并在这些函数之间与某种网络接口之间创建映射。
+
+Google’s **gRPC**. gRPC is typically served over HTTP/2.   
+
+### Protocol Buffers  
+
+gRPC typically  transfers the data using Protocol Buffers (aka Protobufs)  
+
