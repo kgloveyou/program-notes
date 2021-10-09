@@ -80,3 +80,15 @@ Google’s **gRPC**. gRPC is typically served over HTTP/2.
 
 gRPC typically  transfers the data using Protocol Buffers (aka Protobufs)  
 
+Protocol Buffer消息中的属性顺序非常重要，原因有两个：
+
+第1个原因是字段名称不与消息本身一起传输。
+
+字段顺序很重要的第2个原因是使用Protobufs和 gRPC 本身表示的消息被设计为向后兼容。
+
+### gRPC Producer  
+
+The gRPC package abstracts the underlying HTTP/2 layer, so you typically don’t need to think of a gRPC service as being over HTTP/2, nor do you have to think about the paths.  
+
+### gRPC Consumer  
+
