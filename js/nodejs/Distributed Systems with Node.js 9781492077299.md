@@ -100,4 +100,15 @@ The gRPC package abstracts the underlying HTTP/2 layer, so you typically don’t
 
 另一个原因是给定的 Node.js 实例只能处理这么多的吞吐量。
 
-53
+## The Cluster Module  
+
+Node.js 提供了集群（cluster）模块，允许在同一台机器上运行 Node.js 应用程序的多个副本，将传入的网络消息分派到副本。
+
+knee-jerk  下意识的
+
+### 一个简单的例子
+
+54
+
+
+
