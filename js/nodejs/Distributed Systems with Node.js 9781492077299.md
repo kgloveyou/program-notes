@@ -92,3 +92,12 @@ The gRPC package abstracts the underlying HTTP/2 layer, so you typically don’t
 
 ### gRPC Consumer  
 
+# 第3章 Scaling   
+
+出于至少两个原因，运行服务的冗余副本很重要。
+
+第一个原因是为了实现高可用性。
+
+另一个原因是给定的 Node.js 实例只能处理这么多的吞吐量。
+
+53
