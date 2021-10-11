@@ -108,7 +108,22 @@ knee-jerk  下意识的
 
 ### 一个简单的例子
 
-54
+### 请求分发 （Request Dispatching）
 
+### Cluster的缺点（Cluster Shortcomings ）
 
+cluster最大的缺点是它只将传入的请求分发给运行在同一台机器上的进程。
 
+## 使用 HAProxy 反向代理（Reverse Proxies with HAProxy ）
+
+### HAProxy 简介
+
+和 JavaScript 一样，HAProxy 是事件驱动和单线程的。
+
+**HAProxy 的替代品**
+
+- Nginx  
+
+### 负载平衡和健康检查
+
+67
