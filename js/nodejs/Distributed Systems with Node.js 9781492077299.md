@@ -126,4 +126,38 @@ cluster最大的缺点是它只将传入的请求分发给运行在同一台机�
 
 ### 负载平衡和健康检查
 
-67
+### 压缩
+
+### TLS Termination  
+
+cipher 密码
+
+### Rate Limiting and Back Pressure  
+
+One way to do this is to set the `maxConnections` property of an `http.Server` instance.   
+
+## SLA 和负载测试
+
+*Service Level Agreement (SLA)*  ，服务水平协议
+
+ample  充足的
+
+uptime  正常运行时间
+
+throughput  吞吐量
+
+### Autocannon 介绍
+
+load-testing  负载测试
+
+```sh
+$ npm install -g autocannon@6  
+```
+
+polyglot  多语言
+
+Apache Bench (ab)  
+
+### 运行基线负载测试
+
+78
