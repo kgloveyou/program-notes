@@ -160,4 +160,32 @@ Apache Bench (ab)
 
 ### 运行基线负载测试
 
-78
+### Reverse Proxy Concerns  
+
+#### Establishing a baseline  
+
+### Protocol Concerns  
+
+# 第4章 Observability  
+
+reactive  被动的
+
+proactive	主动的
+
+## 环境
+
+作为惯例，Node.js 应用程序通常使用 NODE_ENV 环境变量来指定实例在哪个环境中运行。
+
+通常，公司至少会拥有以下环境：
+
+
+
+## 使用 ELK 进行日志记录
+
+*Elasticsearch, Logstash*, and *Kibana*,   
+
+on-prem  本地
+
+**Elasticsearch**  
+
+94
