@@ -1,5 +1,9 @@
 # Distributed Systems with Node.js
 
+代码
+
+https://github.com/tlhunter/distributed-node
+
 勘误链接
 
 https://www.oreilly.com/catalog/errata.csp?isbn=0636920342762
@@ -196,4 +200,11 @@ on-prem  本地
 
 ## Metrics with Graphite, StatsD, and Grafana  
 
-102
+A metric is numeric data associated with time  
+
+## 使用 Zipkin 进行分布式请求跟踪
+
+## 健康检查
+
+120
+
