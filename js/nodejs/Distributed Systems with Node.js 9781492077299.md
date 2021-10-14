@@ -214,4 +214,121 @@ A metric is numeric data associated with time
 
 # 第5章 容器
 
-131
+brittleness	脆弱性
+
+## Docker 简介
+
+如果 Dockerfile 中的一行预计会频繁更改，则应将其放置在 Dockerfile的后面。 这将允许在应用程序的 Docker 镜像的多个版本之间重用之前的层。
+
+Alpine 是一个极其精简的 Linux 发行版，通常是有存储意识的开发人员选择的基本映像。有时，应用程序确实依赖于这样一个简单的基础映像没有提供的功能，而可能需要使用更复杂的功能。
+
+官方的 [Node.js Docker 镜像](https://hub.docker.com/_/node/)包含 Debian 和 Alpine 的变体。
+
+查看docker镜像列表
+
+```sh
+$ docker images
+```
+
+查看镜像层信息
+
+```sh
+$ docker history grafana/grafana:6.5.2
+```
+
+拉取镜像
+
+```sh
+$ docker pull node:lts-alpine
+```
+
+运行容器
+
+```sh
+$ docker run -it --rm --name ephemeral ubuntu /bin/bash
+```
+
+在Docker容器退出时，默认容器内部的文件系统仍然被保留，以方便调试并保留用户数据。
+
+但是，对于foreground容器，由于其只是在开发调试过程中短期运行，其用户数据并无保留的必要，因而可以在容器启动时设置--rm选项，这样在容器退出时就能够自动清理容器内部的文件系统。
+
+查看运行的容器
+
+```sh
+$ docker ps
+```
+
+甚至可以在当前运行的 Docker 容器中手动执行命令。
+
+```sh
+$ docker exec ephemeral /bin/ls /var  
+```
+
+退出容器
+
+```sh
+$ exit
+```
+
+容器将被拆除，并且由于它是使用 --rm 标志运行的，因此它将从您的系统中完全删除。
+
+移除容器
+
+```sh
+$ docker rm <name/id>
+```
+
+移除镜像
+
+```sh
+$ docker rmi <image id>  
+```
+
+共享文件系统
+
+`-v / --volume` 
+
+`--mount  `
+
+端口映射
+
+`-p / --publish`
+
+```sh
+$ rm index.html ; curl -o index.html http://example.org
+$ docker run --rm -p 8080:80 \
+-v $PWD:/usr/share/nginx/html nginx
+```
+
+在这种情况下，使用 `-p 8080:80` 将主机上的端口 8080 映射到容器中的端口 80。
+
+The current directory is mapped to the directory used by nginx to read static files with the `-v $PWD:/usr/share/nginx/html` flag (the -v flag expects absolute directories, which is why the command uses $PWD instead of “.”).  
+
+viable  可行的
+
+## 容器化Node.js服务
+
+### Dependency Stage  
+
+Example 5-2. recipe-api/Dockerfle “deps” stage
+
+```dockerfile
+FROM node:14.8.0-alpine3.12 AS deps
+
+
+WORKDIR /srv
+
+COPY package*.json ./
+
+RUN npm ci --only=production
+
+\# COPY package.json yarn.lock ./
+
+\# RUN yarn install --production
+```
+
+一般来说，在处理诸如 Docker 镜像之类的干净环境时，`npm ci` 命令比 `npm install` 更快。
+
+### Release Stage  
+
+143
