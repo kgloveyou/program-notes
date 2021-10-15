@@ -331,4 +331,46 @@ RUN npm ci --only=production
 
 ### Release Stage  
 
-143
+```dockerfile
+FROM alpine:3.12 AS release
+
+ENV V 14.8.0
+ENV FILE node-v$V-linux-x64-musl.tar.xz
+
+RUN apk add --no-cache libstdc++ \
+  && apk add --no-cache --virtual .deps curl \
+  && curl -fsSLO --compressed \
+  "https://unofficial-builds.nodejs.org/download/release/v$V/$FILE" \
+  && tar -xJf $FILE -C /usr/local --strip-components=1 \
+  && rm -f $FILE /usr/local/bin/npm /usr/local/bin/npx \
+  && rm -rf /usr/local/lib/node_modules \
+  && apk del .deps
+```
+
+Dockerfile 声明将执行多个命令，但它们包含在单个 RUN 指令中以保持中间层的数量较少。
+
+&&符号表示正在运行新命令（如果上一条命令失败，则不应运行下一条命令）。
+
+Alpine 操作系统带有一个名为 `apk` 的包管理器，RUN 指令中的前两个命令使用它安装包。这些软件包是通过运行 `apk add` 来安装的。`--no-cache` 标识告诉 apk 不要留下任何跟踪安装的包管理文件，这有助于使镜像更小。`--virtual .deps` 标志告诉 `apk` 跟踪已安装的包及其依赖项。 然后，稍后，可以立即删除该组软件包。
+
+最后， `apk del .deps` 命令删除 `curl` 及其依赖项。
+
+
+
+例 5-4. recipe-api/Dockerfile“发布”阶段第2部分
+
+```dockerfile
+WORKDIR /srv
+COPY --from=deps /srv/node_modules ./node_modules
+COPY . .
+
+EXPOSE 1337
+ENV HOST 0.0.0.0
+ENV PORT 1337
+CMD [ "node", "producer-http-basic.js" ]
+```
+
+### 从镜像到容器
+
+146
+
