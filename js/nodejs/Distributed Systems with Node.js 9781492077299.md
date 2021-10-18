@@ -372,5 +372,44 @@ CMD [ "node", "producer-http-basic.js" ]
 
 ### 从镜像到容器
 
-146
+Example 5-5. 从 Dockerfile 构建镜像
 
+```sh
+$ cd recipe-api
+$ docker build -t tlhunter/recipe-api:v0.0.1 .
+```
+
+tag pattern: `repository/name:version`  
+
+如果未指定版本号，Docker 将提供默认的`latest`标签。
+
+运行容器
+
+```sh
+$ docker run --rm --name recipe-api-1 \
+-p 8000:1337 tlhunter/recipe-api:v0.0.1
+```
+
+停止容器（在新终端中运行）
+
+```sh
+$ docker kill recipe-api-1
+```
+
+### Rebuilding and Versioning an Image  
+
+运行以下命令以查看您的应用程序 v0.0.1 版本的每个层的大小：
+
+```sh
+$ docker history tlhunter/recipe-api:v0.0.1
+```
+
+## 使用 Docker Compose 进行基本编排
+
+Docker Compose  
+
+docker-compose.yml  
+
+### Composing Node.js Services  
+
+152
