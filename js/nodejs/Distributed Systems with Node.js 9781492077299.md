@@ -412,4 +412,66 @@ docker-compose.yml
 
 ### Composing Node.js Services  
 
-152
+当一个项目包含多个Dockerfile文件时，除了默认的Dockerfile外，其他按照惯例命名为`Dockerfile-*`  。
+
+*Example 5-8. docker-compose.yml, part one*  
+
+```yml
+version: "3.7"
+services:
+  zipkin:
+    image: openzipkin/zipkin-slim:2.19
+    ports:
+      - "127.0.0.1:9411:9411"
+```
+
+*Example 5-9. docker-compose.yml, part two*  
+
+```yaml
+  recipe-api:
+    build:	①
+      context: ./recipe-api
+      dockerfile: Dockerfile-zipkin
+    ports:
+      - "127.0.0.1:4000:4000"
+    environment:	②
+      HOST: 0.0.0.0
+      ZIPKIN: zipkin:9411
+    depends_on:	③
+      - zipkin
+```
+
+1. Instead of using a named image, a path to a Dockerfile is provided.
+2. Environment variable pairs used by the service.
+3. The *zipkin* service should be started before this container  
+
+
+
+在这种情况下，`HOST` 值被覆盖为 0.0.0.0，这样应用程序将接受来自 Docker 容器外部的请求。
+
+
+
+告诉 Docker Compose 启动你的服务
+
+```sh
+$ docker-compose up
+```
+
+停止服务
+
+```sh
+$ ctrl + c
+```
+
+删除相应的服务
+
+```sh
+$ docker rm distributed-node_web-api_1 \
+distributed-node_recipe-api_1 distributed-node_zipkin_1
+```
+
+## Internal Docker Registry  
+
+Docker Registry 是一个可以存储 Docker 镜像及其附属层的地方。默认情况下，Docker CLI 配置为使用 Docker Hub，即 Docker 的官方公共Registry。
+
+157
