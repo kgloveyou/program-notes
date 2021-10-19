@@ -474,4 +474,61 @@ distributed-node_recipe-api_1 distributed-node_zipkin_1
 
 Docker Registry 是一个可以存储 Docker 镜像及其附属层的地方。默认情况下，Docker CLI 配置为使用 Docker Hub，即 Docker 的官方公共Registry。
 
-157
+
+
+`repository/name:version`  实际上是`server/repository/name:version`的简写，当server缺失时，Docker CLI 默认使用 Docker Hub 的repository -`docker.io`。`repository`部分也有默认值.  例如，命令 `docker pull node:14.8.0-alpine3.12` 也可以使用更简洁的 `docker pull docker.io/library/node:14.8.0-alpine3.12` 版本表示。
+
+### 运行 Docker Registry  
+
+### Pushing and Pulling to the Registry  
+
+推送镜像命令：`docker push`  
+
+```sh
+# run for each of v0.0.1, v0.0.2, v0.0.3
+$ time docker push localhost:5000/tlhunter/recipe-api:v0.0.1
+```
+
+`time`  命令将打印复制镜像所需的时间。
+
+
+
+首先删除原来的镜像
+
+```shell
+$ docker rmi localhost:5000/tlhunter/recipe-api:v0.0.2
+$ docker rmi tlhunter/recipe-api:v0.0.2
+$ docker run tlhunter/recipe-api:v0.0.2 # should fail
+```
+
+拉取镜像并运行
+
+```sh
+$ docker pull localhost:5000/tlhunter/recipe-api:v0.0.2
+$ docker image tag localhost:5000/tlhunter/recipe-api:v0.0.2 \
+tlhunter/recipe-api:v0.0.2
+$ docker run tlhunter/recipe-api:v0.0.2 # this time it succeeds
+```
+
+### Running a Docker Registry UI  
+
+# 第6章 部署
+
+*Continuous Integration* (CI)  
+
+持续集成是一种软件开发实践，其中对应用程序所做的自包含更改不断地被测试、合并到主线分支并进行部署。CI 服务器负责管理构建管道（build
+pipeline）以使这样的过程可行。
+
+## Build Pipeline with Travis CI  
+
+需要两个账号：
+
+- GitHub 
+
+- [Travis CI](https://www.travis-ci.com/)  
+
+Travis 是一种流行的持续集成构建管道服务。 它也被 Node.js 和许多流行的 npm 包使用。
+
+### 创建一个基础项目
+
+165
