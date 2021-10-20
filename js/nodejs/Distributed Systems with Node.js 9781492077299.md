@@ -536,3 +536,15 @@ Travis 是一种流行的持续集成构建管道服务。 它也被 Node.js 和
 ### 配置 Travis CI  
 
 167
+
+### Testing a Pull Request  
+
+**Travis CI 的替代品**
+
+- GitHub Actions  
+- Jenkins  
+
+## 自动化测试
+
+170
+
