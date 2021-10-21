@@ -546,5 +546,22 @@ Travis 是一种流行的持续集成构建管道服务。 它也被 Node.js 和
 
 ## 自动化测试
 
-170
+Tape  ，一个流行而简单的测试框架。
 
+### 单元测试
+
+`t.equal()`  which asserts that the two arguments are loosely equal to each other.  如果错误，进程将会退出，并返回非0状态码。
+
+`t.deepLooseEqual()`  the two arguments are “deeply loosely equal.”   使用 ==  相等运算。
+
+`t.deepEqual()`  
+
+
+
+0代表测试通过，其他值代表测试失败。
+
+### 集成测试
+
+`Integration testing` covers an application at a layer logically higher than that covered by unit testing.  集成测试检查应用程序的不同部分如何协同工作。
+
+175
