@@ -565,3 +565,4 @@ Tape  ，一个流行而简单的测试框架。
 `Integration testing` covers an application at a layer logically higher than that covered by unit testing.  集成测试检查应用程序的不同部分如何协同工作。
 
 175
+
