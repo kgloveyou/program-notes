@@ -566,3 +566,72 @@ Tape  ，一个流行而简单的测试框架。
 
 175
 
+### 代码覆盖执行
+
+该值可以使用不同的标准来衡量，您将在本节中使用的工具衡量四个方面的覆盖范围：语句、分支、函数和行。
+
+`nyc`  用于测试代码覆盖率的最受欢迎的软件包之一
+
+```sh
+$ npm install --save-dev nyc@15
+```
+
+在package.json   中设置
+
+```json
+  "scripts": {
+    "test": "nyc tape ./test/**/*.js"
+  },
+```
+
+nycrc配置文件
+
+Example 6-6. distnode-deploy/.nycrc
+
+```json
+{
+  "reporter": ["lcov", "text-summary"],
+  "all": true,
+  "check-coverage": true,
+  "branches": 100,
+  "lines": 100,
+  "functions": 100,
+  "statements": 100
+}
+```
+
+测试代码中忽略指定行，在前面加上
+
+```js
+/* istanbul ignore next */
+```
+
+eslint  代码格式测试
+
+**Tape的替代品**
+
+Mocha  
+
+## 部署到 Heroku
+
+Heroku 是一个云平台，可以非常轻松地部署应用程序、配置数据库和横向扩展正在运行的应用程序实例。它带有许多第三方集成，使部署变得容易，并且可以配置为在分支合并到 GitHub 后自动部署您的 Node.js 应用程序代码。
+
+### 创建一个Heroku  应用
+
+### 配置Travis CI  
+
+### 部署你的应用程序
+
+**Heroku的替代品**
+
+## Modules, Packages, and SemVer  
+
+### Node.js Modules  
+
+Node.js 支持两种不同的模块格式。
+
+- [CommonJS module](https://nodejs.org/api/modules.html)  
+- [ECMAScript module](https://nodejs.org/api/esm.html) (ESM)  ，近年来一直在大力发展的一种格式，最终应该弥合在浏览器中运行的 JavaScript 和在 Node.js 中运行的 JavaScript 之间的差距。很有可能有一天大多数应用程序代码将使用 ESM 编写，但从 Node.js v14.8 开始，ECMAScript 模块仍被标记为实验性的——这一标记意味着仍然可以进行向后的更改。出于这个原因，本节以及本书重点介绍 CommonJS 模块。
+
+191
+
