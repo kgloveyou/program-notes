@@ -74,7 +74,7 @@ GraphQL 并没有规定使用特定的底层协议。
 
 Remote Procedure Call (RPC)  
 
-使用 RPC，您可以几乎以其原始形式向网络公开该方法，而不是完成创建不同接口的工作。
+使用 RPC，你可以几乎以其原始形式向网络公开该方法，而不是完成创建不同接口的工作。
 
 通常，RPC 的工作方式是选择要公开应用程序中的哪些函数，并在这些函数之间与某种网络接口之间创建映射。
 
@@ -270,7 +270,7 @@ $ docker exec ephemeral /bin/ls /var
 $ exit
 ```
 
-容器将被拆除，并且由于它是使用 --rm 标志运行的，因此它将从您的系统中完全删除。
+容器将被拆除，并且由于它是使用 --rm 标志运行的，因此它将从你的系统中完全删除。
 
 移除容器
 
@@ -398,7 +398,7 @@ $ docker kill recipe-api-1
 
 ### Rebuilding and Versioning an Image  
 
-运行以下命令以查看您的应用程序 v0.0.1 版本的每个层的大小：
+运行以下命令以查看你的应用程序 v0.0.1 版本的每个层的大小：
 
 ```sh
 $ docker history tlhunter/recipe-api:v0.0.1
@@ -568,7 +568,7 @@ Tape  ，一个流行而简单的测试框架。
 
 ### 代码覆盖执行
 
-该值可以使用不同的标准来衡量，您将在本节中使用的工具衡量四个方面的覆盖范围：语句、分支、函数和行。
+该值可以使用不同的标准来衡量，你将在本节中使用的工具衡量四个方面的覆盖范围：语句、分支、函数和行。
 
 `nyc`  用于测试代码覆盖率的最受欢迎的软件包之一
 
@@ -614,7 +614,7 @@ Mocha
 
 ## 部署到 Heroku
 
-Heroku 是一个云平台，可以非常轻松地部署应用程序、配置数据库和横向扩展正在运行的应用程序实例。它带有许多第三方集成，使部署变得容易，并且可以配置为在分支合并到 GitHub 后自动部署您的 Node.js 应用程序代码。
+Heroku 是一个云平台，可以非常轻松地部署应用程序、配置数据库和横向扩展正在运行的应用程序实例。它带有许多第三方集成，使部署变得容易，并且可以配置为在分支合并到 GitHub 后自动部署你的 Node.js 应用程序代码。
 
 ### 创建一个Heroku  应用
 
@@ -633,5 +633,46 @@ Node.js 支持两种不同的模块格式。
 - [CommonJS module](https://nodejs.org/api/modules.html)  
 - [ECMAScript module](https://nodejs.org/api/esm.html) (ESM)  ，近年来一直在大力发展的一种格式，最终应该弥合在浏览器中运行的 JavaScript 和在 Node.js 中运行的 JavaScript 之间的差距。很有可能有一天大多数应用程序代码将使用 ESM 编写，但从 Node.js v14.8 开始，ECMAScript 模块仍被标记为实验性的——这一标记意味着仍然可以进行向后的更改。出于这个原因，本节以及本书重点介绍 CommonJS 模块。
 
-191
+Node.js 模块不同于浏览器 JavaScript 的另一件事是，如果你首先在 JavaScript 文件中声明一个变量，例如 var foo = bar，该值将不会成为全局变量。 相反，它只能在当前文件中访问。Node.js 模块以这种方式工作的原因是因为 Node.js 自动将每个 JavaScript 文件包装在以下内容中
 
+```js
+(function(exports, require, module, __filename, __dirname) {
+// File contents go here
+});
+```
+
+这个wrapper  为应用程序开发人员提供了一些便利。 最重要的是，它提供了 CommonJS 标准要求的`exports`和`require`  。`_filename` 和 `__dirname` 都是字符串，可以方便地知道你的文件所在的位置。 两者都是绝对路径。
+
+你可以使用`require.main === module`  检查当前模块是否恰好是应用程序入口点。
+
+V8 引擎提供了两个对全局对象的引用：较新的 `globalThis` 和较旧的`global`  对象。浏览器对其全局对象有两个引用：较新的 `globalThis` 和较旧的`window`。由于在服务器和浏览器之间共享 JavaScript 文件的流行，创建 globalThis 是为了弥合差距。
+
+**module resolution algorithm**  
+
+
+
+当模块被加载到正在运行的 Node.js 进程中时，它们会被添加到`require cache`  中。该缓存位于 require.cache 并且可用于每个模块。
+
+缓存是一个对象，其中键是文件的绝对路径，值是“模块”对象。
+
+### SemVer (Semantic Versioning)  
+
+1.2.3，major version.minor version.patch version.
+
+当包进行了破坏向后兼容性的更改时，应增加`主版本号`。当一个包添加了一个新功能但保持向后兼容性时，应该增加`次版本号`。如果更改仅导致错误修复而没有其他结果，则应增加`补丁版本号`。每当版本增加时，较低的版本都会重置为零。
+
+```json
+"dependencies": {
+    "fastify": "^2.11.0",
+    "ioredis": "~4.14.1",
+    "pg": "7.17.1"
+}
+```
+
+^  表示将安装与指定版本兼容的任何未来版本的软件包。^符号前缀是运行 `npm install` 命令时给出的默认前缀。
+
+~ 表示只接受包含错误修复（补丁更新）的包更新。
+
+第3行表示只能安装`pg`的指定版本。
+
+196
