@@ -676,3 +676,33 @@ V8 引擎提供了两个对全局对象的引用：较新的 `globalThis` 和较
 第3行表示只能安装`pg`的指定版本。
 
 196
+
+### npm Packages and the npm CLI  
+
+**控制包的内容**
+
+在package.json的顶层添加`“private”：true`可以阻止npm 发布。（发布将会失败）。
+
+**依赖层次结构和去重（Dependency hierarchy and deduplication  ）**
+
+这种方法有两个问题。 首先是有时包最终会产生循环依赖。 这将导致无限深的 node_modules/ 目录。 第二个问题是许多依赖树最终会产生重复的包，从而增加磁盘空间需求。
+
+为了克服这些问题，npm CLI 将尝试在 node_modules/ 目录中的更高位置“去重”或“提升”子依赖项。
+
+
+
+查看依赖树中的"物理"结构
+
+```bash
+ls node_modules  
+```
+
+查看依赖树的“逻辑”布局：
+
+```bash
+npm ls
+```
+
+## Internal npm Registry  
+
+204
