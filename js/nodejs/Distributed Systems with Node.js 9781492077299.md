@@ -705,4 +705,62 @@ npm ls
 
 ## Internal npm Registry  
 
-204
+### 运行 Verdaccio  
+
+https://verdaccio.org/
+
+它是一个用 Node.js 编写的开源 npm 注册表。
+
+```bash
+$ docker run -it --rm \
+--name verdaccio \
+-p 4873:4873 \
+verdaccio/verdaccio:4.8
+```
+
+然后访问 http://localhost:4873/  
+
+### 配置 npm 以使用 Verdaccio
+
+```bash
+$ npm set registry http://localhost:4873
+$ npm adduser --registry http://localhost:4873
+```
+
+### 发布到 Verdaccio
+
+```bash
+$ cd leftish-padder
+$ npm publish --registry http://localhost:4873
+```
+
+增加版本号并重新发布
+
+```bash
+$ npm verson patch
+$ npm publish --registry http://localhost:4873
+```
+
+**添加scope**  
+
+打开*package.json*  文件，修改name字段：
+
+```json
+"name": "@tlhunter/leftish-padder",
+```
+
+
+
+删除配置，恢复官方npm链接
+
+```bash
+$ npm config delete registry
+```
+
+# 第7章 容器编排（Container Orchestration  ）
+
+容器编排非常适用于无状态服务，例如典型的 Node.js 服务，其中实例可以被销毁或重新创建，而不会产生很多副作用。 有状态的服务，如数据库，在容器编排工具中运行时需要多加小心，因为存在跨部署的持久存储或随着实例的来去而重新分片数据等问题。许多组织选择仅在容器编排器中运行应用程序代码，并依靠专用机器来运行他们的数据库。
+
+## Kubernetes 简介
+
+210
