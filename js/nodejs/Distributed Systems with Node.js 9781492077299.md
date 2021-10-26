@@ -764,3 +764,8 @@ $ npm config delete registry
 ## Kubernetes 简介
 
 210
+
+### Kubernetes 概览  
+
+以下是对不同组件及其相互关系的解释：
+
