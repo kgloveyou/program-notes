@@ -769,3 +769,106 @@ $ npm config delete registry
 
 以下是对不同组件及其相互关系的解释：
 
+**容器**
+
+Kubernetes 可以使用几种不同的容器格式，例如 Docker 和 rkt。
+
+**卷**
+
+**Pod**  
+
+一个 pod 代表一个应用程序实例。通常，一个 Pod 只包含一个容器，但一个 Pod 中可能有多个容器。 Pod 还可以包含 Pod 容器所需的任何卷。 每个 pod 都有自己的 IP 地址，如果同一个 pod 中存在多个容器，它们将共享一个地址。 Pod 是 Kubernetes API 允许你与之交互的最小单元。
+
+**Node**  
+
+一个节点是一个工作机器——无论是物理的还是虚拟的——它是整个 Kubernetes 集群的一部分。每个节点都需要在机器上运行一个容器守护进程（如 Docker）、Kubernetes 守护进程（称为 Kubelet）和一个网络代理（Kube Proxy）。 不同的节点可能有不同的可用内存和 CPU，就像不同的 Pod 可能有不同的内存和 CPU 要求一样。
+
+**Master**  
+
+master表示在主节点上运行的一组服务。 master 公开了一个 API，这是外部客户端与之通信的 API，例如你将在本章中使用的 `kubectl` 命令。 master 将命令委托给在各个节点上运行的 Kubelet 进程。
+
+**Cluster**  
+
+集群代表主节点及其各种关联节点的整体集合。 通过指定哪个 pod 属于哪个环境，在技术上可以将单个集群用于不同的环境，例如staging 和production 。 也就是说，维护多个集群以防止意外交叉通信通常更安全，特别是如果你计划在生产之外测试集群。
+
+### Kubernetes 概念
+
+*Scheduling*  
+
+调度是 Kubernetes 确定将新创建的 pod 分配到的最佳节点的过程。Kubernetes 中使用的默认调度程序称为 `kube-scheduler`。
+
+遇到新创建的 pod 时，调度程序会检查可用节点。 它会考虑节点的空闲 CPU 和内存，以及 pod（如果指定）的 CPU 和内存要求。然后选择一个兼容的节点来托管 pod。 如果没有节点为 Pod 提供容量，那么它可以保持在等待节点可用的`scheduled`  状态。
+
+*Namespaces*  
+
+命名空间是一种 Kubernetes 机制，用于在逻辑上将集群划分为更小的、半隔离的集合。
+
+*Labels* 
+
+标签是分配给各种资源（例如 pod 或节点）的键/值对。
+
+*Selectors*  
+
+Selectors  声明 pod 的要求。 例如，一个特定的 pod 可能要求它在物理机而不是虚拟机上运行，因为它需要执行一些对时间非常敏感的工作。 在这种情况下，selector  可能是 machine:physical。
+
+*Stateful sets*  
+
+Kubernetes does work with stateful services, and stateful sets are intended to make this process convenient.  
+
+*Replica sets*  
+
+*Deployments*  
+
+*Controllers*  
+
+*Service*  
+
+服务是向网络公开一组 Pod 的资源。
+
+*Ingress*  
+
+ingress  资源管理对 Kubernetes 集群内服务的外部网络访问。
+
+*Probe*  
+
+probe  很像你之前使用过的 HAProxy 健康检查。 它可用于判断 Pod 是否健康，以及它在启动后是否准备好接收流量。
+
+### 启动 Kubernetes
+
+要继续本章，您需要在开发机器上安装 Minikube 和 Kubectl。安装完成后，运行下面命令查看版本。
+
+```sh
+$ minikube version
+$ kubectl version --client
+```
+
+## 入门  
+
+启动Minikube  
+
+```sh
+# Linux:
+$ minikube start
+```
+
+它实际上在您已经运行的 Docker 守护进程中运行了一个专用于 Minikube 的 Docker 容器。可以使用`docker ps`  命令查看：
+
+运行以下命令以获取当前构成 Kubernetes 集群的节点列表：
+
+```sh
+$ kubectl get pods
+```
+
+Kubectl 默认使用`default`  命名空间。
+
+```sh
+$ kubectl get pods --namespace=kube-system
+```
+
+运行以下命令以获取 Kubernetes 集群中的节点列表：
+
+```sh
+$ kubectl get nodes
+```
+
+216
