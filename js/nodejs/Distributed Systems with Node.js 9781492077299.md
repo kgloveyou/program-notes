@@ -872,3 +872,32 @@ $ kubectl get nodes
 ```
 
 216
+
+## 部署应用程序
+
+### Kubectl Subcommands  
+
+### Kubectl 配置文件
+
+```sh
+$ kubectl apply -f recipe-api/recipe-api-deployment.yml
+```
+
+### Service Discovery  
+
+```sh
+$ minikube addons enable ingress
+$ kubectl get pods --namespace kube-system | grep ingress
+```
+
+第一个命令指示 Minikube 启用 ingress 插件，这是扩展 Minikube 功能的一种方式。在这种情况下，它会创建一个使用 Nginx Web 服务器执行ingress  路由的新容器。
+
+第二个命令只显示容器所在的位置。 在这种情况下，Kubernetes 在 `kube-system` 命名空间中启动 Nginx 容器。
+
+许多其他[ingress controllers](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/)  可用，例如第 61 页的“使用 HAProxy 的反向代理”中介绍的心爱的 HAProxy，尽管默认的 Nginx 选项由 Kubernetes 项目直接维护。不同的入ingress controllers  支持不同的功能，但最终控制器会配置某种反向代理来将传入的请求映射到服务。
+
+通过启用 ingress，您可以通过向单个主机名发出 curl 请求来向 web-api 服务发出请求，而不必使用 minikube CLI 来定位服务的主机和端口。这使得将来自外部客户端的请求路由到适当的节点和容器变得更加容易。
+
+`web-api` 应用程序查找并与 `recipe-api` 应用程序通信的机制称为服务发现，主要由 Kubernetes 负责。
+
+230
