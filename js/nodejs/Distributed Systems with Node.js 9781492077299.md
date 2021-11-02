@@ -903,3 +903,23 @@ $ kubectl get pods --namespace kube-system | grep ingress
 `web-api` 应用程序查找并与 `recipe-api` 应用程序通信的机制称为服务发现，主要由 Kubernetes 负责。
 
 230
+
+### 回滚应用程序部署
+
+# 第8章 弹性（Resilience）
+
+application resilience  ，这是在可能导致失败的情况下生存的能力。
+
+## Node.js 进程的死亡
+
+The `process` global is an `EventEmitter` instance, and when the process exits it will usually emit an `exit` event.  
+
+### Process Exit  
+
+`process.exit(code)` 方法是终止进程的最基本机制，在许多不一定涉及错误的场景中很有用。
+
+`code`参数 1 是 0 到 255 范围内的数字型`exit status code`  。按照惯例，0 表示应用程序以健康的方式终止，任何非零数字表示发生了错误。
+
+### Exceptions, Rejections, and Emitted Errors  
+
+242
