@@ -871,7 +871,9 @@ $ kubectl get pods --namespace=kube-system
 $ kubectl get nodes
 ```
 
-216
+**Minikube 的替代品**
+
+Minikube 在处理较少数量的容器时，对于在单台机器上运行 Kubernetes 非常有用。但是，在要求更高的生产环境中，您将需要功能更强大的东西。 您可以在生产机器上安装完整版本的 Kubernetes，这将需要多项服务，例如 Etcd。
 
 ## 部署应用程序
 
