@@ -835,7 +835,7 @@ probe  很像你之前使用过的 HAProxy 健康检查。 它可用于判断 Po
 
 ### 启动 Kubernetes
 
-要继续本章，您需要在开发机器上安装 Minikube 和 Kubectl。安装完成后，运行下面命令查看版本。
+要继续本章，你需要在开发机器上安装 Minikube 和 Kubectl。安装完成后，运行下面命令查看版本。
 
 ```sh
 $ minikube version
@@ -851,7 +851,7 @@ $ kubectl version --client
 $ minikube start
 ```
 
-它实际上在您已经运行的 Docker 守护进程中运行了一个专用于 Minikube 的 Docker 容器。可以使用`docker ps`  命令查看：
+它实际上在你已经运行的 Docker 守护进程中运行了一个专用于 Minikube 的 Docker 容器。可以使用`docker ps`  命令查看：
 
 运行以下命令以获取当前构成 Kubernetes 集群的节点列表：
 
@@ -873,7 +873,7 @@ $ kubectl get nodes
 
 **Minikube 的替代品**
 
-Minikube 在处理较少数量的容器时，对于在单台机器上运行 Kubernetes 非常有用。但是，在要求更高的生产环境中，您将需要功能更强大的东西。 您可以在生产机器上安装完整版本的 Kubernetes，这将需要多项服务，例如 Etcd。
+Minikube 在处理较少数量的容器时，对于在单台机器上运行 Kubernetes 非常有用。但是，在要求更高的生产环境中，你将需要功能更强大的东西。 你可以在生产机器上安装完整版本的 Kubernetes，这将需要多项服务，例如 Etcd。
 
 ## 部署应用程序
 
@@ -898,7 +898,7 @@ $ kubectl get pods --namespace kube-system | grep ingress
 
 许多其他[ingress controllers](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/)  可用，例如第 61 页的“使用 HAProxy 的反向代理”中介绍的心爱的 HAProxy，尽管默认的 Nginx 选项由 Kubernetes 项目直接维护。不同的入ingress controllers  支持不同的功能，但最终控制器会配置某种反向代理来将传入的请求映射到服务。
 
-通过启用 ingress，您可以通过向单个主机名发出 curl 请求来向 web-api 服务发出请求，而不必使用 minikube CLI 来定位服务的主机和端口。这使得将来自外部客户端的请求路由到适当的节点和容器变得更加容易。
+通过启用 ingress，你可以通过向单个主机名发出 curl 请求来向 web-api 服务发出请求，而不必使用 minikube CLI 来定位服务的主机和端口。这使得将来自外部客户端的请求路由到适当的节点和容器变得更加容易。
 
 `web-api` 应用程序查找并与 `recipe-api` 应用程序通信的机制称为服务发现，主要由 Kubernetes 负责。
 
@@ -928,5 +928,90 @@ The `process` global is an `EventEmitter` instance, and when the process exits i
 
 ### Exceptions, Rejections, and Emitted Errors  
 
-242
 
+
+**Error swallowing**  
+
+捕获错误并完全无视结果，包括不将错误记录到控制台，被认为是“吞下错误”。
+
+
+
+有时，库作者可能会对错误进行子类化，但不会导出它们。 在这些情况下，你可以检查 .name 字段，例如使用 `e.name === 'ConnectionFallback'`。
+
+```js
+const logger = require('./lib/logger.js');
+process.on('uncaughtException', (error) => {
+    logger.send("An uncaught exception has occured", error, () => {
+        console.error(error);
+        process.exit(1);
+    });
+});
+```
+
+与未捕获的exceptions  类似，未处理的rejections  也可以使用`process` event emitter  进行监听。 这是一个如何完成的示例：
+
+```js
+process.on('unhandledRejection', (reason, promise) => {});
+```
+
+The `EventEmitter` class, available at `require('events').EventEmitter`, is extended by and used by many other classes, both those provided by core Node.js modules, as well as packages available on npm.  
+
+### Signals  
+
+运行 `kill -l` 命令以获取当前机器识别的信号列表。
+
+```sh
+#!/usr/bin/env node
+console.log(`Process ID: ${process.pid}`);
+process.on('SIGHUP', () => console.log('Received: SIGHUP'));
+process.on('SIGINT', () => console.log('Received: SIGINT'));
+setTimeout(() => {}, 5 * 60 * 1000); // keep process alive
+```
+
+
+
+而且，为了向将信号称为 kill 的惯例致敬，用于发送信号的方法可用作 `process.kill()`。
+
+```sh
+$ node -e "process.kill(<PROCESS_ID>, 'SIGHUP')"
+```
+
+终止程序
+
+```sh
+$ kill -9 <PROCESS_ID>
+```
+
+此命令将向你的进程发送 SIGKILL 信号，并立即终止它。
+
+## 构建无状态服务
+
+### 避免内存泄漏
+
+### Bounded In-Process Caches  
+
+cache hit
+
+cache invalidation  
+
+The `lru-cache` package is a popular tool for doing just that. It is a key/value store that can be configured to use the length of strings or buffers that are inserted into the cache to loosely approximate the memory requirements of those entries.  
+
+`Least Recently Used`  
+
+### 使用 Memcached 进行外部缓存
+
+三种不同的缓存策略比较：
+
+- In-memory cache  
+
+  这是最快的方法，但缓存在崩溃和部署之间被破坏。
+
+- External cache  
+
+  它比内存缓存慢，但应该比找到真实来源更快。 它还可以防止缓存在崩溃和部署之间被清除。 必须在应用程序版本之间维护数据结构或重命名缓存键。 此处发生的查找可能需要数十毫秒。
+
+- No cache  
+
+  它通常是最慢和最容易实现的。
+
+256
