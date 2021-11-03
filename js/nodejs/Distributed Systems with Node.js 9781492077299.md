@@ -902,7 +902,13 @@ $ kubectl get pods --namespace kube-system | grep ingress
 
 `web-api` 应用程序查找并与 `recipe-api` 应用程序通信的机制称为服务发现，主要由 Kubernetes 负责。
 
-230
+## 修改部署
+
+### 扩展应用程序实例
+
+### 部署新的应用程序版本
+
+233
 
 ### 回滚应用程序部署
 
@@ -923,3 +929,4 @@ The `process` global is an `EventEmitter` instance, and when the process exits i
 ### Exceptions, Rejections, and Emitted Errors  
 
 242
+
