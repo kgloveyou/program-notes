@@ -998,7 +998,7 @@ The `lru-cache` package is a popular tool for doing just that. It is a key/value
 
 `Least Recently Used`  
 
-### 使用 Memcached 进行外部缓存
+## 使用 Memcached 进行外部缓存
 
 三种不同的缓存策略比较：
 
@@ -1014,4 +1014,32 @@ The `lru-cache` package is a popular tool for doing just that. It is a key/value
 
   它通常是最慢和最容易实现的。
 
-256
+### 介绍 Memcached
+
+Memcached 是最成熟的可用缓存服务之一。 它是一种可靠、简洁的缓存，可以分布在多台机器上。
+
+**Memcached 的替代品**
+
+Redis 可能是 Memcached 最受欢迎的替代品。
+
+### 运行 Memcached
+
+在实例化 Memcached 服务时，有几个标志可以传入，包括 -d 用于守护进程（Docker 容器不需要），-m 用于设置最大内存量（非常有用），以及 -v 用于启用日志记录 （可以重复此标志以增加详细程度）。
+
+```sh
+$ docker run \
+	--name distnode-memcached \
+	-p 11211:11211 \
+	-it --rm memcached:1.6-alpine \
+	memcached -m 64 -vv
+```
+
+端口 11211 是默认的 Memcached 端口.
+
+当运行多个 Memcached 实例时，这些实例本身并不知道彼此。 相反，客户端直接连接到不同的实例并使用客户端散列算法来确定哪个服务器包含特定key。
+理想情况下，这意味着每个客户端对相同的键名使用相同的服务器，但不同的客户端库可能会决定在不同的服务器上存储特定的键，这可能导致缓存未命中和数据冗余。
+
+### 使用 Memcached 缓存数据
+
+259
+
