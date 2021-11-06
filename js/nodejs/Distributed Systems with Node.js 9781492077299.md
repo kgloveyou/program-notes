@@ -1043,3 +1043,55 @@ $ docker run \
 
 259
 
+### Data Structure Mutations 
+
+例如，key名称可以从 account-info-<ACCOUNT_ID> 更改为 account-info-<VERSION>-<ACCOUNT_ID>。
+
+另一种解决方案是将数据从旧表单“迁移”到新表单，而不是更改键名和丢失缓存值。（参见：“Schema Migrations with Knex” on page 272）
+
+## 数据库连接弹性
+
+### 运行PostgreSQL  
+
+### 自动重连
+
+```js
+class DatabaseReconnection extends EventEmitter {
+  #client = null;       #conn = null;
+  #kill = false;        connected = false;
+
+  constructor(conn) {
+    super();
+    this.#conn = conn;
+  }
+```
+
+前三个private属性，最后一个是public属性。
+
+### 连接池
+
+另一种增加应用程序数据库连接弹性的方法是使用多个连接，或者众所周知，使用连接池。关于弹性，如果一个连接失败，那么另一个连接 将保持开放。
+
+当配置为使用连接池时，应用程序通常会尝试维护一定数量的连接。 当连接断开时，应用程序会尝试创建一个新连接来进行补偿。 当应用程序选择运行数据库查询时，它将选择池中的可用连接之一来传递查询。
+
+大多数数据库包似乎默认支持某种形式的连接池。这些示例中使用的流行 `pg` 包也不例外。 The `pg.Pool` class is available and can mostly be swapped out with `pg.Client`, though it does have a few different configuration options and exposes some new properties.  
+
+无论如何，您应该尝试使用最少数量的数据库连接来满足您的性能需求。 出于以下几个原因，将这个数字保持在较低水平很重要。
+
+如果您想知道特定 Postgres 数据库配置为处理多少个连接（例如，在使用托管实例时），请运行以下查询：
+
+```sql
+SELECT * FROM pg_settings WHERE name = 'max_connections';
+```
+
+可以增加最大连接数，但至少需要服务器处理连接的少量开销。 如果不是，则默认值为无穷大。
+
+在选择连接数时，您可能需要确保每个进程使用的连接数乘以同时运行的进程数小于 Postgres 服务器可以处理的连接数的一半。这半部分很重要，因为如果您部署一组新进程来替换旧进程，那么新旧实例需要在短时间内重叠运行。
+
+Connection pooling isn’t just about resilience; it’s also about performance. The Postgres database, for example, isn’t able to handle multiple queries sent through the same connection at the same time. Instead, each query needs to finish before the following query can be sent, serially.
+
+连接池不仅仅是关于弹性； 这也与性能有关。 例如，Postgres 数据库无法同时处理通过同一连接发送的多个查询。 相反，每个查询都需要在可以串行发送以下查询之前完成。
+
+## Schema Migrations with Knex  
+
+272
