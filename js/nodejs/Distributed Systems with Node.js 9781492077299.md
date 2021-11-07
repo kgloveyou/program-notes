@@ -1094,4 +1094,31 @@ Connection pooling isn’t just about resilience; it’s also about performance.
 
 ## Schema Migrations with Knex  
 
-272
+Knex 是一个流行的 SQL 查询构建器包。 许多更高级别的 ORM（对象关系映射）包都依赖它。 如果您参与过一些与 SQL 数据库交互的 Node.js 项目，那么您很有可能在某个时候接触过 Knex。
+
+虽然 Knex 通常因其生成 SQL 查询的能力（减少将 SQL 字符串危险地连接在一起的需要）而广受赞誉，但本节中介绍的功能是其鲜为人知的[schema migration](https://knexjs.org/#Migrations)  功能。
+
+`schema migration`   是对数据库schema以增量、可逆的方式进行的更改，并且可以使用可以检入版本控制的代码来表示。
+
+### 配置 Knex
+
+### Creating a Schema Migration  
+
+### Applying a Migration  
+
+执行以下命令在 Postgres Docker 容器内运行 psql 命令：
+
+```sh
+$ docker exec \
+	-it distnode-postgres \
+	psql -U user -W dbconn
+```
+
+### Rolling Back a Migration  
+
+### 实时迁移（Live Migrations ）
+
+实时迁移是以不会导致应用程序脱机的方式发生的迁移。
+
+282
+
