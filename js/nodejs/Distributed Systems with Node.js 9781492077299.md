@@ -1124,5 +1124,16 @@ $ docker exec \
 
 ## 幂等性和消息弹性
 
-284
+### HTTP 重试逻辑
 
+如果请求是幂等的，则可以多次重复请求而不会产生副作用。
+
+HTTP的下列方法时幂等性的：GET  、PUT、DELETE。
+
+如果消息会导致数据丢失，则该消息具有破坏性。（PUT、PATCH、DELETE ）。在这些情况下，服务器可能会选择实现 `ETag` 和 `If-Match` HTTP 头以提供额外的语义以避免数据破坏。
+
+A mechanism that a server may choose to implement that makes every request idempotent is an `idempotency key`.   幂等键是客户端在向服务器发出请求时提供的元数据。当服务器收到带有此密钥的请求时，它首先检查缓存中是否存在该密钥。 如果该条目存在于缓存中，则服务器立即回复缓存条目。 如果缓存中缺少该条目，则服务器照常执行请求，然后将响应写入缓存并回复请求。如果重复请求的副作用可能代价高昂，请考虑在您的 API 中支持幂等键。
+
+### 断路器模式
+
+289
