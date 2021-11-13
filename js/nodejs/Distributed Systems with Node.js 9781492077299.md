@@ -1137,3 +1137,81 @@ A mechanism that a server may choose to implement that makes every request idemp
 ### 断路器模式
 
 289
+
+### Exponential Backoff  (指数退避)
+
+让客户端重试对外部服务的请求的幼稚方法是简单地让它在失败发生时立即再次发出请求。 然后，如果重试失败，请立即再试一次。 这种方法可能无助于请求成功，也可能会加剧问题。
+
+使用这种方法，客户端首先快速尝试重试，但随着时间的推移会变慢。 例如，服务可能会选择使用以下计划进行请求重试：
+
+```
+100ms | 250ms | 500ms | 1000ms | 2500ms | 5000ms | 5000ms | ...
+```
+
+这种方法可以与您之前使用过的 `ioredis` 包一起使用。
+
+```js
+const Redis = require('ioredis');
+const DEFAULT = 5000;
+const SCHEDULE = [100, 250, 500, 1000, 2500];
+const redis = new Redis({
+    retryStrategy: (times) => {
+    	return SCHEDULE[times] || DEFAULT;
+    }
+});
+```
+
+`thundering herd`  
+
+jitter  :抖动
+
+抖动是随机变化，例如请求时序的增加或减少±10%。
+
+```js
+const redis = new Redis({
+    retryStrategy: (times) => {
+        let time = SCHEDULE[times] || DEFAULT;
+        return Math.random() * (time * 0.2) + time * 0.9; // ±10%
+    }
+});
+```
+
+抖动的概念在其他情况下也很有用。 例如，应用程序可能需要在内存中缓冲统计信息并每分钟将其刷新到数据库中。这可以通过在应用程序启动时调用一次 setInterval(fn, 60_000) 来实现。 然而，同样存在`thundering herd`  问题。
+
+## 弹性测试
+
+作为一名工程师，很容易将错误场景视为二等公民。 工程师可能只测试应用程序的愉快路径，无论是通过 UI 与新功能交互还是编写单元测试。 当仅测试功能的成功使用时，当应用程序不再在开发人员的笔记本电脑上运行并被交付到生产环境时，它就会面临失败的风险。 分布式环境中的故障可能会进一步复杂化，因为一个应用程序中的错误可能会导致其他应用程序中的错误——通常没有原始堆栈跟踪进行调试。
+
+强制处理此类错误的一种哲学称为混沌工程(**chaos engineering**  )。这是一种将故障随机引入环境的方法。通过将通常很少发生的故障变成日常发生，工程师被迫尽早处理这些故障，以免他们面临午夜寻呼机的愤怒。 这种测试失败的方法是您可以考虑在您的组织内使用的方法，尽管它需要非常严格的开发人员集合才能实现。
+
+下面是一些可以引入 Node.js 应用程序的混乱类型的示例，这些混乱类型基于我在我处理过的应用程序中遇到的一些常见故障边界。
+
+### 随机崩溃(Random Crashes  )
+
+### 事件循环暂停
+
+### Random Failed Async Operations  
+
+**手动混沌的替代方案**
+
+Netflix 创建了一个名为 Chaos Monkey 的开源工具，它将不同形式的混乱引入组织的基础设施中。
+
+# 第9章 分布式原语
+
+## ID 生成问题
+
+```
+How would you design a link shortening service?  
+```
+
+你如何生成用于短 URL 的 ID？
+
+最终，URL ID 代表一个键，关联的值包含原始的完整 URL。
+
+**lock**  
+
+这个等待锁被解锁的循环称为自旋锁（`spinlock`  ）。
+
+## Redis 介绍
+
+301
