@@ -42,3 +42,13 @@ If you did a `git commit -m "msg"` after doing a `git rm -r --cached`, i.e., you
 ————————————————
 版权声明：本文为CSDN博主「白马不是马」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
 原文链接：https://blog.csdn.net/kuodannie1668/article/details/91383496
+
+## git pull --rebase
+
+- 聊下git pull --rebase
+
+https://www.cnblogs.com/wangiqngpei557/p/6056624.html
+
+- git pull --rebase的正确使用（※）
+
+https://juejin.cn/post/6844903895160881166
