@@ -70,4 +70,15 @@ let language = 'JavaScript'; // 字符串
 
 ### 2.3.4 TypeScript中对 JavaScript 文件的编译时检查
 
-P64
+# 第3章 数组
+
+### 3.3.2  在数组开头插入元素
+
+**使用unshift方法**
+
+```js
+numbers.unshift(-2);
+numbers.unshift(-4, -3);
+```
+
+## 3.4 删除元素
