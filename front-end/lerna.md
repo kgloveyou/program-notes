@@ -60,3 +60,7 @@ https://juejin.cn/post/6969544464113074189
 
 https://juejin.cn/post/6847902224794943495
 
+4、中文文档
+
+http://www.febeacon.com/lerna-docs-zh-cn/
+
