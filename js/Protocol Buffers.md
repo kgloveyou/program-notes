@@ -36,6 +36,12 @@ protoc -I=sourcedir --ts_out=dist myproto.proto
 
 上面的protoc是Protocol Buffer Compiler命令。
 
+
+
+[issue](https://github.com/thesayyn/protoc-gen-ts/issues/97)里面提到
+
+https://github.com/timostamm/protobuf-ts
+
 6、Protocol Buffer Compiler Installation
 
 https://grpc.io/docs/protoc-installation/
