@@ -64,3 +64,17 @@ https://juejin.cn/post/6847902224794943495
 
 http://www.febeacon.com/lerna-docs-zh-cn/
 
+5、使用lerna的介绍与用法
+
+https://juejin.cn/post/7016332558975647781
+
+6、lerna+yarn workspace+monorepo项目的最佳实践（※）
+
+https://juejin.cn/post/6844903918279852046
+
+7、基于 Lerna 管理 packages 的 Monorepo 项目最佳实践
+
+https://mp.weixin.qq.com/s/NlOn7er0ixY1HO40dq5Gag
+
+说明：6中大部分内容参照的这里。
+
