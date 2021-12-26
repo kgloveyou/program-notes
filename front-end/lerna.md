@@ -78,3 +78,18 @@ https://mp.weixin.qq.com/s/NlOn7er0ixY1HO40dq5Gag
 
 说明：6中大部分内容参照的这里。
 
+
+
+## 问题：
+
+1、`lerna publish`发布报错：
+
+```shell
+lerna ERR! E404 Scope not found
+```
+
+原因：
+
+https://github.com/any86/Notes/issues/66
+
+如果库已经存在, 但是想改为组织, 那么必须先去npm网站手动创建组织
