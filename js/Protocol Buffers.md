@@ -57,3 +57,22 @@ https://juejin.cn/post/6916164817409540104
 - 如何使用websocket + protobuf开发IM聊天项目
 
 https://juejin.cn/post/6844904038958383118
+
+8、ts-proto（*）
+
+https://github.com/stephenh/ts-proto
+
+(Note, if you're a new user of ts-proto and using a modern TS setup with `esModuleInterop`, you need to also pass that as a `ts_proto_opt`.)
+
+adhub-frontend使用的这个库。
+
+客户端调用示例：
+
+https://github.com/stephenh/ts-proto/blob/main/integration/grpc-web/client-ts.ts
+
+9、protoc vs ts-proto vs ts-protoc-gen
+
+https://www.npmtrends.com/protoc-vs-ts-proto-vs-ts-protoc-gen
+
+ts-protoc-gen的使用量最多。
+
