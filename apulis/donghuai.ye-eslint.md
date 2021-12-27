@@ -1,7 +1,9 @@
 ## eslint 配置
 
+.eslintrc.js中配置规则：
+
 ```js
-{
+  rules: {
     'object-curly-newline': 'off',
     'object-shorthand': 'off',
     'no-unused-expressions': ["error", { "allowShortCircuit": true }],
@@ -58,7 +60,7 @@
   "lint--fix": "eslint src/.  --ext .js,.jsx,.tsx,.ts --fix --quiet"
 ```
 
-## 保存自动格式化
+## 保存自动格式化（项目代码中未采用）
 ### setting.json 新增
 
 ```js
@@ -218,7 +220,7 @@ module.exports = {
 
 
 
-### setting.json 增加配置 
+### package.json 增加配置 
 ```js
 "cz": "git cz",
 "c": "git add . && git cz" // 提交指令
