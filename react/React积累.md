@@ -411,3 +411,55 @@ const [isDirty, setDirty] = useState(false)
 # React的memo和useMemo的作用
 
 https://juejin.cn/post/6897038904914870286
+
+
+
+# 问题
+
+1、页面崩溃
+
+Uncaught Error: Rendered fewer hooks than expected. This may be caused by an accidental early return statement.
+
+**错误原因：**嵌套的子组件里面有根据条件动态生成内容，其中使用了hooks。
+
+https://stackoverflow.com/questions/53472795/uncaught-error-rendered-fewer-hooks-than-expected-this-may-be-caused-by-an-acc
+
+https://www.cnblogs.com/longlongdan/p/10833412.html（※）
+
+```tsx
+const JobItemComponent: React.FC<JobItemProps> = (props) => {
+    // const context = useContext(MetaDataContext);
+    // const { info: { subTaskStatus } } = context;
+    const { taskId, id, isAutoAnnotating, subTaskStatus, lang } = props;
+    // const { locale } = useContext(ConfigProvider.ConfigContext);
+
+    return (
+        <>
+            <Row className='cvat-jobs-list-item' justify='center' align='middle'>
+                {renderPreview(props)}
+                {renderDescription(props)}
+                {renderStatus(props, subTaskStatus, { taskId: taskId, jobId: id })}
+                {!isAutoAnnotating && renderProgress(props)}
+                {isAutoAnnotating && renderAutoAnnotatingProgress(props)}
+                {renderNavigation(props, lang)}
+            </Row>
+        </>
+    );
+}
+```
+
+而react的钩子官方要求如下
+
+**不要在循环，条件或嵌套函数中调用Hook。相反，始终在React函数的顶层使用Hooks。通过遵循此规则，您可以确保每次组件呈现时都以相同的顺序调用Hook。这就是允许React在多个`useState`和`useEffect`调用之间正确保留Hook状态的原因。**
+
+**解决方案：**选择在没有判断条件的顶层使用useContext、useState、useEffect、userHistory、useTransaction等，将获取的值，作为参数传给子组件使用！
+
+# 强制刷新页面
+
+tell the browser to reload the current page:
+
+```js
+window.location.reload(false);
+```
+
+This method takes an optional parameter which by default is set to false. If set to true, the browser will do a complete page refresh from the server and *not* from the cached version of the page.
