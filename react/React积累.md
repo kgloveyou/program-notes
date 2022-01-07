@@ -285,11 +285,24 @@ function CustomTextInput(props) {
 
 https://blog.csdn.net/tang_yi_/article/details/82706338
 
+1、props
+
+需要注意的是：
+
+- key 和 ref 不会传递给子组件的 this.props。
+- 只有属性没有值，React会自动解析为布尔值 true。
+- 属性值除了字符串外，其他值需要用花括号包裹。
+- 子组件内部不能改变 this.props 的值。
+
+  综上，使用 props 来存储父组件传递给子组件的值。
+
 https://www.freecodecamp.org/news/where-do-i-belong-a-guide-to-saving-react-component-data-in-state-store-static-and-this-c49b335e2a00/
 
 ### Local state
 
-**Takeaway:** keep UI state and transitory data (such as form inputs) in local **state**.
+The important thing to know about local **state** is that when a **state** value changes, it triggers a re-render.
+
+**Takeaway（要点）:** keep UI state and transitory data (such as form inputs) in local **state**.
 
 ### Redux store
 
@@ -463,3 +476,10 @@ window.location.reload(false);
 ```
 
 This method takes an optional parameter which by default is set to false. If set to true, the browser will do a complete page refresh from the server and *not* from the cached version of the page.
+
+
+
+# Using setTimeout in React components (including hooks)
+
+https://felixgerschau.com/react-hooks-settimeout/
+
