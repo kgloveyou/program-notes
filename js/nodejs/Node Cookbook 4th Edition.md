@@ -34,3 +34,21 @@ const fs = require("fs").promises;
 
 `chmod()`, and an equivalent synchronous API, `chmodSync()`.   
 
+#### Inspecting symbolic links  
+
+Node.js REPL (Read-Eval-Print Loop)  
+
+Node.js REPL 是一个交互式 shell，我们可以将语句传递给它，它将评估它们并将结果返回给用户。
+
+要进入 Node.js REPL，请在 shell 中键入 node：
+
+```shell
+$ node
+Welcome to Node.js v14.0.0.
+Type ".help" for more information.
+>  
+```
+
+## Watching for file updates  
+
+41
