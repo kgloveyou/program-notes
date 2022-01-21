@@ -30,5 +30,7 @@ const fs = require("fs").promises;
 
 有一个现在已弃用的旧 API，称为 `fs.exists()`。 不建议使用此函数 — 应改用 `fs.access()` API。
 
-36
+#### Modifying file permissions  
+
+`chmod()`, and an equivalent synchronous API, `chmodSync()`.   
 
