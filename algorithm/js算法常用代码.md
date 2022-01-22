@@ -6,3 +6,15 @@
 const left = new Array(n).fill(0);
 ```
 
+2、数字转字符串、字符转数字
+
+```js
+n = n.toString()
+n = n.split('').map(item => {
+    return +item
+})
+
+n = n.join('')
+return +n
+```
+
