@@ -326,14 +326,14 @@ $ npm publish --access=public
 
 ### Private registries  
 
-您可以使用以下命令更改您指向的注册表：
+你可以使用以下命令更改你指向的注册表：
 
 ```bash
 $ npm config set registry https://registry.your-registry.npme.
 io/
 ```
 
-您可以使用以下命令查看您指向的注册表：
+你可以使用以下命令查看你指向的注册表：
 
 ```bash
 $ npm config get registry
@@ -369,7 +369,7 @@ app.listen(PORT, () => {
 
 ```
 
-还有其他方法可以表明您希望将模块视为 ECMAScript 模块。如果最近的 package.json 包含值为 module 的类型字段，则以 .js 结尾的文件被视为 ECMAScript 模块，如下所示：
+还有其他方法可以表明你希望将模块视为 ECMAScript 模块。如果最近的 package.json 包含值为 module 的类型字段，则以 .js 结尾的文件被视为 ECMAScript 模块，如下所示：
 
 ```json
 {
@@ -394,3 +394,134 @@ import express from "express";
 像这样的导入语句只允许在 `.mjs` 文件中使用，但它们可以引用 CommonJS 模块或 ECMAScript 模块。
 
 # 6、Exploring Node.js web Frameworks  
+
+## 使用 Express.js 构建 Web 应用程序
+
+### Adding views with Express.js  
+
+Embedded JavaScript (EJS)  
+
+### 使用 Express.js 创建自定义中间件
+
+### 生成 Express.js 应用程序
+
+Express.js 提供了一个生成器，可以为你构建一个框架应用程序。 你可以使用 npx 从终端运行生成器：
+
+```bash
+$ npx express-generator --view=ejs express-generated-app
+```
+
+### 处理 POST 请求和路由参数
+
+### Router methods  
+
+### 使用 NODE_ENV 环境变量
+
+或者，你可以将其作为环境变量直接传递给 Node.js 进程：
+
+```bash
+$ NODE_ENV=production node index.js  
+```
+
+## 使用 Koa.js 构建 Web 应用程序
+
+与 Express.js 相比，Koa.js 是一个更小、更轻量级的框架，并且没有预装任何中间件。
+
+### Adding views with Koa.js  
+
+### Cascading middleware  
+
+### 使用 Koa.js 创建自定义中间件
+
+## 使用 Fastify 构建 Web 应用程序
+
+虽然 Fastify 可用于创建 Web 应用程序，但在构建基于 JSON 的 API 时它确实表现出色。
+
+### 使用 Fastify 的自定义插件
+
+Fastify 认为一切都是插件，包括你定义的路由。
+
+### Fastify CLI  
+
+Fastify 提供了一个命令行界面（CLI），使你能够生成和运行 Fastify 应用程序：
+
+```bash
+$ npx fastify-cli generate fastify-generated-app
+```
+
+## 使用 Hapi 构建 Web 应用程序
+
+Hapi 是 Web 应用程序的另一个框架。 Hapi 的原始版本是基于 Express 创建的，用于处理沃尔玛的黑色星期五促销规模要求。 与我们在本章中介绍的其他 Web 框架相比，Hapi 具有截然不同的理念。
+
+### 使用 Hapi 添加视图
+
+# 7、使用数据库
+
+`dotenv` 模块将环境变量从 `.env` 文件加载到 Node.js 进程中。
+
+## 连接并持久化到 MySQL 数据库
+
+## 连接并持久化到 PostgreSQL 数据库
+
+PostgreSQL 既可以用作关系数据库，也可以用作文档数据库。
+
+PostgreSQL 提供了两种 JSON 数据类型：`json` 和 `jsonb`。`json` 数据类型类似于常规文本输入字段，但它还验证 JSON。
+`jsonb` 类型是结构化的，便于文档对象内的查询和索引。当你需要能够查询或索引数据时，你会选择 `jsonb` 数据类型而不是 `json` 数据类型。
+
+## 连接和持久化到 MongoDB
+
+虽然 MongoDB 通常被标识为 NoSQL 数据库，但它确实提供了类似 SQL 的语法。
+
+### Mongoose
+
+Mongoose 是一个对象数据建模库，可让你使用 Node.js 将模式应用于 MongoDB 数据。
+
+## 使用 Redis 持久化数据
+
+它通常用于在应用程序中提供缓存，但也可以用作数据库。
+
+## 使用 LevelDB 持久化数据
+
+LevelDB 是一个嵌入式数据库。 它是谷歌编写的键值对存储，其中数据按键排序。 LevelDB 通常用于需要快速访问大型数据集的情况。 LevelDB 直接用作库，因此没有服务器或命令行界面。
+
+我们将使用 `levelup` 和 `leveldown` 模块来创建我们的 LevelDB 存储并与之交互：
+
+# 8、使用 Node.js 进行测试
+
+## 用tape测试
+
+TAP stands for **Test Anything Protocol**   
+
+## 用Mocha测试
+
+The `it()` syntax is to create a test case; it stands for Individual Test.   
+
+## 用 Jest 进行测试
+
+Jest 是 Facebook 开发的开源 JavaScript 测试框架。 它通常用于测试 React 代码，但也可用于测试 Node.js 应用程序。
+
+
+
+`describe()` 用于定义测试集合。
+
+Jest的 `test()` 语法用于定义测试用例。
+
+### Mocking with Jest  
+
+我们可以使用mock来验证我们的函数是否已使用正确的参数调用，而无需实际执行该函数。
+
+```js
+describe("uppercase", () => {
+  test("uppercase hello returns HELLO", () => {
+    uppercase = jest.fn(() => "HELLO");
+    const result = uppercase("hello");
+    expect(uppercase).toHaveBeenCalledWith("hello");
+    expect(result).toBe("HELLO");
+  });
+});
+```
+
+`jest.fn(() => "HELLO");` returns a new mock function.   
+
+## Stubbing HTTP requests  
+
