@@ -525,3 +525,212 @@ describe("uppercase", () => {
 
 ## Stubbing HTTP requests  
 
+为了能够在不向外部服务发送请求的情况下对代码进行单元测试，你可以伪造请求和响应。 这个概念被称为stubbing  。
+
+```js
+const test = require("tape");
+const sinon = require("sinon");
+
+const github = require("../github.js");
+const octokitUserData = require("./octokitUserData.js");
+
+test("Get GitHub user by username", async function (t) {
+  t.plan(3);
+
+  sinon.stub(github, "getGitHubUser").returns(octokitUserData);
+  
+  const githubUser = await github.getGitHubUser("octokit");
+
+  t.equal(githubUser.id, 3430433);
+  t.equal(githubUser.login, "octokit");
+  t.equal(githubUser.name, "Octokit");
+});
+
+```
+
+Stub，打桩，存根, 占位代码，指满足形式要求但没有实现实际功能的占坑/代理代码。
+
+```js
+sinon.stub(github, "getGitHubUser").returns(octokitUserData);
+```
+
+`stub()` 方法指示 Sinon.JS 创建一个匿名存根函数。 我们向 `stub()` 方法传递了两个参数，它们是我们希望存根的对象和方法。在我们的例子中，我们想要存根 `github.getGitHubUser()`。
+
+## 使用 Puppeteer
+
+Puppeteer 是一个开源库，可用于自动化 UI 测试。 Puppeteer 提供了一个可以以编程方式与之交互的headless  Chromium 实例。
+
+
+
+也可以在非无头模式下运行 Puppeteer。你可以通过将参数传递给 launch() 方法来做到这一点：
+
+```js
+const browser = await puppeteer.launch({
+	headless: false
+});
+```
+
+在这种模式下，当你运行测试时，你将看到 Chromium UI，并且可以在测试执行时跟踪你的测试。 这在调试 Puppeteer 测试时特别有用。
+
+## 配置持续集成测试
+
+Continuous Integration (CI)   持续集成 (CI) 是一种开发实践，开发人员定期将他们的代码合并到源存储库。 为了保持源代码的完整性，通常会在接受每个代码更改之前运行自动化测试。
+
+**Pull Request (PR)**  
+
+有许多 CI 产品可以执行您的单元测试。 最受欢迎的之一是 Travis CI (https://travis-ci.org/)。 但其他包括 GitHub Actions (https://github.com/features/actions) 和 Circle CI (https://circleci.com/)。
+
+
+
+默认情况下，Travis CI 配置为在提交被推送到任何分支时执行构建。
+
+
+
+.travis.yml
+
+```yaml
+language: node_js
+node_js:
+  - 14
+```
+
+基础 Node.js `.travis.yml` 文件也默认使用 `npm install` 或 `npm ci` 安装依赖项。 当存在 `package-lock.json` 或 `npm-shrinkwrap.json` 文件时，Travis CI 将使用 `npm ci`。`npm ci` 安装项目的依赖项，但确保它从一个干净的状态安装它们。此命令是专门为在 CI 环境中使用而创建的。
+
+在内部，当构建运行时，Travis CI 将首先将存储库克隆到虚拟环境中。 Travis CI 将执行 `.travis.yml` 文件中定义的构建任务。 在我们的例子中，由于我们没有指定任何自定义命令，Travis CI 默认运行 `npm install` 然后运行 `npm test`。 如果任何构建任务失败，构建将被标记为失败。
+
+**GitHub 分支保护**
+
+可以将 GitHub 配置为阻止拉取请求，直到它们通过build /CI 运行。 可以在 GitHub 存储库的设置中进行配置。
+
+# 9、保护 Node.js 应用程序
+
+**Cross-Site Scripting (XSS)** and **Cross-Site Request Forgery (CSRF)**  
+
+## 检测已知的依赖漏洞
+
+检测漏洞
+
+```bash
+$ npm audit  
+```
+
+修复漏洞
+
+```bash
+$ npm audit fix  
+```
+
+The `$ npm audit` command has been available since npm version 6. The command submits a report of the dependencies in our application and compares it with a database of known vulnerabilities. The `$ npm audit` command will audit direct, development, bundled, and optional dependencies. However, it does not audit peer dependencies. The command requires both a `package.json` and a `package-lock.json` file to be present; otherwise, it will fail. The audit automatically runs when a package is installed with the `$ npm install` command.
+
+许多组织认为 `$ npm audit` 是一种预防措施，以保护其应用程序免受已知安全漏洞的影响。
+
+In the recipe, we used the `$ npm audit fix` command to automatically update your dependencies to fixed versions. The command will only upgrade dependencies to later minor or patch versions.
+
+```bash
+$ npm audit fix --force  
+```
+
+可以使用 `$ npm audit fix --force` 命令覆盖此行为并强制 npm 更新所有依赖项，即使它们包括重大更改。
+
+Tools such as **Dependabot** (https://dependabot.com/) can help keep your dependencies up to date by automating updates on GitHub.
+
+## 使用 Express.js 进行身份验证
+
+### Secure session cookies  
+
+会话 cookies 可以使用`Secure`属性进行标记。 `Secure`属性强制浏览器不使用 HTTP 将 cookie 发送回服务器。 这是为了避免中间人**Man-In-Te-Middle（MITM）**攻击。在生产应用程序中，应使用 HTTPS 和安全 cookies。 但在开发中，使用 HTTP 更容易。
+
+生产环境通常在负载均衡器层应用 SSL 加密。负载均衡器是应用程序架构中的一种技术，负责通过在一组资源上分配一组任务来提高应用程序的效率——例如，将登录请求分配到服务器。
+
+### Hashing with bcrypt
+
+密码永远不应以纯文本形式存储，而应以散列形式存储。 使用散列函数**hashing function**  将密码转换为散列形式。  
+
+散列通常与一种称为加盐的技术结合使用。
+
+`bcrypt` (https://www.npmjs.com/package/bcrypt) 是一个流行的模块，用于在 Node.js 中散列密码。
+
+现在我们必须定义salt rounds的数量。`bcrypt` 将使用指定的轮数生成盐。
+
+## 使用 Helmet 设置 HTTP 
+
+`Helmet` 模块 (https://github.com/helmetjs/helmet) 提供了一个中间件来为我们的 HTTP 请求设置与安全相关的headers，从而节省手动配置的时间。
+
+不加helmet模块前，返回的响应头：
+
+```bash
+$ curl -I http://localhost:3000
+HTTP/1.1 200 OK
+X-Powered-By: Express
+Content-Type: text/html; charset=utf-8
+Content-Length: 12
+ETag: W/"c-Lve95gjOVATpfV8EL5X4nxwjKHE"
+Date: Sun, 06 Feb 2022 03:07:22 GMT
+Connection: keep-alive
+Keep-Alive: timeout=5
+```
+
+注意 `X-Powered-By: Express` 头。
+
+添加helmet模块
+
+```js
+const helmet = require("helmet");
+
+app.use(helmet());
+```
+
+请注意，X-Powered-By 标头已被删除。
+
+
+
+`helmet`  删除了 `X-Powered-By: Express` 标头，因此发现服务器是基于 Express 的变得更加困难。 混淆这一点的原因是为了防止攻击者试图利用面向 Express.js 的安全漏洞，从而减慢他们确定应用程序中使用的服务器类型的速度。
+
+
+
+其他一些流行的 Web 框架也可以通过以下模块集成`helmet`  中间件：
+
+- Koa.js: https://www.npmjs.com/package/koa-helmet
+- Fastify: https://www.npmjs.com/package/fastify-helmet  
+
+## 防御 HTTP 参数污染攻击
+
+参数污染是一种注入攻击，其中 Web 应用程序的 HTTP 端点的 HTTP 参数被注入特定的恶意输入。 HTTP 参数污染可用于暴露内部数据，甚至导致拒绝服务 (DoS) 攻击，其中攻击者试图中断资源并使其无法被资源的预期用户访问。
+
+
+
+发生这种情况是因为多个 `msg` 值已转换为数组。
+
+
+
+Express.js 依赖于 `qs` 模块进行 URL 参数处理。 `qs` 模块处理多个同名参数的方法是将重复的名称转换为数组。 正如配方中所展示的，这种转换会导致代码中断和意外行为。
+
+### 还有更多…
+
+## 防止 JSON 污染
+
+防止 JSON 污染攻击的关键是验证所有 JSON 输入。 这可以手动完成，也可以通过为您的 JSON 定义一个schema  模式来验证。
+
+具体来说，我们将使用**Another JSON Schema Validator(Ajv)** 来验证我们的 JSON 输入。
+
+## 防止跨站点脚本攻击
+
+XSS 攻击是客户端注入攻击，其中恶意脚本被注入网站。 XSS 漏洞非常危险，因为它们可以危害受信任的网站。
+
+为了转义或清理输入，我们将使用一个名为 `he` 的模块。
+
+
+
+XSS 攻击的两种主要类型是persistent XSS  和reﬂected  XSS。
+
+
+
+### Protocol-handler XSS  
+
+### 参数验证
+
+## 防范跨站请求伪造攻击
+
+CSRF 是一种攻击，其中恶意 Web 应用程序导致用户的 Web 浏览器在用户登录的另一个受信任的 Web 应用程序上执行操作。
+
+# 10、性能优化
