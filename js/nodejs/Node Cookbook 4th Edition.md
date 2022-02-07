@@ -734,3 +734,35 @@ XSS 攻击的两种主要类型是persistent XSS  和reﬂected  XSS。
 CSRF 是一种攻击，其中恶意 Web 应用程序导致用户的 Web 浏览器在用户登录的另一个受信任的 Web 应用程序上执行操作。
 
 # 10、性能优化
+
+## 对 HTTP 请求进行基准测试
+
+我们将使用名为 `autocannon`(https://github.com/mcollina/autocannon) 的工具来模拟 HTTP 请求来捕获 HTTP Web 服务器的基准性能测量。
+
+```bash
+$ npm install --global autocannon  
+```
+
+输入以下命令以使用 `autocannon` 运行负载测试：
+
+```bash
+$ autocannon --connections 100 http://localhost:3000/  
+```
+
+### 复制生产环境
+
+使用以下命令以生产模式重新启动 Express.js 服务器：
+
+```bash
+$ NODE_ENV=production npm start
+```
+
+## 解释火焰图
+
+火焰图是一种可视化工具，它允许我们识别应用程序中的“热代码路径”。 术语“热代码路径”用于描述程序中消耗相对大量时间的执行路径，这可能表示应用程序中的瓶颈。
+
+我们将使用 `0x` 火焰图工具（https://github.com/davidmarkclements/0x) 为我们的 Node.js 应用程序生成一个火焰图。
+
+示例运行结果与书中不同，没有生成火焰图。
+
+370
