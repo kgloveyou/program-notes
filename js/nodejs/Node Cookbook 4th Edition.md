@@ -765,4 +765,23 @@ $ NODE_ENV=production npm start
 
 示例运行结果与书中不同，没有生成火焰图。
 
-370
+## 检测内存泄漏
+
+当内存块从未被 GC 回收并因此空闲且效率低下时，就会发生内存泄漏。
+
+### 准备好
+
+### 怎么做…
+
+```bash
+$ node --max-old-space-size=10 leaky-server.js
+Server listening on port 3000
+```
+
+## 优化同步函数
+
+## 优化异步函数
+
+## 使用工作线程
+
+工作线程在 Node.js 版本 12 及更高版本中被声明为稳定，并通过 Node.js 核心 `worker_threads` 模块公开。工作线程 API 允许使用线程并行执行 JavaScript，最适合处理 CPU 密集型 JavaScript 操作
