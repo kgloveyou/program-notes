@@ -1,5 +1,11 @@
 
 
+https://www.packtpub.com/product/node-cookbook-fourth-edition/9781838558758
+
+https://github.com/PacktPublishing/Node.js-14-Cookbook
+
+
+
 # 2 Handling I/O  
 
 `process.cwd()`  is a function on the global process object that returns the current directory of the Node.js process.  
@@ -51,4 +57,6 @@ Type ".help" for more information.
 
 ## Watching for file updates  
 
-41
+`fs.watchFile`
+
+42
