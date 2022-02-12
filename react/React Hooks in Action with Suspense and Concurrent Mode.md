@@ -1,22 +1,4 @@
-# React Hooks in Action with Suspense and Concurrent Mode   
-
-### 1.4.1 Concurrent Mode  
-
-## 1.4.2 Suspense  
-
-## 1.5 React’s new publication channels  
-
-Much of Concurrent Mode and Suspense for data fetching are on the experimental channel at the time of writing.  
-
-# 2、Managing component state with the useState hook  
-
-## 2.2 Storing, using, and setting values with useState  
-
-
-
-### 2.2.1 Assigning new values to variables doesn’t update the UI  
-
-### 2.2.4 Passing a function to useState as the initial value  
+### 2.2.4 Passing a function to useState as the initial value
 
 the `useState` hook accepts a function as its argument, `a lazy initial state,`  
 
@@ -124,28 +106,7 @@ side effect  包括如下：
 The `useEffect` hook is our gateway to safe interactions with the outside world.  
 
 ## 4.1 Exploring the useEffect API with simple examples  
-
-### 4.1.1 Running side effects after every render  
-
-Reaching out to a browser API in this way is considered a side effect.  
-
-```js
-useEffect(() => {
-	document.title = "Bonjour";
-});  
-```
-
-When you call the `useEffect` hook in this way, without a second argument, React runs the effect after every render.   
-
-### 4.1.2 Running an effect only when a component mounts  
-
-```js
-useEffect( () => {
-// perform a side effect
-}, [ ] );
-```
-
-### 4.1.3 Cleaning up side effects by returning a function  
+UNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORnction  
 
 We have to be careful not to make a mess when we set up long-running side effects like **subscriptions, data requests, timers, and event listeners.**   
 
@@ -244,22 +205,7 @@ useEffect(() => {
 
 ## 概述
 
-- Return a cleanup function from the effect that React will run before rerunning the effect function and when the component unmounts:  
-
-```js
-useEffect(() => {
-    // perform effect
-    return () => {/* clean-up */};
-}, [dep1, dep2]);
-```
-
-- If, on re-render, multiple effects are going to run, React will call all of the cleanup functions for the rerunning effects before it runs any effects themselves.  
-
-# 5 Managing component state with the useRef hook  
-
-## 5.1 Updating state without causing a re-render  
-
-With the `useState` hook, calling a state value’s updater function usually triggers a re-render. 
+- Return a cleanup functionUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTOR`useState` hook, calling a state value’s updater function usually triggers a re-render. 
 
 With the `useRef` hook, we can update our value without a corresponding change to the UI.   
 
@@ -373,17 +319,7 @@ myRef.current.focus();
 
 - Components that read their state from the DOM are called `uncontrolled components`. You can use refs to access and update the state.  
 
-- React recommends you use `controlled components.` Use the `useState` hook or the `useReducer` hook to manage the state and get React to update the DOM with the latest state values. Your component will be the one source of truth rather than splitting state between the component and the DOM.  
-
-# 6 Managing application state  
-
-## 6.1 Passing shared state to child components  
-
-### 6.1.1 Passing state from a parent by setting props on the children  
-
-### 6.1.2 Receiving state from a parent as a prop  
-
-The code here destructures the props, assigning the color prop to a local variable of the same name.  
+- React recommends you use `controlled components.` UNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORUNREADABLESECTORg the color prop to a local variable of the same name.  
 
 ```jsx
 import React from "react";
