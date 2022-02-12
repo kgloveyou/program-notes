@@ -1,3 +1,5 @@
+# 2 使用 useState hook管理组件状态
+
 ### 2.2.4 Passing a function to useState as the initial value
 
 the `useState` hook accepts a function as its argument, `a lazy initial state,`  
@@ -55,7 +57,7 @@ setValue(state => {
 });
 ```
 
-# 3 Managing component state with the useReducer hook  
+# 3 使用useReducer hook管理组件状态
 
 ## 3.1 Updating multiple state values in response to a single event  
 
@@ -328,7 +330,11 @@ myRef.current.focus();
 
 - React recommends you use `controlled components.` 
 
-  ### 6.1.2 Receiving state from a parent as a prop  
+# 6 管理应用状态
+
+## 6.1 将共享状态传递给子组件
+
+### 6.1.2 Receiving state from a parent as a prop  
 
   The code here destructures the props, assigning  the color prop to a local variable of the same name.  
 
@@ -630,7 +636,7 @@ data : bookables = []
 
 ### 9.5.3 Creating a more specialized data-fetching hook: useBookings  
 
-# 10、Using third-party hooks  
+# 10、使用第三方hooks  
 
 ## 10.1 Accessing state in the URL with React Router  
 
