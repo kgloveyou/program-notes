@@ -47,3 +47,6 @@ https://baike.baidu.com/item/%E5%8D%8A%E5%BD%B1/14681287?fr=aladdin
 ### THREE.PointLight  
 
 ### THREE.DirectionalLight  
+
+平行光
+
