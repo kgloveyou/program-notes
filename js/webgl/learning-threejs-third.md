@@ -50,3 +50,68 @@ https://baike.baidu.com/item/%E5%8D%8A%E5%BD%B1/14681287?fr=aladdin
 
 平行光
 
+## 3.3　特殊光源
+
+### 3.3.1　THREE.HemisphereLight
+
+半球光光源
+
+### 3.3.2　THREE.RectAreaLight
+
+平面光光源，从一个矩形平面上均匀地发射光线。这种光源可以用来模拟像明亮的窗户或者条状灯光光源。
+
+### 3.3.3 镜头光晕（Lens flare ）
+
+# 第4章　使用Three.js的材质
+
+## 4.1　理解材质的共有属性
+
+### 4.1.1　基础属性
+
+### 4.1.2 混合属性（Blending properties  ）
+
+最后一组属性主要在内部使用，用来控制使用 WebGL 渲染场景的细节。
+
+### 4.1.3 高级属性
+
+我们不会深入讨论这些属性的细节。 它们与 WebGL 内部如何工作有关。
+
+## 4.2 从简单的网格材质开始
+
+- `MeshBasicMaterial,`
+- `MeshDepthMaterial,` 
+- `MeshNormalMaterial.`  
+
+### 4.2.1　THREE.MeshBasicMaterial
+
+### 4.2.2　THREE.MeshDepthMaterial
+
+使用这种材质的物体，其外观不是由光照或某个材质属性决定的，而是由物体到摄像机的距离决定的。
+
+### 4.2.3　联合材质（Combining materials）
+
+### 4.2.4　THREE.MeshNormalMaterial
+
+### 4.2.5　在单几何体上使用多种材质
+
+## 4.3　高级材质
+
+### 4.3.1　THREE.MeshLambertMaterial
+
+这种材质可以用来创建暗淡的并不光亮的表面。该材质非常易用，而且会对场景中的光源产生反应。
+
+### 4.3.2　THREE.MeshPhongMaterial
+
+通过该材质可以创建一种光亮的材质。
+
+### 4.3.3　THREE.MeshStandardMaterial
+
+该材质使用更加正确的物理计算来决定物体表面如何与场景中的光源互动。
+
+### 4.3.4　THREE.MeshPhysicalMaterial
+
+该材质与`THREE.MeshStandardMaterial`非常相似，但提供了对反光度的更多控制。
+
+### 4.3.5　用THREE.ShaderMaterial创建自己的着色器  
+
+Three.js库中最常用、最复杂的材质之一。
