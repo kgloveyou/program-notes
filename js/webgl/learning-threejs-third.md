@@ -114,4 +114,36 @@ https://baike.baidu.com/item/%E5%8D%8A%E5%BD%B1/14681287?fr=aladdin
 
 ### 4.3.5　用THREE.ShaderMaterial创建自己的着色器  
 
-Three.js库中最常用、最复杂的材质之一。
+Three.js库中最常用、最复杂的材质之一。通过它，可以使用自己定制的着色器，直接在WebGL环境中运行。
+
+`fragmentShader`  galary 网站：https://glslsandbox.com/
+
+## 4.4　线性几何体的材质
+
+### 4.4.1　THREE.LineBasicMaterial
+
+
+
+### 4.4.2　THREE.LineDashedMaterial
+
+# 第5章　学习使用几何体
+
+- `THREE.BufferGeometry`  ，效率更高，因为它可以轻松地将其数据获取到 GPU，但不太容易使用。
+
+- `THREE.Geometry`  ，非常容易理解和使用。
+
+  在 Three.js 的旧版本中，所有几何形状都基于 THREE.Geometry。
+
+两者的相互转换方法：
+
+```js
+var normalGeometry = new THREE.Geometry();
+normalGeometry.fromBufferGeometry(bufferGeometry);
+
+var bufferGeometry = new THREE.BufferGeometry();
+bufferGeometry.fromGeometry(normalGeometry);
+```
+
+
+
+## 5.1　Three.js提供的基础几何体
