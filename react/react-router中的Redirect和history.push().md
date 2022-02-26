@@ -64,3 +64,81 @@ Below is a working example of this which can be placed directly into your `<Rout
 }}/>
 ```
 
+
+
+## push记录从哪个页面跳转过来的
+
+https://qastack.cn/programming/30915173/react-router-go-back-a-page-how-do-you-configure-history
+
+**History.js**
+
+```jsx
+import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom'
+import './App.css'
+
+
+class History extends Component {
+
+  handleBack = () => {
+    this.props.history.goBack()
+  }
+
+  handleForward = () => {
+    console.log(this.props.history)
+    this.props.history.go(+1)
+  }
+
+  render() {
+    return <div className="container">
+      <div className="row d-flex justify-content-between">
+        <span onClick={this.handleBack} className="d-flex justify-content-start button">
+          <i className="fas fa-arrow-alt-circle-left fa-5x"></i>
+        </span>
+        <span onClick={this.handleForward} className="d-flex justify-content-end button">
+          <i className="fas fa-arrow-alt-circle-right fa-5x"></i>
+        </span>
+      </div>
+    </div>
+  }
+}
+
+export default withRouter(History)
+```
+
+**PageOne.js**
+
+```tsx
+import React, { Fragment, Component } from 'react'
+
+class PageOne extends Component {
+
+   componentDidMount(){
+      if(this.props.location.state && this.props.location.state.from != '/pageone')
+      this.props.history.push({
+         pathname: '/pageone',
+         state: { 
+             from: this.props.location.pathname
+         }
+       });
+   }
+
+   render() {
+      return (
+         <Fragment>
+            <div className="container-fluid">
+               <div className="row d-flex justify-content-center">
+                  <h2>Page One</h2>
+               </div>
+            </div>
+         </Fragment>
+      )
+   }
+}
+
+export default PageOne
+```
+
+从`history` 对象的state属性中，可以拿到from的页面地址。
+
+https://v5.reactrouter.com/web/api/history
