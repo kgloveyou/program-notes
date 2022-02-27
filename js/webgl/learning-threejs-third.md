@@ -147,3 +147,29 @@ bufferGeometry.fromGeometry(normalGeometry);
 
 
 ## 5.1　Three.js提供的基础几何体
+
+### 5.1.1　二维几何体
+
+#### THREE.PlaneGeometry  
+
+二维矩形
+
+#### THREE.CircleGeometry  
+
+二维圆（或部分圆）
+
+#### THREE.ShapeGeometry  
+
+用于创建一个自定义的二维图形。通过`THREE.ShapeGeometry` ，可以调用几个函数类创建自己的图形。可以将该功能与HTML画布元素和SVG里的<path>元素的功能相比较。
+
+### 5.1.2　三维几何体
+
+#### THREE.BoxGeometry
+
+长方体
+
+#### THREE.SphereGeometry  
+
+#### THREE.CylinderGeometry  
+
+####   
