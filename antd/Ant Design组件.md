@@ -46,3 +46,11 @@ Col 提供 `flex` 属性以支持填充。
 | lg   | `屏幕 ≥ 992px` 响应式栅格，可为栅格数或一个包含其他属性的对象 | number \| object | -    |      |
 | xl   | `屏幕 ≥ 1200px` 响应式栅格，可为栅格数或一个包含其他属性的对象 | number \| object | -    |      |
 | xxl  | `屏幕 ≥ 1600px` 响应式栅格，可为栅格数或一个包含其他属性的对象 | number \| object | -    |      |
+
+
+
+# Select
+
+滚动页面，下面框脱离组件问题。
+
+https://github.com/ant-design/ant-design/issues/8268
