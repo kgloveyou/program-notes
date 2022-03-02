@@ -174,4 +174,39 @@ bufferGeometry.fromGeometry(normalGeometry);
 
 #### THREE.CylinderGeometry  
 
-####   
+
+
+####   THREE.TorusGeometry  
+
+圆环
+
+#### THREE.TorusKnotGeometry  
+
+环状扭结
+
+#### THREE.PolyhedronGeometry  
+
+多面体。Three.js提供了几种特定的多面体，你可以直接使用，而不必指定THREE.PolyhedronGeometry 的顶点和面。
+
+#### THREE.IcosahedronGeometry  
+
+20面体
+
+#### THREE.TetrahedronGeometry  
+
+正四面体
+
+#### THREE.OctahedronGeometry  
+
+八面体
+
+#### THREE.DodecahedronGeometry  
+
+12面体
+
+# 第6章　高级几何体和二元操作
+
+## 6.1　THREE.ConvexGeometry
+
+凸包
+
