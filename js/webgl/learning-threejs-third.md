@@ -210,3 +210,25 @@ bufferGeometry.fromGeometry(normalGeometry);
 
 凸包
 
+## 6.2　THREE.LatheGeometry
+
+车削缓冲几何体，样条曲线绕着某个轴旋转得到的图形，比如花瓶、铃铛或葫芦等。
+
+## 6.3 通过拉伸创建几何体
+
+### 6.3.1　THREE.ExtrudeGeometry
+
+从一个形状路径中，挤压/拉伸出一个BufferGeometry。
+
+### 6.3.2　THREE.TubeGeometry
+
+创建一个沿着三维曲线延伸的管道。
+
+### 6.3.3　从SVG拉伸
+
+## 6.4　THREE.ParametricGeometry
+
+生成由参数表示其表面的几何体。
+
+## 6.5　创建三维文本
+
