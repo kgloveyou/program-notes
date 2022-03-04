@@ -232,3 +232,15 @@ bufferGeometry.fromGeometry(normalGeometry);
 
 ## 6.5　创建三维文本
 
+### 6.5.1　渲染文本
+
+### 6.5.2 添加自定义字体
+
+FaceType.js库可以将TrueType和OpenType字体转换为JavaScript文件或JSON文件，以便在网页中的Javascript程序中直接使用。
+
+可以访问网站https://gero3.github.io/facetype.js/在线转换所需的TrueType和OpenType字体。
+
+## 6.6　使用二元操作组合网格
+
+`ThreeBSP`库，可以将现有的模型组合出更多个性的模型来使用。我们可以使用`ThreeBSP`库里面的三个函数进行现有模型的组合，分别是：subtract(相减)、union（并集)、intersect(相交)。
+
