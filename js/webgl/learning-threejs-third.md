@@ -244,3 +244,24 @@ FaceType.js库可以将TrueType和OpenType字体转换为JavaScript文件或JSON
 
 `ThreeBSP`库，可以将现有的模型组合出更多个性的模型来使用。我们可以使用`ThreeBSP`库里面的三个函数进行现有模型的组合，分别是：subtract(相减)、union（并集)、intersect(相交)。
 
+### 6.6.1　subtract函数
+
+### 6.6.2　intersect函数
+
+### 6.6.3　union函数
+
+这个函数并不是很实用，因为Three.js自己也提供了这个功能（`THREE.Geometry.merge` ），而且性能更好。
+
+# 第7章　粒子和精灵
+
+THREE.Points
+
+## 7.1　理解粒子
+
+精灵（Sprite）：精灵是一个总是面朝着摄像机的平面，通常含有使用一个半透明的纹理。
+
+当你想使用大量的`THREE.Sprite`  对象时，你会很快遇到性能问题，因为每个对象需要分别由Three.js进行管理。Three.js提供了另外一种方式来处理大量的粒子，这需要使用`THREE.Points`。  
+
+## 7.2　THREE.Points和THREE.PointsMaterial
+
+## 7.3　使用HTML5画布样式化粒子
