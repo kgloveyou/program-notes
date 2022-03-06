@@ -265,3 +265,34 @@ THREE.Points
 ## 7.2　THREE.Points和THREE.PointsMaterial
 
 ## 7.3　使用HTML5画布样式化粒子
+
+### 7.3.1　在THREE.CanvasRenderer中使用HTML5画布
+
+### 7.3.2　在WebGLRenderer中使用HTML5画布
+
+两种方式：
+
+- 使用`THREE.PointsMaterial`并创建`THREE.Points`对象
+- 使用`THREE.Sprite`和`THREE.SpriteMaterial`的`map`属性。
+
+## 7.4　使用纹理样式化粒子
+
+你可以使用 THREE.TextureLoader().load() 函数将图像加载为 THREE.Texture 对象。 然后可以将此 THREE.Texture 对象分配给材质的map属性。
+
+
+
+你可能还记得，我们只能为 THREE.Points 对象提供一种材质。 如果我们想要多个材质，我们只需要使用多个 THREE.Points 实例，如下所示：
+
+## 7.5　使用精灵贴图
+
+## 7.6　从高级几何体创建THREE.Points
+
+## 7.7　总结
+
+到目前为止，我们已经根据 Three.js 提供的几何形状创建了网格。这适用于简单的模型，例如球体和立方体，但当你想要创建复杂的 3D 模型时，这不是最好的方法。 对于这些模型，你通常会使用 3D 建模应用程序，例如 Blender 或 3D Studio Max。
+
+# 第8章　创建、加载高级网格和几何体
+
+## 8.1　几何体组合与合并
+
+### 8.1.1　对象组合
