@@ -331,12 +331,117 @@ scene.add(group);
 
 ### 8.3.1　OBJ和MTL格式
 
+​		OBJ和MLT是相互配合的两种格式，经常一起使用。OBJ文件定义几何体，而MTL文件定义所用的材质。OBJ和MTL都是基于文本的格式。
+
+​		如果你只想加载几何体，可以使用OBJLoader。
+
+```js
+  var loader = new THREE.OBJLoader();
+  loader.load('../../assets/models/pinecone/pinecone.obj', function (mesh) {
+
+    var material = new THREE.MeshLambertMaterial({
+      color: 0x5C3A21
+    });
+
+    // loadedMesh is a group of meshes. For 
+    // each mesh set the material, and compute the information 
+    // three.js needs for rendering.
+    mesh.children.forEach(function (child) {
+      child.material = material;
+      child.geometry.computeVertexNormals();
+      child.geometry.computeFaceNormals();
+    });
+
+    mesh.scale.set(120,120,120)
+
+    // call the default render loop.
+    loaderScene.render(mesh, camera);
+  });
+```
+
+​		使用OBJLoader和MTLLoader加载模型并直接赋予材质。
+
 ### 8.3.2　加载Collada模型
+
+​		COLLADA 模型（扩展名为 .dae）是另一种非常常见的模型，用于定义场景和模型（以及动画，我们将在下一章中看到）的格式。在 COLLADA 模型中，不仅定义了几何形状，还定义了材料。 甚至可以定义光源。
+
+```js
+  // load the model
+  var loader = new THREE.ColladaLoader();
+  loader.load("../../assets/models/medieval/Medieval_building.DAE", function (result) {
+
+    var sceneGroup = result.scene;
+    sceneGroup.children.forEach(function (child) {
+      if (child instanceof THREE.Mesh) {
+        child.receiveShadow = true;
+        child.castShadow = true;
+      } else {
+        // remove any lighting sources from the model
+        sceneGroup.remove(child);
+      }
+    });
+
+    // correctly scale and position the model
+    sceneGroup.rotation.z = 0.5 * Math.PI;
+    sceneGroup.scale.set(8, 8, 8);
+
+    // call the default render loop.
+    loaderScene.render(sceneGroup, camera);
+  });
+```
 
 ### 8.3.3　从其他格式的文件中加载模型
 
 ### 8.3.4　展示蛋白质数据银行中的蛋白质
 
+
+
 ### 8.3.5　从PLY模型中创建粒子系统
 
 ## 8.4　总结
+
+# 第9章　创建动画和移动摄像机
+
+## 9.1　基础动画
+
+### 9.1.1　简单动画
+
+### 9.1.2　选择对象
+
+### 9.1.3　使用Tween.js实现动画
+
+## 9.2　使用摄像机
+
+### 9.2.1　轨迹球控制器
+
+### 9.2.2　飞行控制器
+
+### 9.2.3　第一视角控制器
+
+### 9.2.4　轨道控制器
+
+## 9.3　变形动画和骨骼动画
+
+### 9.3.1　用变形目标创建动画
+
+### 9.3.2　用骨骼和蒙皮创建动画
+
+## 9.4　使用外部模型创建动画
+
+### 9.4.1　使用Blender创建骨骼动画
+
+### 9.4.2　从Collada模型加载动画
+
+### 9.4.3　从雷神之锤模型中加载动画
+
+### 9.4.4　使用gltfLoader
+
+### 9.4.5　利用fbxLoader显示动作捕捉模型动画
+
+### 9.4.6　通过xLoader加载古老的DirectX模型
+
+### 9.4.7　利用BVHLoader显示骨骼动画
+
+### 9.4.8　如何重用SEA3D模型
+
+## 9.5　总结
