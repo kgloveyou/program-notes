@@ -404,9 +404,46 @@ scene.add(group);
 
 ## 9.1　基础动画
 
+```js
+render();
+function render() {
+  // render the scene
+  renderer.render(scene, camera);
+  // schedule the next rendering using requestAnimationFrame
+  requestAnimationFrame(render);
+}
+```
+
 ### 9.1.1　简单动画
 
+
+
 ### 9.1.2　选择对象
+
+```js
+    function onDocumentMouseDown(event) {
+
+        var vector = new THREE.Vector3((event.clientX / window.innerWidth) * 2 - 1, -(event.clientY / window.innerHeight) * 2 + 1, 0.5);
+        vector = vector.unproject(camera);
+
+        var raycaster = new THREE.Raycaster(camera.position, vector.sub(camera.position).normalize());
+        var intersects = raycaster.intersectObjects([sphere, cylinder, cube]);
+
+        if (intersects.length > 0) {
+            console.log(intersects[0]);
+            intersects[0].object.material.transparent = true;
+            intersects[0].object.material.opacity = 0.1;
+        }
+    }
+```
+
+三维向量（Vector3）
+
+.unproject ( camera : Camera ) : this
+
+camera — 在投影中使用的摄像机。
+
+将此向量(坐标)从相机的标准化设备坐标 (NDC) 空间投影到世界空间。
 
 ### 9.1.3　使用Tween.js实现动画
 
@@ -414,11 +451,21 @@ scene.add(group);
 
 ### 9.2.1　轨迹球控制器
 
+轨迹球控制器（TrackballControls）
+
+https://threejs.org/docs/index.html?q=TrackballControls#examples/zh/controls/TrackballControls
+
 ### 9.2.2　飞行控制器
+
+代码运行结果与书中效果不一致：没有那些控制，点击鼠标直接放大到不可见。
 
 ### 9.2.3　第一视角控制器
 
+像第一视角射击游戏一样。
+
 ### 9.2.4　轨道控制器
+
+可以用于控制场景中的对象围绕场景中心旋转和平移。
 
 ## 9.3　变形动画和骨骼动画
 
