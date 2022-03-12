@@ -1,3 +1,7 @@
+# 1 React 正在发展
+
+
+
 # 2 使用 useState hook管理组件状态
 
 ### 2.2.4 Passing a function to useState as the initial value
@@ -89,7 +93,7 @@ The initialization function uses the initialization argument to generate the ini
 
 # 4、Working with side effects  
 
-side effect  包括如下：
+​		以某种方式影响外部世界的行为称为`side effect`。side effect  包括如下：
 
 - 强制设置页面标题
 
@@ -103,11 +107,50 @@ side effect  包括如下：
 
 - Fetching data or subscribing and unsubscribing to services  
 
-  
+
+React 提供了 useEffect 钩子，以便我们可以更好地控制副作用并将它们集成到我们组件的生命周期中。
 
 The `useEffect` hook is our gateway to safe interactions with the outside world.  
 
-## 4.1 Exploring the useEffect API with simple examples  
+## 4.1 Exploring the useEffect API with simple examples
+
+在本节中，我们着眼于以不会失控的方式设置副作用。 特别是，我们探讨了以下四种情况：
+
+- 每次渲染后运行 side effects  
+- 仅在组件挂载时运行 effect
+- 通过返回一个函数来清理 side effects  
+- 通过指定依赖项来控制 effect 何时运行
+
+### 4.1.1 Running side effects after every render    
+
+​		The document title isn’t part of the document body and isn’t rendered by React.  But the title is accessible via the `document` property of the window. You can set the title like this:  
+
+```js
+document.title = "Bonjour";  
+```
+
+​		以这种方式访问浏览器 API 被认为是一种副作用。 我们可以通过将代码包装在 `useEffect` hook 中来明确这一点：
+
+```jsx
+  useEffect(() => {
+    document.title = greetings[index];
+  });
+```
+
+### 4.1.2 仅在组件挂载时运行 effect
+
+```js
+  useEffect(() => {
+    function handleResize() {
+      setSize(getSize());
+    }
+
+    window.addEventListener("resize", handleResize);
+  }, []);
+```
+
+ Effect function: We want to run this function only once, when the component mounts.  
+
 ### 4.1.3 Cleaning up side effects by returning a function  
 
 We have to be careful not to make a mess when we set up long-running side effects like **subscriptions, data requests, timers, and event listeners.**   
@@ -119,9 +162,13 @@ useEffect( () => {
 }, [ ] );
 ```
 
-Cleanup function: Return a function to clean up  after the effect (e.g., unsubscribe,  stop timers, remove listeners, etc.).  
+**Cleanup function: Return a function to clean up  after the effect (e.g., unsubscribe,  stop timers, remove listeners, etc.).**  
 
 ​		React runs the cleanup function when it unmounts the component. But that’s not the only time it runs it. Whenever the component re-renders, React calls the cleanup function before running the effect function, **if the effect runs again**. If multiple effects need to run again, React calls all of the cleanup functions for those effects. Once the cleanup is finished, React reruns the effect functions as needed.  
+
+​		React 在卸载组件时会运行清理功能。 但这不是它唯一一次运行它。 每当组件重新渲染时，如果effect 再次运行，React 会在运行effect 函数之前调用清理函数。 如果多个 effect 需要再次运行，React 会为这些 effect 调用所有清理函数。 清理完成后，React 会根据需要重新运行 effect 函数。
+
+​		我们已经看到了两个极端：只运行一次 effect 和每次渲染后运行一个 effect 。 如果我们想要更多地控制 effect 何时运行怎么办？ 还有一个案例需要说明。 让我们填充那个依赖数组。
 
 ### 4.1.4 Controlling when an effect runs by specifying dependencies  
 
@@ -132,15 +179,24 @@ useEffect( () => {
 }, [dep1, dep2] );
 ```
 
-Cleanup function: Remove listeners, unsubscribe, etc.  
+**Cleanup function: Remove listeners, unsubscribe, etc.**  
 
 ### 4.1.5 Summarizing the ways to call the useEffect hook  
 
+| Call pattern                        | Code pattern                                                 | Execution pattern                                            |
+| ----------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| 没有第二个参数                      | `useEffect(() => { // perform effect });`                    | Run after every render.                                      |
+| 空数组作为第二个参数                | `useEffect(() => { // perform effect }, []);`                | Run once, when the compo nent mounts.                        |
+| Dependency array as second argument | `useEffect(() => { // perform effect // that uses dep1 and dep2 }, [dep1, dep2]);` | Run whenever a value in the dependency array changes.        |
+| Return a function                   | `useEffect(() => { // perform effect return () => {/* clean-up */}; }, [dep1, dep2]);` | React will run the cleanup function when the component unmounts and before rerunning the effect. |
+
 ### 4.1.6 Calling useLayoutEffect to run an effect before the browser repaints  
 
-This hook has the same API as `useEffect` but runs synchronously after React updates the DOM and before the browser repaints.   If the effect makes further updates to the state, the intermediate state isn’t painted to the screen.  
+​		Making changes in `useEffect` will show users an intermediate state that’ll immediately be updated.  
 
-You generally won’t need `useLayoutEffect`, but if you come across problems (maybe with an element flickering between states), you could try switching from `useEffect` for the suspect effect.  
+​		We can avoid such flashes of changing state by calling the `useLayoutEffect` hook instead of `useEffect`.   This hook has the same API as `useEffect` but runs synchronously after React updates the DOM and before the browser repaints.   If the effect makes further updates to the state, the intermediate state isn’t painted to the screen.  
+
+​		You generally won’t need `useLayoutEffect`, but if you come across problems (maybe with an element flickering between states), you could try switching from `useEffect` for the suspect effect.  
 
 ## 4.2 获取数据
 
