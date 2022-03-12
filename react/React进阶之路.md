@@ -1,4 +1,9 @@
+React进阶之路
+
+React 16.1.1
+
 # 第1章 初始React
+
 ## 1.1 React简介
 
 ## 1.2 ES6语法简介
@@ -253,13 +258,19 @@ export default PostItem;
 
 https://react.docschina.org/docs/react-component.html
 
+总结：4---->5---->1
+
 ### 2.3.1 挂载阶段
 
 ​		这个阶段组件被创建，执行初始化，并被挂载到DOM中，完成组件的第一次渲染。依次调用的生命周期方法有：
 
 1. constructor
 
+   通常用于初始化组件的state以及绑定事件处理方法等工作。
+
 2. componentWillMount
+
+   这个方法在组件被挂载到DOM前调用，且只会被调用一次。实际项目中很少会用到。
 
 3. render
 
@@ -267,7 +278,7 @@ https://react.docschina.org/docs/react-component.html
 
 4. componentDidMount
 
-   这个方法通常还会用于向服务器请求数据。在这个方法中调用this.setState会引起组件的重新渲染。
+   这个方法在组件被挂载到DOM后调用，且只会被调用一次。这个方法通常还会用于向服务器请求数据。在这个方法中调用this.setState会引起组件的重新渲染。
 
    
 
@@ -281,11 +292,17 @@ https://react.docschina.org/docs/react-component.html
 
    此生命周期之前名为 componentWillReceiveProps。该名称将继续使用至 React 17。
 
+   这个方法只在props引起的组件更新过程中，才会被调用。State引起的组件更新并不会触发该方法的执行。
+
 2. shouldComponentUpdate(nextProps, nextState)
+
+   这个方法可以用来减少不必要的渲染，从而优化组件的性能。
 
 3. UNSAFE_componentWillUpdate(nextProps, nextState)
 
    此生命周期之前名为 componentWillUpdate。该名称将继续使用至 React 17。
+
+   一般很少用到。
 
 4. render()
 
@@ -295,7 +312,7 @@ https://react.docschina.org/docs/react-component.html
 
 当组件从 DOM 中被卸载的过程，这个过程中只有一个生命周期方法：
 
-componentWillUnmount()
+`componentWillUnmount()`
 
  这个方法在组件被卸载前调用，可以在这里执行一些清理工作，比如清理组件中使用的定时器，清除componentDidMount中手动创建的DOM元素等，以避免引起内存泄露。
 
