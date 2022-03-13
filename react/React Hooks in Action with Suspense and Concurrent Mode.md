@@ -491,17 +491,113 @@ React doesn’t trust functions passed in as props to be the same on each render
 
 If the functions are updater or dispatch functions from `useState` or `useReducer`, React guarantees that their identity will be stable. But for functions we define ourselves, the very nature of components as functions that React calls means our functions will be defined on every render.   In this section, we explore the problems such redefining can cause and look at a new hook, `useCallback`, that can help solve such problems.  
 
-### 6.5.1 Depending on functions we pass in as props  
+如果函数是来自 `useState` 或 `useReducer` 的 updater 或 dispatch 函数，React 保证它们的身份将是稳定的。 但是对于我们自己定义的函数，组件作为 React 调用的函数的本质意味着我们的函数将在每次渲染时定义。 在本节中，我们将探讨此类重新定义可能导致的问题，并查看一个新的钩子 `useCallback`，它可以帮助解决此类问题。
+
+### 6.5.1 Depending on functions we pass in as props 
+
+在上一节中，所选 bookable 的状态由 `BookablesView` 组件管理。它将 bookable 及其更新函数 `setBookable` 传递给 `BookablesList`。`BookablesList` calls `setBookable` whenever a user choses a bookable and also within the effect wrapping the data-fetching code, shown here without the `catch` block:  
+
+src\components\Bookables\BookablesView.js
+
+```jsx
+export default function BookablesView () {
+  const [bookable, setBookable] = useState();
+
+  return (
+    <Fragment>
+      <BookablesList bookable={bookable} setBookable={setBookable}/>
+      <BookableDetails bookable={bookable}/>
+    </Fragment>
+  );
+}
+```
+
+src\components\Bookables\BookablesList.js
+
+```jsx
+export default function BookablesList ({bookable, setBookable}) {
+...
+  useEffect(() => {
+    getData("http://localhost:3001/bookables")
+
+      .then(bookables => {
+        setBookable(bookables[0]);
+        setBookables(bookables);
+        setIsLoading(false);
+      })
+
+      .catch(error => {
+        setError(error);
+        setIsLoading(false);
+      });
+  }, [setBookable]);
+...    
+}    
+```
+
+ 当前情况下，`setBookable`不会变，所以上述`useEffect`只会调用一次。
+
+考虑另外一种情况：
+
+src\components\Bookables\BookablesView.js
+
+```jsx
+export default function BookablesView() {
+  const [bookable, setBookable] = useState();
+  function updateBookable(selected) {
+    if (selected) {
+      selected.lastShown = Date.now();
+      setBookable(selected);
+    }
+  }
+  return (
+    <Fragment>
+      <BookablesList bookable={bookable} setBookable={updateBookable} />
+      <BookableDetails bookable={bookable} />
+    </Fragment>
+  );
+}
+```
+
+上述`useEffect`会不断被调用。
+
+父组件 BookablesView 管理所选 bookable 的状态。每当 BookablesList 加载 bookables 数据并设置 bookable 时，BookablesView 重新渲染； React 再次运行它的代码，再次定义 updateBookable 函数并将新版本的函数传递给 BookablesList。 BookablesList 中的 useEffect 调用看到 setBookable 属性是一个新函数并再次运行效果，重新获取可预订数据并再次设置可预订，重新启动循环。 我们需要一种方法来维护我们的更新函数的身份，这样它就不会随着渲染而改变。
 
 ### 6.5.2 Maintaining function identity with the useCallback hook  
 
 When we want to use the same function from render to render but don’t want it to be redefined each time, we can pass the function to the `useCallback` hook. React will return the same function from the hook on every render, redefining it only if one of the function’s dependencies changes. Use the hook like this:  
 
+当我们想在每次渲染中使用相同的函数但不希望每次都重新定义它时，我们可以将该函数传递给 `useCallback` hook。 React 将在每次渲染时从 hook 返回相同的函数，仅当函数的依赖项之一发生更改时才重新定义它。 像这样使用钩子：
+
 ```jsx
 const stableFunction = useCallback(funtionToCache, dependencyList);
 ```
 
-​	`useCallback` lets us memoize functions. To prevent the redefinition or recalculation of values more generally, React also provides the `useMemo` hook, and we’ll look at that in the next chapter.  
+The function that `useCallback` returns is stable while the values in the dependency list don’t change. When the dependencies change, React redefines, caches, and returns the function using the new dependency values.  	
+
+```jsx
+export default function BookablesView() {
+  const [bookable, setBookable] = useState();
+
+  const updateBookable = useCallback(selected => {
+    if (selected) {
+      selected.lastShown = Date.now();
+      setBookable(selected);
+    }
+  }, []);
+
+  return (
+    <Fragment>
+      <BookablesList bookable={bookable} setBookable={updateBookable} />
+      <BookableDetails bookable={bookable} />
+    </Fragment>
+  );
+}
+```
+
+在 `useCallback` 中包装我们的 updater 函数意味着 React 将在每次渲染时返回相同的函数，除非依赖项改变了值。 但是我们使用了一个空的依赖列表，所以值永远不会改变，React 总是会返回完全相同的函数。 `BookablesList` 中的 `useEffect` 调用现在将看到它的 `setBookable` 依赖是稳定的，并且它将停止无休止地重新获取可预订数据。
+
+`useCallback` lets us memoize functions. To prevent the redefinition or recalculation of values more generally, React also provides the `useMemo` hook, and we’ll look at that in the next chapter.  
 
 ## 概述
 
@@ -534,7 +630,7 @@ React 提供了 `useMemo` 钩子来帮助我们避免不必要和浪费的工作
 
 ## 7.1 Breaking the cook’s heart by calling, “O, shortcake!”  
 
-### 7.1.1 Generating anagrams with an expensive algorithm  
+### 7.1.1 使用昂贵的算法生成字谜  
 
 ### 7.1.2 避免多余的函数调用
 
@@ -553,6 +649,8 @@ const memoizedValue = useMemo( () => expensiveFn(a, b), [a, b] );
 
 To reiterate, `useMemo` *may* return the stored value. React reserves the right to clear its store if it needs to free up memory. So, it might call the expensive function even if the dependencies are unchanged.  
 
+重申一下，`useMemo` 可能会返回存储的值。 如果需要释放内存，React 保留清除其存储的权利。 因此，即使依赖项没有改变，它也可能调用昂贵的函数。
+
 ## 7.3 Organizing the components on the Bookings page  
 
 ### 7.3.2 Managing the selected week and booking with useReducer and useState  
@@ -560,6 +658,10 @@ To reiterate, `useMemo` *may* return the stored value. React reserves the right 
 ## 7.4 Efficiently building the bookings grid with useMemo  
 
 ### 7.4.5 Coping with racing responses when fetching data in useEffect  
+
+在 useEffect 中获取数据时应对竞争性的响应。
+
+我们可以尝试实现一种方法来取消正在进行的请求。
 
 Before rerunning an effect, React calls any associated cleanup function for the previous invocation of the effect.   
 
