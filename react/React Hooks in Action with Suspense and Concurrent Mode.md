@@ -264,9 +264,28 @@ useEffect(() => {
 ## 概述
 
 - Return a cleanup function from the effect that React will run before rerunning the effect function and when the component unmounts:  
-- 
+
+  ```jsx
+  useEffect(() => {
+      // perform effect
+      return () => {/* clean-up */};
+  }, [dep1, dep2]);
+  ```
+
+  
+
+- If, on re-render, multiple effects are going to run, React will call all of the cleanup functions for the rerunning effects before it runs any effects themselves.  
+
+
 
 # 5 使用useRef hook管理组件状态
+
+本章涵盖
+- 调用 `useRef` hook 获取 ref
+- 通过将值分配给其 `current` 属性来更新 ref
+- 在不触发重新渲染的情况下更新状态
+- 在 JSX 中设置 ref 属性以将 DOM 元素引用分配给 ref
+- 通过 ref 访问 DOM 元素的属性和方法
 
 ## 5.1 Updating state without causing a re-render  
 
@@ -282,9 +301,9 @@ React persists the state across renders, each time passing it back to the compon
 
 `useRef`  
 
-The hook returns an object, a `ref`, which we use to store the state value. Changing the value stored on the ref doesn’t trigger a re-render. React persists the state across renders, each time passing the same ref object back to the component, where it is assigned to the `ref` variable.  
+The hook returns an object, a `ref`, which we use to store the state value. **Changing the value stored on the ref doesn’t trigger a re-render.** React persists the state across renders, each time passing the same ref object back to the component, where it is assigned to the `ref` variable.  
 
-### 5.1.2 Calling useRef  
+### 5.1.2 调用 useRef  
 
 Every time React runs the component code, each call to `useRef` will return the same ref object for that call.  
 
@@ -299,7 +318,7 @@ ref1.current = "Babel Fish";
 ref2.current = "1,000,000,000,000";  
 ```
 
-Assigning new values to the `current` properties of the ref objects doesn’t trigger a rerender. But as React always returns the same ref objects, the new values are available when the component runs again.  
+**Assigning new values to the `current` properties of the ref objects doesn’t trigger a rerender**. **But as React always returns the same ref objects, the new values are available when the component runs again.**  
 
 ## 5.2 Storing timer IDs with a ref  
 
@@ -318,7 +337,12 @@ function stopPresentation () {
 }
 ```
 
-## 5.3 Keeping references to DOM elements  
+## 5.3 保持对 DOM 元素的引用 
+
+​		这种对 DOM 元素的引用让我们可以直接与元素交互，绕过通常的 React 状态到 UI 流程。 特别是，我们看看两个常见的用例：
+
+- 将焦点设置在元素上以响应事件
+- 读取非受控的文本框的值
 
 ### 5.3.1 Setting focus on an element in response to an event  
 
@@ -342,14 +366,17 @@ nextButtonRef.current.focus();
 
 Components that let the DOM manage their state in this way are called `uncontrolled components`.  
 
+让 DOM 以这种方式管理其状态的组件称为“非受控组件”。
+
 #### 受控组件
 
 With controlled components, the data flow is from the component to the DOM, in line with the standard React approach.  
 
+使用受控组件，数据流是从组件到 DOM，符合标准的 React 方法。
+
 ## 概述
 
-- Call the `useRef` hook when you want React to manage a state value but don’t want changes to the value to trigger a re-render.  For example, use it for storing IDs for `setTimeout` and `setInterval` or for references to DOM elements. You
-  can pass it an initial value if required. It returns an object with a `current` property set to the initial value:  
+- 当你希望 React 管理状态值但不希望更改值触发重新渲染时，调用 `useRef` hook。例如，使用它来存储 `setTimeout` 和 `setInterval` 的 ID 或对 DOM 元素的引用。如果需要，你可以传递一个初始值。 它返回一个`current`属性设置为初始值的对象：
 
 ```jsx
 const ref = useRef(initialValue);
@@ -384,7 +411,7 @@ myRef.current.focus();
 
 - Components that read their state from the DOM are called `uncontrolled components`. You can use refs to access and update the state.  
 
-- React recommends you use `controlled components.` 
+- React recommends you use `controlled components.` 使用 `useState` 钩子或 `useReducer` 钩子来管理状态并让 React 使用最新的状态值更新 DOM。 你的组件将成为唯一的事实来源，而不是在组件和 DOM 之间分割状态。
 
 # 6 管理应用状态
 
