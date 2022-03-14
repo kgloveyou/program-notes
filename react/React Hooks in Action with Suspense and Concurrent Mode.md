@@ -704,23 +704,232 @@ If the component re-renders with a new `url`, the cleanup function for the previ
 
 # 8、使用 Context API 管理状态
 
-## 8.1 Needing state from higher up the component tree  
+本章涵盖
+ 通过 Context API 及其 `Provider` 组件提供状态
+ 使用 useContext 钩子消费 context 状态
+ 在更新状态值时避免不必要的重新渲染
+ 创建自定义 context providers
+ 在多个contexts 中拆分共享状态
 
-## 8.2 Working with custom providers and multiple contexts  
+​		但是，嵌套在多个分支上的许多组件渴望相同的多汁蠕虫、相同的应用程序状态花絮，例如主题、本地化信息或经过身份验证的用户详细信息，这种情况并不少见。 嗯嗯，花絮。 . . React 的 Context API 是一种将多汁的状态花絮直接传递到您的巢穴的方法，而无需通过多层中间人传递它们，这些中间人更喜欢炸玉米饼而不是花絮，对它们不感兴趣。
+
+## 8.1 需要来自组件树更高层的状态
+
+### 8.1.1 在页面首次加载时显示号召性用语消息
+
+### 8.1.2 访客选择预订时显示预订信息
+
+### 8.1.3 显示用户预订的编辑按钮：问题
+
+### 8.1.4 显示用户预订的编辑按钮：解决方案
+
+1、src\components\Users\UserContext.js
+
+```js
+import {createContext} from "react";
+
+const UserContext = createContext();
+
+export default UserContext;
+```
+
+2、src\components\App.js
+
+```js
+...
+import UserContext from "./Users/UserContext";
+
+export default function App () {
+  const [user, setUser] = useState();
+
+  return (
+    <UserContext.Provider value={user}>
+      <Router>
+        <div className="App">
+		...
+          <Routes>
+            <Route path="/bookings" element={<BookingsPage/>}/>
+            <Route path="/bookables" element={<BookablesPage/>}/>
+            <Route path="/users" element={<UsersPage/>}/>
+          </Routes>
+        </div>
+      </Router>
+    </UserContext.Provider>
+
+  );
+```
+
+The `App` component imports the `UserContext` object and then wraps the UI in the context’s `Provider` component, making the `user` state value available to all components in the tree:  
+
+```jsx
+<UserContext.Provider value={user}>
+// all app UI
+</UserContext.Provider>
+```
+
+The provider  不必包装整个组件树。 正如代码所示，app 将 `user` 和 `setUser` 作为 props 传递给 `UserPicker` 组件，我们可以只将 routes 包装在 the provider 中：
+
+```jsx
+<Router>
+    <div className="App">
+        <header>
+        // nav and user picker
+        </header>
+        <UserContext.Provider value={user}>
+            <Routes>
+            // routes
+            </Routes>
+        </UserContext.Provider>
+    </div>
+</Router>
+```
+
+3、src\components\Bookings\BookingDetails.js
+
+```js
+import {useContext} from "react";
+
+import UserContext from "../Users/UserContext";
+
+export default function BookingDetails ({booking, bookable}) {
+
+  const user = useContext(UserContext);
+
+  ...
+}
+```
+
+​	React 的 Context API 非常适合在预订应用程序中共享选定的用户。但它提出了几个问题：如果我们有不止一个 value 要分享怎么办？ 或者是一个具有许多属性的更复杂的值？ 并且我们可以避免在调用 setUser 时触发整个组件树的重新渲染吗？ 在寻找这些问题的答案时，让我们更深入地研究一下 React 渲染的细微差别。
+
+## 8.2 使用自定义的 providers 和多个 contexts  
+
+​		在本节中，我们将研究扩展 context  使用的四种方法。 第一个，使用对象作为值，可能会导致问题。 第二个和第三个，使用自定义providers和多个contexts  ，可以帮助我们解决这些问题。 最后一种方法让我们为我们的context  指定一个默认值。
 
 ### 8.2.1 Setting an object as the context provider’s value  
+
+```jsx
+<UserContext.Provider value={{user, setUser}}>
+// app JSX
+</UserContext.Provider/>
+```
+
+`BookingDetails` 组件中消费：
+
+```jsx
+const {user} = useContext(UserContext);
+```
+
+`UsersPage` 组件中消费：
+
+```jsx
+const {user : loggedInUser} = useContext(UserContext);
+```
+
+`UserPicker` 组件中消费：
+
+```jsx
+const {user, setUser} = useContext(UserContext);
+```
 
 ### 8.2.2 Moving the state to a custom provider  
 
 Because `App` re-renders, `all of its children` rerender,   
 
+​		重新渲染本质上并不是坏事——我们关注状态，React 调用组件，进行差异化，并对 DOM 进行处理——如果您的应用程序运行良好，则无需使代码复杂化。 但是，如果树中出现速度较慢、涉及更多的组件，您可能希望避免不会更改 UI 的重新渲染。我们想要一种更新the context provider value  的方法，而不会在组件树的整个过程中引发一连串的更新。 我们希望上下文消费者（调用 useContext 的组件）重新渲染以响应提供者上的值变化，而不仅仅是因为整个树都在重新渲染。 我们可以避免更新 App 组件中的状态吗？
+
+​		回答这个问题需要对 React 的渲染行为有很好的理解。 我们将在以下四个小节中讨论这些概念以及如何应用它们：
+
+ 创建自定义的 provider
+ Using the `children` prop to render wrapped components
+ 避免不必要的重新渲染
+ 使用自定义的 provider
+
 **CREATING A CUSTOM PROVIDER**  
+
+src\components\Users\UserContext.js
+
+```jsx
+import {createContext, useState} from "react";
+
+const UserContext = createContext();
+export default UserContext;
+
+export function UserProvider ({children}) {
+  const [user, setUser] = useState(null);
+
+  return (
+    <UserContext.Provider value={{user, setUser}}>
+      {children}
+    </UserContext.Provider>
+  );
+}
+
+```
 
 **USING THE CHILDREN PROP TO RENDER WRAPPED COMPONENTS**  
 
+每当一个组件包装其他组件时，React 都会将 wrapped components  分配给 wrapper  的 `children` 属性。
+
+```jsx
+<Wrapper>
+	<MyComponent/>
+</Wrapper>
+```
+
+```jsx
+function Wrapper ({children}) {
+	return <div className="wrapped">{children}</div>
+}
+```
+
+When returning its UI, `Wrapper` uses the components React has assigned to `children`.
+The UI becomes the following:  
+
+```jsx
+<div className="wrapped"><MyComponent/></div>
+```
+
 **AVOIDING UNNECESSARY RE-RENDERS**  （※）
 
-**USING THE CUSTOM PROVIDER**  
+当后代（例如用户选择器）调用 `setUser` 来更新 `UserProvider` 组件中的`user`状态值时，React 会注意到状态已更改并重新渲染管理该状态的组件 `UserProvider`。 但是对于 `UserProvider`，它的所有子节点都不会重新渲染，如图 8.10 所示。
+
+**Figure 8.10 When `UserProvider` re-renders, only the context consumers, not the whole tree, re-render.**  
+
+​		这可能出乎意料，但这是标准的 React 渲染行为； 这里没有应用特殊的memoizing function。 当 App 管理用户状态时，是什么让 `UserProvider` 的行为与我们的 `App` 组件不同？ 是什么阻止了 React 渲染 the provider’s children？
+
+​		It’s because `UserProvider` accesses its children as a prop, and updating the state `within` the component doesn’t change its props. The identity of `children` doesn’t change when a descendant calls `setUser`. It’s exactly the same object as it was before.There’s no need to re-render all the children, so React doesn’t.  
+
+​		除了context consumers！ context 的closest provider的值发生变化时，Context consumers总是重新渲染。我们的自定义provider 为其消费者提供updater function。 当组件调用 updater 函数时，自定义provider 会重新渲染，更新其上下文值。 React 知道提供者的孩子没有改变，所以不会重新渲染它们。 但是，任何使用上下文的组件都会重新渲染以响应提供者上的值变化，不是因为整个组件树都重新渲染了。
+
+
+
+**使用自定义 PROVIDER**  
+
+src\components\App.js
+
+```jsx
+import {UserProvider} from "./Users/UserContext";
+
+export default function App () {
+  return (
+    <UserProvider>
+      <Router>
+        <div className="App">
+		...
+          <Routes>
+            <Route path="/bookings" element={<BookingsPage/>}/>
+            <Route path="/bookables" element={<BookablesPage/>}/>
+            <Route path="/users" element={<UsersPage/>}/>
+          </Routes>
+        </div>
+      </Router>
+    </UserProvider>
+
+  );
+}
+```
+
+
 
 ### 8.2.3 Working with multiple contexts  
 
