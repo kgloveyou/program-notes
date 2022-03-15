@@ -711,7 +711,7 @@ If the component re-renders with a new `url`, the cleanup function for the previ
  创建自定义 context providers
  在多个contexts 中拆分共享状态
 
-​		但是，嵌套在多个分支上的许多组件渴望相同的多汁蠕虫、相同的应用程序状态花絮，例如主题、本地化信息或经过身份验证的用户详细信息，这种情况并不少见。 嗯嗯，花絮。 . . React 的 Context API 是一种将多汁的状态花絮直接传递到您的巢穴的方法，而无需通过多层中间人传递它们，这些中间人更喜欢炸玉米饼而不是花絮，对它们不感兴趣。
+​		但是，嵌套在多个分支上的许多组件渴望相同的多汁蠕虫、相同的应用程序状态花絮，例如主题、本地化信息或经过身份验证的用户详细信息，这种情况并不少见。 嗯嗯，花絮。 . . React 的 Context API 是一种将多汁的状态花絮直接传递到你的巢穴的方法，而无需通过多层中间人传递它们，这些中间人更喜欢炸玉米饼而不是花絮，对它们不感兴趣。
 
 ## 8.1 需要来自组件树更高层的状态
 
@@ -835,7 +835,7 @@ const {user, setUser} = useContext(UserContext);
 
 Because `App` re-renders, `all of its children` rerender,   
 
-​		重新渲染本质上并不是坏事——我们关注状态，React 调用组件，进行差异化，并对 DOM 进行处理——如果您的应用程序运行良好，则无需使代码复杂化。 但是，如果树中出现速度较慢、涉及更多的组件，您可能希望避免不会更改 UI 的重新渲染。我们想要一种更新the context provider value  的方法，而不会在组件树的整个过程中引发一连串的更新。 我们希望上下文消费者（调用 useContext 的组件）重新渲染以响应提供者上的值变化，而不仅仅是因为整个树都在重新渲染。 我们可以避免更新 App 组件中的状态吗？
+​		重新渲染本质上并不是坏事——我们关注状态，React 调用组件，进行差异化，并对 DOM 进行处理——如果你的应用程序运行良好，则无需使代码复杂化。 但是，如果树中出现速度较慢、涉及更多的组件，你可能希望避免不会更改 UI 的重新渲染。我们想要一种更新the context provider value  的方法，而不会在组件树的整个过程中引发一连串的更新。 我们希望context消费者（调用 useContext 的组件）重新渲染以响应provider上的值变化，而不仅仅是因为整个树都在重新渲染。 我们可以避免更新 App 组件中的状态吗？
 
 ​		回答这个问题需要对 React 的渲染行为有很好的理解。 我们将在以下四个小节中讨论这些概念以及如何应用它们：
 
@@ -899,7 +899,7 @@ The UI becomes the following:
 
 ​		It’s because `UserProvider` accesses its children as a prop, and updating the state `within` the component doesn’t change its props. The identity of `children` doesn’t change when a descendant calls `setUser`. It’s exactly the same object as it was before.There’s no need to re-render all the children, so React doesn’t.  
 
-​		除了context consumers！ context 的closest provider的值发生变化时，Context consumers总是重新渲染。我们的自定义provider 为其消费者提供updater function。 当组件调用 updater 函数时，自定义provider 会重新渲染，更新其上下文值。 React 知道提供者的孩子没有改变，所以不会重新渲染它们。 但是，任何使用上下文的组件都会重新渲染以响应提供者上的值变化，不是因为整个组件树都重新渲染了。
+​		除了context consumers！ context 的closest provider的值发生变化时，Context consumers总是重新渲染。我们的自定义provider 为其消费者提供updater function。 当组件调用 updater 函数时，自定义provider 会重新渲染，更新其context值。 React 知道provider的孩子没有改变，所以不会重新渲染它们。 但是，任何使用context的组件都会重新渲染以响应provider上的值变化，不是因为整个组件树都重新渲染了。
 
 
 
@@ -931,9 +931,26 @@ export default function App () {
 
 
 
-### 8.2.3 Working with multiple contexts  
+### 8.2.3 Working with multiple contexts
+
+​		如果你发现你确实有不经常改变的状态并且被应用程序中不同级别的许多组件使用，那么 Context API 听起来很合适。 但即便如此，由 context 提供的单个状态对象可能效率低下。假设你的context state value 如下所示：  
+
+```jsx
+value = {
+  theme: "lava",
+  user: 1,
+  language: "en",
+  animal: "Red Panda"
+};
+
+<MyContext.Provider value={value}><App/></MyContext.Provider>
+```
+
+​		在你的组件层次结构中，一些组件使用主题，一些使用用户，另一些使用语言，还有一些使用动物。 问题是，如果单个属性值发生变化（比如主题从 *lava* 变为 *cute*），*所有*使用 context 的组件都将**重新渲染**，即使它们对更改的值不感兴趣。
 
 **SPLITTING THE CONTEXT VALUES ACROSS MULTIPLE PROVIDERS**  
+
+​		你可以根据需要使用尽可能多的 contexts，并且嵌套组件可以仅在它们使用的context 上调用 `useContext` hook。 如果每个共享值都有自己的，则 providers 看起来如下：
 
 ```jsx
 <ThemeContext.Provider value="lava">
@@ -946,19 +963,104 @@ export default function App () {
 </ThemeContext.Provider>
 ```
 
-然后，嵌套组件只使用它们需要的值，并在它们选择的值发生变化时重新渲染。
+然后，嵌套组件只使用它们需要的值，并在它们选择的值发生变化时重新渲染。 这里有两个组件分别访问一对context值：
 
-**USING A CUSTOM PROVIDER FOR MULTIPLE CONTEXTS**  
+```jsx
+function InfoPage(props) {
+  const theme = useContext(ThemeContext);
+  const language = useContext(LanguageContext);
+  return ( /* UI */ );
+}
 
-**USING SEPARATE CONTEXTS FOR A STATE VALUE AND ITS UPDATER FUNCTION**  
+function Messages(props) {
+  const theme = useContext(ThemeContext);
+  const user = useContext(UserContext);
+  // subscribe to messages for user 
+  return ( /* UI */ );
+}
+```
+
+**为多个 CONTEXTS 使用自定义PROVIDER** 
+
+​		你希望将你的 providers 尽可能靠近使用其 contexts 的组件，包装子树而不是整个应用程序。 但是，有时，context 确实会在整个应用程序中使用，并且 providers 可以位于或接近根目录。 根部的代码通常不会有太大变化，因此不必担心嵌套多个 providers； 你不必将嵌套视为“包装地狱”或“末日中的金字塔”。 如果你愿意，并且providers 可能会在一起，你总是可以创建一个自定义 provider，将多个 providers 分组在一个地方，如下所示：
+
+```jsx
+function AppProvider({ children }) {
+
+  return (
+    <ThemeContext.Provider value="lava">
+      <UserContext.Provider value='1'>
+        < LanguageContext.Provider value="en">
+          <AnimalContext.Provider value="Red Panda">
+            {children}
+          </AnimalContext.Provider>
+        </LanguageContext.Provider >
+      </UserContext.Provider>
+    </ThemeContext.Provider >
+  );
+}
+```
+
+然后app可以使用自定义provider(s)：
+
+```jsx
+<AppProvider> 
+	<App/>
+</AppProvider>
+```
+
+**为状态值及其更新函数使用单独的context**
+
+​		当 context provider的值改变时，它的consumers会重新渲染。 A provider 也可能由于其父级重新渲染而重新渲染。 If the provider’s value is an object that the code creates every time the provider renders,则该值在每次渲染时都会发生变化，即使您分配给对象的属性值保持不变。 
+
+​		所以，我们有两个问题：
+
+- 每次渲染都会为provider值分配一个新对象。
+
+- 更改该值的一个属性会重新渲染可能不使用该值的消费者。
+
+  
+  
+  我们可以通过在自定义 provider 中使用两个 contexts 而不是一个 context 来解决这两个问题，如下面的清单所示。
+  
+  ```jsx
+  import {createContext, useState} from "react";
+  
+  const UserContext = createContext();
+  export default UserContext;
+  
+  export const UserSetContext = createContext();
+  
+  export function UserProvider ({children}) {
+    const [user, setUser] = useState(null);
+  
+    return (
+      <UserContext.Provider value={user}>
+        <UserSetContext.Provider value={setUser}>
+        {children}
+        </UserSetContext.Provider>
+      </UserContext.Provider>
+    );
+  }
+  
+  ```
+  
+  `user` 和 `setUser` 不会在每次渲染时重新创建，我们现在为每个值使用单独的context和provider，因此一个值的消费者不会受到另一个值的更改的影响。
 
 ### 8.2.4 Specifying a default value for a context  
+
+​		使用 Context API 涉及providers和consumers  ：provider设置一个值，consumer读取该值。 但是使用两个独立的部分可能需要一点信任。 如果我们使用context对象调用 `useContext` ，但在树的后面没有设置相应的provider怎么办？ 如果合适，在创建context对象时，我们可以为这种情况指定一个默认值，如下所示：
 
 ```jsx
 const MyContext = createContext(defaultValue);  
 ```
 
+​		如果相应的provider没有为该context设置任何值，则 `useContext` hook将返回该context对象的默认值。 如果您的应用使用默认语言或主题，这可能会很有用；provider可用于覆盖默认值，但如果不包含provider，一切仍然有效。
+
 ## 概述
+
+- 对于许多组件使用的很少更改的值，请考虑使用 Context API。
+- 
 
 # 9、创建自己的hooks
 

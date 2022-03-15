@@ -301,9 +301,9 @@ $ git config --list
 如果你配置的全局的用户名和邮箱是公司的，而自己也有私人用户名和邮箱来开发自己项目，这样可能一台电脑需要设置多个git用户名配置的项目。如果你不进行配置用户名和邮箱的话, 则会使用全局的, 这个时候是错误的, 正确的做法是针对个人的项目, **在自己的项目根目录下进行单独配置**
 
 ```sh
-$ git config user.name "mygitlab Name"
+$ git config user.name "Jiangfeng.Han"
 
-$ git config user.email "mygitlab@xx.com"
+$ git config user.email "Jiangfeng.Han@apulisai.com"
 
 $ git config --list
 ```
