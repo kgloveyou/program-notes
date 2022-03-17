@@ -469,9 +469,28 @@ https://threejs.org/docs/index.html?q=TrackballControls#examples/zh/controls/Tra
 
 ## 9.3　变形动画和骨骼动画
 
+Morphing and skeletal animation
+
+- 变形动画
+- 骨骼动画
+
+
+
 ### 9.3.1　用变形目标创建动画
 
+**使用混合器和变形目标创建动画**
+
+Animation with a mixer and morphtargets
+
+为本身带有变形动画数据的模型设置和播放动画。
+
+**使用多个THREE.AnimationClip对象**
+
+
+
 ### 9.3.2　用骨骼和蒙皮创建动画
+
+Animation using bones and skinning
 
 ## 9.4　使用外部模型创建动画
 
