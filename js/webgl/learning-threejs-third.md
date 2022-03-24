@@ -582,6 +582,18 @@ refraction，折射
 
 `live-server`黑屏，`http-server`正常显示。
 
+`http-server`无法运行，可以安装`anywhere`。
+
+```sh
+npm install -g anywhere
+```
+
+运行，在要启动静态服务的目录下执行
+
+```sh
+anywhere -p 8080
+```
+
 
 
 ## 10.3	总结
@@ -624,18 +636,34 @@ refraction，折射
 
 ## 12.3  Physi.js支持的形体（shapes）
 
-## 12.4  使用约束限制对象移动
+## 12.4  使用约束限制对象的移动
 
-### 12.4.1  用PointConstraint限制两点间的移动
+### 12.4.1  使用PointConstraint限制两点间的移动
 
-### 12.4.2  用HingeConstraint创建类似门的约束
+### 12.4.2  使用HingeConstraint创建类似门的约束
 
-### 12.4.3  用SliderConstraint将移动限制到一个轴
+### 12.4.3  使用SliderConstraint将移动限制在一个轴上
 
-### 12.4.4  用ConeTwistConstraint创建类似球销的约束
+### 12.4.4  使用ConeTwistConstraint创建类似球销的约束
 
-### 12.4.5  用DOFConstraint实现细节的控制
+### 12.4.5  使用DOFConstraint实现细节的控制
+
+​		`DOFConstraint`, also called the  degree of freedom constraint  
 
 
 
-## 12.5  总结259
+## 12.5  在场景中添加声源 
+
+`live-server`和`http-server`无法运行，可以安装`anywhere`。
+
+```sh
+npm install -g anywhere
+```
+
+运行，在要启动静态服务的目录下执行
+
+```sh
+anywhere -p 8080
+```
+
+## 12.6  总结
