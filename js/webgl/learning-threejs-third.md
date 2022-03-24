@@ -630,6 +630,12 @@ anywhere -p 8080
 
 # 第12章 在场景中添加物理效果和声音
 
+https://github.com/chandlerprall/Physijs
+
+已经停止更新。2.0版本最新提交时间：Commits on Nov 14, 2016。
+
+其他的库：[Babylon.js](https://link.juejin.cn/?target=http%3A%2F%2Fwww.babylonjs.com%2F)，功能和Three.js并列。
+
 ## 12.1  使用Physi.js创建基本的Three.js场景
 
 ## 12.2  Physi.js材质属性
