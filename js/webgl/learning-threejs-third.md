@@ -686,7 +686,7 @@ https://github.com/chandlerprall/Physijs
 
 已经停止更新。2.0版本最新提交时间：Commits on Nov 14, 2016。
 
-其他的库：[Babylon.js](https://link.juejin.cn/?target=http%3A%2F%2Fwww.babylonjs.com%2F)，功能和Three.js并列。
+其他的库：[Babylon.js](https://www.babylonjs.com/)（巴比伦），功能和Three.js并列。Babylonjs 由微软公司发布 并持续更新。
 
 ## 12.1  使用Physi.js创建基本的Three.js场景
 

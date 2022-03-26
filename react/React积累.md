@@ -483,3 +483,19 @@ This method takes an optional parameter which by default is set to false. If set
 
 https://felixgerschau.com/react-hooks-settimeout/
 
+
+
+# useEffect vs useLayoutEffect
+
+https://kentcdodds.com/blog/useeffect-vs-uselayouteffect
+
+
+
+## useEffect
+
+
+
+## useLayoutEffect
+
+Your code runs immediately after the DOM has been updated, but before the browser has had a chance to "paint" those changes (the user doesn't actually see the updates until after the browser has repainted).
+
