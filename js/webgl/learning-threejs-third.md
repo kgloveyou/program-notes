@@ -16,6 +16,10 @@ x轴朝右，y轴朝上，z轴屏幕向外。
 
 
 
+在 ThreeJS 中，一个物体可看作一个 Mesh，Mesh 的坐标是用一个 Vector3 来表示的，Vector3 中包含了 x、y、z 坐标。**空间坐标系是三维的，其原点默认在屏幕中心**，且 x y z 的范围是 [-1,1]
+
+
+
 **OpenGL Transformation**
 
 http://www.songho.ca/opengl/gl_transform.html
@@ -74,11 +78,21 @@ http://www.songho.ca/opengl/gl_transform.html
 
 Orthographic camera versus perspective camera  
 
+正交相机：无论物体距离相机距离远或者近，在最终渲染的图片中物体的大小都保持不变。**用于渲染2D场景或者UI元素是非常有用的**。
+
+
+
+透视相机：被用来模拟人眼所看到的景象。**它是3D场景的渲染中使用得最普遍的投影模式**。
+
+我们在使用透视相机时，可能会遇到这种情况：边缘处的物体会产生一定程度上的形变，原因是：**透视相机是鱼眼效果，如果视域越大，边缘变形越大。为了避免边缘变形，可以将fov角度设置小一些，距离拉远一些**
+
 ### 2.3.2　将摄像机聚焦在指定点上
 
 
 
 # 第3章	学习使用Three.js中的光源
+
+## 3.1　Threejs中不同种类的光源
 
 ## 3.2 基础光源
 
@@ -111,6 +125,8 @@ https://baike.baidu.com/item/%E5%8D%8A%E5%BD%B1/14681287?fr=aladdin
 平面光光源，从一个矩形平面上均匀地发射光线。这种光源可以用来模拟像明亮的窗户或者条状灯光光源。
 
 ### 3.3.3 镜头光晕（Lens flare ）
+
+## 3.4　总结
 
 # 第4章　使用Three.js的材质
 
@@ -220,7 +236,7 @@ bufferGeometry.fromGeometry(normalGeometry);
 
 #### THREE.SphereGeometry  
 
-
+https://threejs.org/docs/index.html?q=SphereGeometry#api/zh/geometries/SphereGeometry
 
 #### THREE.CylinderGeometry  
 
