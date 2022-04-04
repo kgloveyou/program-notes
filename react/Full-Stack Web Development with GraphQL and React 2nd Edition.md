@@ -395,3 +395,103 @@ sequelize db:seed:all --seeders-path src/server/seeders
 
 ## Sequelize 中的一对一关系
 
+### 使用迁移更新表结构
+
+### Sequelize 中的模型关联
+
+### 生成外键数据
+
+**注意：**
+
+有一些方法可以通过额外的 npm 包来自动化这个过程。有一个包可以自动为你从数据库模型创建 GraphQL 模式的过程。 与往常一样，当你不依赖预配置的软件包时，你会更加灵活。 你可以在 https://www.npmjs.com/package/graphql-tools-sequelize 找到这个包。
+
+## 使用 Sequelize 改变数据
+
+## 多对多关系
+
+### 模型和迁移
+
+**join tables**  
+
+### Chat 模型
+
+### Message 模型
+
+### Chats and messages in GraphQL  
+
+### 生成多对多数据
+
+### 创建新聊天
+
+### 创建新消息
+
+## 概述
+
+我们在本章中的目标是创建一个以数据库作为存储的工作后端，我们已经取得了很好的成就。 我们可以添加更多实体并使用 Sequelize 迁移和播种它们。在投入生产时，迁移我们的数据库更改对我们来说不是问题。
+
+在本章中，我们还介绍了 Sequelize 在使用其模型时为我们自动执行的操作，以及它与我们的 Apollo Server 协作的出色表现。
+
+在下一章中，我们将重点介绍如何将 Apollo React Client 库与我们的后端以及它背后的数据库一起使用。
+
+# 4、将 Apollo 连接到 React
+
+在本章中，我们将向我们的前端介绍 Apollo 的 React 客户端，以将其与后端连接起来。 我们将使用我们的前端查询、创建和更新帖子数据。
+
+## 安装和配置 Apollo 客户端
+
+首先，我们必须安装 React Apollo 客户端库。 Apollo Client 是一个 GraphQL 客户端，它提供了与 React 的出色集成以及从我们的 GraphQL API 轻松获取数据的能力。 此外，它还处理缓存和订阅等操作，以实现与你的 GraphQL 后端的实时通信。虽然 Apollo Client 以 Apollo 品牌命名，但它并不与 Apollo Server 绑定。 你可以将 Apollo Client 与任何 GraphQL API 或schema  一起使用，只要它们遵循协议标准。 你很快就会看到客户端与我们的 React 设置完美融合。
+
+与往常一样，有很多选择。 您可以在我们构建的当前 API 中使用您希望的任何 GraphQL 客户端。 这种开放性是 GraphQL 的一大优点：它使用开放标准进行通信。 许多库都实现了 GraphQL 标准，您可以自由使用其中的任何一个。
+
+您可以在以下位置找到与 GraphQL 生态系统相关的一长串软件包：https://github.com/chentsulin/awesome-graphql.  
+
+### 安装 Apollo Client  
+
+```bash
+npm install --save @apollo/client graphql
+```
+
+我们需要安装以下两个包来运行 GraphQL 客户端：
+
+- `@apollo/client` 是我们安装的所有包的包装包。 Apollo Client 依赖于所有其他包。
+- `graphql` 是 GraphQL 的参考实现，并提供解析 GraphQL 查询的逻辑。
+
+### 测试 Apollo Client  
+
+### 将 Apollo Client绑定到 React
+
+```jsx
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { ApolloProvider } from '@apollo/client/react';
+import App from './App';
+import client from './apollo';
+
+ReactDOM.render(
+  <ApolloProvider client={client}>
+    <App />
+  </ApolloProvider>, document.getElementById('root')
+);
+```
+
+## 在 React 中使用 Apollo 客户端
+
+### 使用 Apollo 客户端在 React 中查询
+
+#### Apollo useQuery Hook  
+
+最新版本的 Apollo Client 带有 `useQuery` Hook。 您只需将 GraphQL 查询字符串传递给 `useQuery` Hook，它将返回一个对象，其中包含可用于呈现 UI 的`data`, `error`,   和`loading`  属性。
+
+P123
+
+# 9、实现服务器端渲染
+
+**server-side rendering (SSR)**  
+
+## 介绍 SSR
+
+在转换纯客户端渲染应用程序以支持 SSR 时，需要牢记许多事情。
+
+与 SSR 相比，客户端方法很简单。 在开发 Angular、Ember、React 和其他 JavaScript 框架之前，传统的方法是拥有一个实现所有业务逻辑的后端以及大量返回有效 HTML 的模板或函数。后端查询数据库，处理数据，并将数据插入 HTML。 HTML 是应客户的要求直接提供的。 然后浏览器根据 HTML 下载 JavaScript、CSS 和图像文件。 大多数时候，JavaScript 只负责允许动态内容或布局更改，而不是渲染整个应用程序。 这可能包括下拉菜单、手风琴，或者只是通过 Ajax 从后端提取新数据。 然而，应用程序的主要 HTML 是直接从后端返回的，这导致了一个单体应用程序。 这个解决方案的一个显着好处是客户端不需要处理所有的业务逻辑，因为它已经在服务器上完成了。
+
+## 在 Express.js 中设置 SSR 以在服务器上渲染 React
