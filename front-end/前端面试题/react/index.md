@@ -21,7 +21,7 @@ const id = +own.match.params.id;
 
 [React的memo和useMemo的作用](https://juejin.cn/post/6897038904914870286)，具体代码示例参见：https://codesandbox.io/s/svcpo?file=/src/index.js
 
-**React.memo**
+### React.memo
 
 https://zh-hans.reactjs.org/docs/react-api.html#reactmemo
 
@@ -55,9 +55,21 @@ export default React.memo(MyComponent, areEqual);
 
 
 
+[React-Hooks 初识 （五）： React性能优化手段 Memo 防止子组件不必要的reRender](https://juejin.cn/post/7077369439011749902)
+
+> 注意：memo包裹子组件只能解决父组件没有传参给子组件的情况或者父组件传简单数据类型的参数给子组件的情况（例如 string、number、boolean等）
+
+**memo已经包裹，但父组件传给子组件的参数是复杂数据类型，那么子组件仍会渲染**
+
+这是因为，由于子组件接收了父组件的fValue，并且类型是个对象，每次父组件render时这个fValue都是新的，从而造成子组件在每次父组件render时props都会发生变化，也就重新进行渲染了。
+
+
+
 **但是此时还有一个bug，如果在子组件Child上添加一个监听函数，无论修改m的值与否，都会执行Child组件，因此引出useMemo。**
 
-**useMemo**
+### useMemo
+
+https://zh-hans.reactjs.org/docs/hooks-reference.html#usememo
 
 ```react
 const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
@@ -71,7 +83,11 @@ const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
 
 如果没有提供依赖项数组，`useMemo` 在每次渲染时都会计算新的值。
 
-**useCallback**
+**你可以把 `useMemo` 作为性能优化的手段，但不要把它当成语义上的保证。**将来，React 可能会选择“遗忘”以前的一些 memoized 值，并在下次渲染时重新计算它们，比如为离屏组件释放内存。先编写在没有 `useMemo` 的情况下也可以执行的代码 —— 之后再在你的代码中添加 `useMemo`，以达到优化性能的目的。
+
+
+
+### useCallback
 
 https://zh-hans.reactjs.org/docs/hooks-reference.html#usecallback
 
