@@ -22,3 +22,7 @@ https://www.npmjs.com/package/react-hooks-sse
 
 https://developers.google.com/protocol-buffers/docs/reference/javascript-generated
 
+
+
+# event-source-polyfill
+
