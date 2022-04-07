@@ -124,3 +124,37 @@ In [computing](https://en.wikipedia.org/wiki/Computing), **memoization** or **me
 
 memo、useMemo、useCallback：三者结合使用，可以有效的减少项目里组件的rerender，是React的一种性能优化手段。
 
+
+
+[What's the difference between `useCallback` with an empty array as inputs and `useCallback` without a second parameter?](https://stackoverflow.com/questions/55026139/whats-the-difference-between-usecallback-with-an-empty-array-as-inputs-and-u)
+
+对于 useMemo 和 useCallback （本质上只是 useMemo 的一种特殊情况），如果第二个参数是一个空数组，则该值将被记忆一次并始终返回。
+
+如果省略第二个参数，则永远不会记住该值，并且 useCallback 和 useMemo 不会做任何事情。
+
+也许在某些极端情况下，您可以有条件地记住：
+
+```
+useMemo(someValue, shouldMemoize ? [] : null)
+```
+
+但在绝大多数情况下，useMemo 和 useCallback 的第二个参数都应该被认为是强制性的。 事实上，Typescript 定义就是这样对待它们的。
+
+```typescript
+// Require a second argument, and it must be an array
+function useCallback<T extends (...args: any[]) => any>(callback: T, deps: DependencyList): T;
+// Second argument can be undefined, but must be explicitly passed as undefined, not omitted.
+function useMemo<T>(factory: () => T, deps: DependencyList | undefined): T;
+```
+
+There's an [open pull request](https://github.com/facebook/react/pull/15025) that's enhancing the `exhaustive-deps` hooks eslint rule so that it will raise a lint error if the second argument is omitted, so pretty soon this will likely be a linter error.
+
+
+
+I think it's the same logic behind all the hooks, `useEffect`, `useLayoutEffect`, `useCallback`, `useMemo`, for dependency array,if no dependencies passed means we passed the null value for dependencies, hence comparison would always result false and inline function will execute every time.
+
+If empty dependencies are passed means there is nothing to compare further hence inline function will only execute once. (it is just like we are instructing React for no further comparison).
+
+If the array are passed with some variable then it will compute the inline function based on the changes in the variable.
+
+Though instance of the inline function will always created.
