@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShaderMaterial</title>
+  <style>
+    #WebGL-output {
+      margin: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="WebGL-output"></div>
+</body>
+<script type="module">
+  import * as THREE from './three.module.js';
+
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+  // 创建渲染器并设置大小,整体背景色为黑色
+  var renderer = new THREE.WebGLRenderer();
+  renderer.setClearColor(new THREE.Color(0xffffff));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.shadowMap.enable = true;
+
+  // 初始化几何体对象
+  const geometry = new THREE.BufferGeometry();
+  // 设置顶点数据
+  const pos = new Float32Array([0, 0, 0]);
+  // 设置position attribute
+  geometry.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+
+  // 初始化自定义材质对象
+  const material = new THREE.ShaderMaterial();
+  // 顶点着色器代码
+  material.vertexShader = `
+    void main() {
+        // 设置点的大小为50像素
+        gl_PointSize = 50.0;
+        // 设置点的位置
+        gl_Position = vec4(position, 1.0);
+    }
+`;
+  // 片元着色器代码
+  material.fragmentShader = `
+    void main() {
+        // 光栅化片元的颜色
+        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    }
+`;
+  // 使用 THREE.Points 顶点绘制模式
+  const point = new THREE.Points(geometry, material);
+  scene.add(point);
+
+  // 添加相机，设置相机的位置是正好对着场景原点
+  camera.position.x = -25;
+  camera.position.y = 30;
+  camera.position.z = 25;
+  camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+  document.getElementById("WebGL-output").appendChild(renderer.domElement);
+  renderer.render(scene, camera);
+</script>
+
+</html>

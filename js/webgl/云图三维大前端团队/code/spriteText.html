@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sprite Text</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+    }
+
+    #WebGL-output {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="WebGL-output"></div>
+</body>
+<script type="module">
+  import * as THREE from './three.module.js';
+
+  function initScence() {
+    var scene = new THREE.Scene();
+    //直线光
+    var directionalLight = new THREE.DirectionalLight(0xffffff, 0.7);
+    directionalLight.position.set(-20, 40, 60);
+    scene.add(directionalLight);
+    //环境光
+    var ambientLight = new THREE.AmbientLight(0x292929);
+    scene.add(ambientLight);
+    return scene
+  }
+
+  function initCamera() {
+    var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.x = 120;
+    camera.position.y = 60;
+    camera.position.z = 180;
+    return camera
+  }
+
+  function initRender() {
+    var renderer = new THREE.WebGLRenderer();
+    renderer.setClearColor(new THREE.Color(0xffffff, 1.0));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    return renderer
+  }
+
+  function createSpriteText() {
+    //先用画布将文字画出
+    let canvas = document.createElement("canvas");
+    let ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#ffff00";
+    ctx.font = "Bold 100px Arial";
+    ctx.lineWidth = 4;
+    ctx.fillText("Hello World", 4, 104);
+    let texture = new THREE.Texture(canvas);
+    texture.needsUpdate = true;
+
+    //使用Sprite显示文字
+    let material = new THREE.SpriteMaterial({ map: texture });
+    let textObj = new THREE.Sprite(material);
+    textObj.scale.set(0.5 * 100, 0.25 * 100, 0.75 * 100);
+    textObj.position.set(0, 0, 98);
+    return textObj;
+  }
+
+  function init() {
+
+    var scene = initScence();
+    var camera = initCamera();
+    var renderer = initRender()
+    camera.lookAt(scene.position);
+
+    // 添加场景中的元素 TODO
+    scene.add(createSpriteText())
+
+    document.getElementById("WebGL-output").appendChild(renderer.domElement);
+    render();
+    function render() {
+      requestAnimationFrame(render);
+      renderer.render(scene, camera);
+    }
+  }
+  window.onload = init
+
+</script>
+
+</html>

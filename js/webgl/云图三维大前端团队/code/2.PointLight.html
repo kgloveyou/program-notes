@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PointLight</title>
+</head>
+<style>
+  #WebGL-output {
+    margin: 0;
+  }
+</style>
+
+<body>
+  <div id="WebGL-output"></div>
+  <script type="module">
+    import * as THREE from './three.module.js';
+
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+    // 创建渲染器并设置大小,整体背景色为白色
+    var renderer = new THREE.WebGLRenderer();
+    renderer.setClearColor(new THREE.Color(0xFFFFFF));
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enable = true;
+
+    // 添加坐标轴
+    var axes = new THREE.AxisHelper(10);
+    scene.add(axes);
+
+    // TOOD：添加物体
+    var greenCube = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2),
+      new THREE.MeshLambertMaterial({ color: 0x00ff00 }));
+    greenCube.position.x = 3;
+    scene.add(greenCube); //将实体添加到场景中
+
+    var whiteCube = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2),
+      new THREE.MeshLambertMaterial({ color: 0xffffff }));
+    whiteCube.position.x = -3;
+    scene.add(whiteCube); //将实体添加到场景中
+
+    // 添加相机，设置相机的位置是正好对着场景原点
+    camera.position.x = -25;
+    camera.position.y = 30;
+    camera.position.z = 25;
+    camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+    // TOOD:添加光源
+    var pointLight = new THREE.PointLight(0xffffff);
+    pointLight.position.set(-40, 60, -10);
+    pointLight.castShadow = true;
+    scene.add(pointLight);
+
+    document.getElementById("WebGL-output").appendChild(renderer.domElement);
+    renderer.render(scene, camera);
+  </script>
+</body>
+
+</html>

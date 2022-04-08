@@ -46,6 +46,16 @@ http://www.songho.ca/opengl/gl_transform.html
 
 ### 1.6.1　引入requestAnimationFrame()方法
 
+```js
+function animate() {
+	requestAnimationFrame( animate );
+	renderer.render( scene, camera );
+}
+animate();
+```
+
+在这里我们创建了一个使渲染器能够在每次屏幕刷新时对场景进行绘制的循环（在大多数屏幕上，刷新率一般是60次/秒）。如果你是一个浏览器游戏开发的新手，你或许会说*“为什么我们不直接用setInterval来实现刷新的功能呢？”*当然啦，我们的确可以用setInterval，但是，**requestAnimationFrame**有很多的优点。最重要的一点或许就是当用户切换到其它的标签页时，它会暂停，因此不会浪费用户宝贵的处理器资源，也不会损耗电池的使用寿命。
+
 ### 1.6.2　旋转立方体
 
 ### 1.6.3　弹跳球
@@ -86,6 +96,24 @@ Orthographic camera versus perspective camera
 
 我们在使用透视相机时，可能会遇到这种情况：边缘处的物体会产生一定程度上的形变，原因是：**透视相机是鱼眼效果，如果视域越大，边缘变形越大。为了避免边缘变形，可以将fov角度设置小一些，距离拉远一些**
 
+[PerspectiveCamera](https://threejs.org/docs/index.html#api/en/cameras/PerspectiveCamera)
+
+```js
+const camera = new THREE.PerspectiveCamera( 45, width / height, 1, 1000 );//垂直方向为 45 度
+scene.add( camera );
+```
+
+**Constructor**
+
+**PerspectiveCamera( fov : Number, aspect : Number, near : Number, far : Number )**
+
+fov — Camera frustum vertical field of view.
+aspect — Camera frustum aspect ratio.
+near — Camera frustum near plane.
+far — Camera frustum far plane.
+
+这四个参数定义了一个 *"视椎 (frustum)"*。 *视椎 (frustum)* 是指一个像被削去顶部的金字塔形状。换句话说，可以把 "视椎 (frustum)" 想象成其他三维形状如球体、立方体、棱柱体、截椎体。
+
 ### 2.3.2　将摄像机聚焦在指定点上
 
 
@@ -113,6 +141,18 @@ https://baike.baidu.com/item/%E5%8D%8A%E5%BD%B1/14681287?fr=aladdin
 ### THREE.DirectionalLight  
 
 平行光
+
+```js
+{
+  const color = 0xFFFFFF;
+  const intensity = 1;
+  const light = new THREE.DirectionalLight(color, intensity);
+  light.position.set(-1, 2, 4);
+  scene.add(light);
+}
+```
+
+平行光有一个位置和目标点。默认值都为 (0, 0, 0)。
 
 ## 3.3　特殊光源
 
