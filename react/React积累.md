@@ -499,3 +499,13 @@ https://kentcdodds.com/blog/useeffect-vs-uselayouteffect
 
 Your code runs immediately after the DOM has been updated, but before the browser has had a chance to "paint" those changes (the user doesn't actually see the updates until after the browser has repainted).
 
+
+
+[什么时候使用useLayoutEffect代替useEffect?](https://juejin.cn/post/6844904177521426439)
+
+什么时候使用useLayoutEffect?
+
+什么样的场景需要使用useLayoutEffect？当你看见的时候，你就知道了。（字面意思）
+
+如果状态更新，导致组件渲染闪烁，这个时候，就应该用*useLayoutEffect*，例如初次渲染只有部分状态正确，然后立刻使用最终状态重新渲染时，可能会发生上述情况。
+
