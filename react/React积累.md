@@ -503,7 +503,29 @@ Your code runs immediately after the DOM has been updated, but before the browse
 
 [什么时候使用useLayoutEffect代替useEffect?](https://juejin.cn/post/6844904177521426439)
 
-什么时候使用useLayoutEffect?
+**不同点**
+
+一句话总结：二者的不同在于执行时机。
+
+*useEffect*是在渲染函数执行完成，并绘制到屏幕之后，再异步执行。
+
+大概流程如下：
+
+1. 触发渲染函数执行（改变状态，或者父组件重新渲染）
+2. React调用组件的渲染函数
+3. 屏幕中重绘完成
+4. 执行*useEffect*
+
+*useLayoutEffect*，是在渲染函数执行之后，但是屏幕重绘前同步执行。（注意：它可能会影响渲染体验）
+
+大概流程如下：
+
+1. 触发渲染函数执行（改变状态，或者父组件重新渲染）
+2. React调用组件的渲染函数
+3. 执行*useLayoutEffect*，并且React等待它执行完成
+4. 屏幕中重绘完成
+
+**什么时候使用useLayoutEffect?**
 
 什么样的场景需要使用useLayoutEffect？当你看见的时候，你就知道了。（字面意思）
 

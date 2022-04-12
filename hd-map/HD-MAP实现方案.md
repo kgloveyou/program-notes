@@ -4,4 +4,7 @@
 
 [高精地图数据应用分发引擎建设实践](https://segmentfault.com/a/1190000040199307)
 
-[WEB 三维引擎在高精地图数据生产的探索和实践](https://www.bbsmax.com/A/x9J2XWvWd6/)
+[WEB 三维引擎在高精地图数据生产的探索和实践](https://mp.weixin.qq.com/s/rqQRFP9pbobnjR7VvycIHQ)
+
+高德三维引擎eagle.gl，基于Three.js开发。
+
