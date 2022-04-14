@@ -331,6 +331,34 @@ console.log('Server is listening on ' + port)
 
 # 6、HTTP/2优化
 
+## 6.3 在HTTP/2下依然有效的性能优化技术
+
+### 6.3.1 减少要传输的数据量
+
+**使用合适的文件格式和大小**
+
+两个压缩图片的网站（https://tinypng.com/  、https://tinyjpg.com/  ）。
+
+**压缩文本数据**
+
+gzip仍然是最流行的压缩技术。
+
+**最小化代码**
+
+### 6.3.2 使用缓存防止重复发送数据
+
+HTTP/2 旨在提高 HTTP 请求的性能，但它永远不会比使用缓存（不发请求）更快。
+
+使用上次发送页面时的修改时间（`if-modified-since`）或者eTag值（`if-none-match`  ）做比较。如果同时提供了两个值，则`if-none-match`首部中的`eTag`值更优先。
+
+### 6.3.3 Service Worker 可以大幅减少网络负载
+
+​		它支持在网页和网络之间添加一层 JavaScript 代理。
+
+![image-20220414183651788](https://gitee.com/kg_loveyou/cdn/raw/master/image-20220414183651788.png)
+
+Service Worker可以查看、回复或更改 HTTP 请求。 可以使用它提供类似本地移动应用的体验，尤其是在离线时。
+
 # 7、高级HTTP/2概念
 
 # 8、HPACK首部压缩
