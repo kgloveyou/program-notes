@@ -62,7 +62,15 @@ HTTP/2 is only supported over TLS (HTTPS).
 
 ​		帧时同时发送多个消息的关键。每个帧都有标签标明它属于哪个消息（流），这样在一个连接上就可以同时有两个、三个甚至上百个消息。
 
+<img src="HTTP2 in Action.assets/image-20220414095730826.png" alt="image-20220414095730826" style="zoom:80%;" />
+
+图4.2 使用多路复用技术的HTTP/2连接请求3个资源
+
 ### 4.1.3 流的优先级和流量控制
+
+​		在 HTTP/2 之前，HTTP 是一个单一的请求和响应协议，因此不需要在协议中确定优先级。 客户端（通常是 Web 浏览器）通过使用有限数量的 HTTP/1 连接（通常为6个）决定发送消息的顺序来决定 HTTP 之外的优先级。 这种优先级通常需要先请求关键资源（HTML、影响渲染的 CSS 和 JavaScript），然后再请求非阻塞内容（例如图像和异步 JavaScript）。 请求会进入队列，等待可用的 HTTP/1 连接，而队列的优先级由浏览器管理。
+
+​		现在HTTP/2 对并发的请求数量的限制放宽了许多（通常，在许多实现中默认为 100 个活跃的流），因此许多请求不再需要浏览器排队，可以立即发送。
 
 ​		流的优先级控制是通过这种方式实现的：当数据帧在排队时，服务器会给高优先级的请求发送更多的帧。
 
@@ -114,6 +122,316 @@ HTTP/2 is only supported over TLS (HTTPS).
 chrome://net-export/  
 ```
 
+此时可以使用 NetLog 查看器（https://netlog-viewer.appspot.com）打开并检查创建的日志文件（注意：此工具仅在本地查看文件，不会将其上传到服务器）。
+
+### 4.3.3 HTTP/2消息流示例
+
+**SETTINGS 帧**
+
+**WINDOW_UPDATE 帧**
+
+**PRIORITY 帧**
+
+**HEADERS 帧**
+
+​		在 HTTP/2 中，并没有特定的请求帧类型，HEADERS 帧中也没有类似第一行请求URL概念，而是将`所有内容`通过首部发送。HTTP/2定义了新的伪首部（以冒号开头）来定义HTTP请求中的各个不同部分：
+
+```
+:method: GET
+:path: /
+:scheme: https
+:authority: www.facebook.com
+```
+
+​		需要注意的是，:authority伪首部代替了原来的HTTP/1.1的`Host`首部。HTTP/2伪首部定义严格，不像标准的HTTP首部那样可以在其中添加新的自定义首部。比如你不能这样创建新的伪首部：
+
+```
+:barry: value
+```
+
+​		如果需要，还得使用普通的HTTP首部，没有开头的冒号：
+
+```
+barry: value
+```
+
+​		每个新的请求都会被分配一个独立的流ID，其值在上一个流ID的基础上自增（在这个示例中上一个流ID是11，它是nghttp创建的PRIORITY  帧，所以这个帧使用流ID 13 创建，偶数 12 是服务端使用的）。
+
+**DATA 帧**
+
+**GOAWAY 帧**
+
+这个帧用于关闭连接。
+
+### 4.3.4 其他帧
+
+**CONTINUATION  帧**
+
+**PING  帧**
+
+PING  帧都是在控制流（流ID为0）上发送。
+
+**PUSH_PROMISE  帧**
+
+服务器使用PUSH_PROMISE 帧（0x5）通知客户端它将推送一个客户端没有明确请求的资源。
+
+**RST_STREAM  帧**
+
+RST_STREAM 帧(0x3)  ，用于直接取消（重置）一个流。
+
+**ALTSVC 帧**
+
+其允许服务端宣告获取资源时可用的其他服务。
+
+**ORIGIN 帧**
+
+服务器使用她来宣告自己可以处理哪些源（比如域名）的请求。
+
+**CACHE_DIGEST 帧**
+
+客户端可以使用这个帧来标明自己缓存了哪些资源。
+
+### 总结
+
+- HTTP/2 是一种二进制协议，其消息具有明确的、详细的格式和结构。
+
+- 因此，客户端和服务器必须在发送任何 HTTP 消息之前协商使用 HTTP/2。
+
+- 对于 Web 浏览器，这个协商过程主要在 HTTPS 连接协商中完成，使用一个新的称为 ALPN 的扩展。
+
+- 在 HTTP/2 中，请求和响应在 HTTP/2 帧中发送和接收。
+
+- 例如，HTTP/2 GET 请求通常以 HEADERS 帧的形式发送，响应通常以 HEADERS 帧和 DATA 帧的形式接收。
+
+- 大多数 Web 开发人员和 Web 服务器管理员不需要关心 HTTP/2 帧，尽管可以使用工具来查看它们。
+
+- 当前存在多个 HTTP/2 帧，以后还会添加新的帧。
 
 
-p130
+
+# 5、实现HTTP/2推送
+
+## 5.1 什么是 HTTP/2 服务端推送？
+
+​		HTTP/2 服务端推送（以下称为 HTTP/2 推送）允许服务端发回客户端未请求的额外资源。在 HTTP/2 引入之前，HTTP 是一个简单的`请求-响应`协议； 浏览器请求资源，服务器用该资源响应。 如果页面需要额外的资源来显示（例如 CSS、JavaScript、字体、图像等），浏览器必须下载初始页面，看到引用了额外的资源，然后请求它们。这至少会增加一次往返，也就减慢了网页浏览速度。
+
+![image-20220414103244006](https://gitee.com/kg_loveyou/cdn/raw/master/image-20220414103244006.png)
+
+​		HTTP/2 推送打破了 HTTP 一直遵循的“一个请求 = 一个响应”的惯例。 它允许服务器使用多个返回来响应一个请求。
+
+![image-20220414103317915](https://gitee.com/kg_loveyou/cdn/raw/master/image-20220414103317915.png)
+
+​		如果使用正确，HTTP/2 推送可以缩短加载时间，但如果你`过多`推送客户端不会使用或已经在其缓存中的资源，它也会延长加载时间。 这会浪费带宽，本来应该用这些带宽加载需要的资源。 正如我在本章中讨论的那样，应该谨慎使用 HTTP/2 推送并进行一些思考。
+
+
+
+**HTTP/2推送是否能替代WebSockets 或SSE?**  
+
+​		需要注意的一个关键点是，推送的资源仍然仅在响应初始请求时才发送。 完全基于服务器决定客户端可能需要或需要资源来使用 HTTP/2 推送资源是不可能的。 WebSockets 和服务器发送事件 (SSE) 等技术确实允许双向流，但 HTTP/2 并不是真正的双向； 一切仍然是从客户端请求启动的。 推送的资源是对初始请求做出的额外响应。 当初始请求完成时，流将关闭，除非发出另一个客户端请求，否则无法推送其他资源。 因此，HTTP/2 推送并不是当前指定的 WebSockets 或 SSE 的替代品，尽管如果进一步扩展它可能会取代它（参见第 5.9 节）。
+
+## 5.2 如何推送
+
+如何推送取决于 Web 服务器，因为在撰写本文时并非所有服务器都支持 HTTP/2 推送。 一些 Web 服务器可以使用 HTTP link  首部或通过配置来推送。
+
+### 5.2.1 使用HTTP link  首部推送
+
+### 5.2.2 查看 HTTP/2 推送
+
+### 5.2.3 使用link 首部从下游系统推送
+
+### 5.2.4 更早推送
+
+清单 5.2 使用 HTTP link首部的Node服务，并设置10 秒延迟
+
+```js
+var http = require('http')
+const port = 3000
+
+async function requestHandler(request, response) {
+  console.log(request.url)
+    
+  //Start getting the response ready
+  response.setHeader('Link', '</assets/css/common.css>;rel=preload ')
+    
+  //Pause here for 10 seconds to simulate a slow resource
+  await sleep(10000)
+    
+  //And now return the resource
+  response.writeHead(200, {
+    "Content-Type": "text/html"
+  })
+  response.write('<!DOCTYPE html>\n')
+  response.write('<html>\n')
+  response.write('<head>\n')
+  response.write('<link rel="stylesheet" type="text/css" media = "all" href = "/assets/css/common.css" > \n ')
+  response.write('</head>\n')
+  response.write('<body>\n')
+  response.write('<h1>Test</h1>\n')
+  response.write('</body>\n')
+  response.write('</html>\n')
+  response.end();
+}
+
+function sleep(ms) {
+  return new Promise(resolve => {
+    setTimeout(resolve, ms)
+  })
+}
+
+var server = http.createServer(requestHandler)
+server.listen(port)
+console.log('Server is listening on ' + port)
+```
+
+### 5.2.5 使用其他方式推送
+
+## 5.3 HTTP/2推送在浏览器中如何工作
+
+​		无论你如何在服务器端推送资源，浏览器处理此过程的方式都与你预期的不同。 资源不是被直接推送到网页，而是被推送到缓存中。 网页照常处理。当页面看到它需要的资源时，它会检查缓存，在那里找到它，然后从缓存中加载它，而不是从服务器请求它。
+
+### 5.3.1 查看推送缓存如何工作
+
+​		推送缓存不是浏览器查找资源的第一个地方。虽然这个过程和浏览器相关，一些测试也说明，如果资源在HTTP缓存中，浏览器就不会使用被推送的资源。就算被推送的资源比缓存的资源更新，只要浏览器认为缓存的资源可以用（基于cache-control 首部），它就会使用之前缓存的旧的内容。
+
+<img src="HTTP2 in Action.assets/image-20220414112839270.png" alt="image-20220414112839270" style="zoom: 67%;" />
+
+### 5.3.2 使用RST_STREAM  拒绝推送
+
+## 5.4 如何实现条件推送
+
+## 5.5 推送什么
+
+## 5.6 HTTP/2推送常见问题
+
+## 5.7 HTTP/2推送对性能的影响
+
+## 5.8 对比推送和预加载
+
+## 5.9 HTTP/2推送的其他应用场景
+
+## 总结
+
+- HTTP/2推送是HTTP/2中的一个新概念，它允许为一个请求返回多个响应。
+
+- HTTP/2推送被提议时，目的是作为内联关键资源的替代方案。
+
+- 很多服务器和CDN通过使用HTTP link首部实现HTTP/2推送。
+
+- 新的103状态码可用来更早提供link首部。
+
+- HTTP/2推送在客户端的实现方式可能没有那么显而易见。
+
+- 很容易推送过多的内容，这会降低网站的性能。
+
+- HTTP/2推送带来的性能提升可能没那么大，但是风险很高。
+
+- 相较于使用推送，配合使用预加载和103状态码可能更好。
+
+- HTTP/2推送可能有其他应用场景，但有些需要更改协议。
+
+# 6、HTTP/2优化
+
+# 7、高级HTTP/2概念
+
+# 8、HPACK首部压缩
+
+HTTP/2使用HPACK（不是缩写），它基于查询表和Huffman编码，但（关键）不是基于反查的压缩方法。
+
+HPACK是独立于HTTP/2的规范。
+
+## 8.6 客户端和服务端对HPACK的实现
+
+## 8.7 HPACK的价值
+
+它以高效的方法压缩HTTP/2首部，节省了大量空间，特别是在请求端，请求时首部数据占比很大。
+
+## 总结
+
+- 用不同的方法压缩数据。
+
+- HTTP首部中包含敏感数据，如cookie，所以它们不能和HTTP正文使用相同的压缩方法，因为这些方法不能抵御各种攻击，可能泄露数据。
+
+- HPACK是一种压缩格式，是专门为HTTP/2的HTTP首部压缩实现的。
+
+- HPACK有一个专用的二进制格式，使用由预先定义的常见首部名称（还有一些值）组成的静态表，和在会话过程中创建的动态表。
+
+- 没有引用索引表的首部值可以使用ASCII编码 或者Huffman  编码来传输。
+
+- Huffman  编码通常占用更少的空间。
+
+- 在HPACK中可以使用多种方法来发送HTTP首部，浏览器可能使用不同的方式来编码HTTP首部。
+
+# 9、TCP, QUIC 和 HTTP/3  
+
+## 9.1 TCP 的低效率因素和 HTTP
+
+​		HTTP 依赖于一个保证数据有序可靠传输的网络连接。 直到最近，这个可靠的连接都是通过使用 TCP（Transmission Control Protocol  ）实现的。 TCP 允许在两端（通常是浏览器和 Web 服务器）之间创建一个连接，然后处理消息传递，并确保消息到达，如果消息丢失时处理重传，并确保消息在传递给任何应用层 (如HTTP)之前是有序的 。 HTTP 不需要实现这些复杂的逻辑，它假定这些标准已被满足。 HTTP 协议是建立在该前提之上的。
+
+### 9.1.2 TCP拥塞控制对性能的影响
+
+**TCP慢启动**
+
+拥塞窗口
+
+**连接闲置降低效率**
+
+​		HTTP/1.1。。。
+
+​		而HTTP/2在每个域名上使用单个连接，这样会好很多。每个资源的加载都会让这个唯一的TCP保持活跃，所以它不太可能被闲置。特别是在有连接周期性地和服务端交互时（比如XHR轮询、SSE或者类似的技术）。此类活动让连接保持活跃，并为下次访问新页面做好准备。
+
+**丢包降低TCP性能**
+
+**丢包会导致数据排队**
+
+### 9.1.3 TCP低效率因素对HTTP/2的影响
+
+### 9.1.4 优化TCP
+
+## 9.2 QUIC
+
+​		QUIC (发音同quick)   是Google（又是Google）发明的一个基于UDP的协议，目标是替换TCP和HTTP栈中的某些部分，以解决本章中提到的低效率因素。
+
+
+
+​		创建QUIC 时考虑到了一下特征：
+
+- 大量减少连接的创建时间。
+
+- 改善拥塞控制。
+
+- 多路复用，但不要带来对头阻塞。
+
+- 前向纠错。
+
+- 连接迁移。
+
+​		FEC (Forward error correction  ，前向纠错) 试图通过在相邻的数据包中包含部分 QUIC 数据包来减少数据包重传的需要。
+
+​		连接迁移旨在来减少连接设置开销，它通过支持连接在网络之间迁移来实现。
+
+### 9.2.1 QUIC 的性能优势
+
+### 9.2.2 QUIC 和网络技术栈
+
+​		为了表示与HTTP/2不同，将其与QUIC 本身区分开，并标明这是最好的HTTP版本，人们已经决定将基于QUIC 的HTTP称为HTTP/3。
+
+### 9.2.4 标准化QUIC 
+
+### 9.2.5 HTTP/2和QUIC 的不同
+
+### 9.2.6 QUIC 的工具
+
+## 总结
+
+- 基于QUIC的HTTP被称为HTTP/3.
+
+# 10、HTTP将何去何从
+
+## 10.3 HTTP/2 的未来版本， HTTP/3 或HTTP/4 会带来什么
+
+### 10.3.1 QUIC 是 HTTP/3 吗？
+
+​		然而，一旦 QUIC 变得广泛可用（这需要一些时间），那么 HTTP/3 将代表 HTTP 的最佳版本，应尽可能使用它。
+
+# 附录 将常用 Web 服务器升级到 HTTP/2
+
