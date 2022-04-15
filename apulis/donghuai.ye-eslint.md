@@ -141,7 +141,30 @@ module.exports = {
 }
 ```
 
+**备注：**
+
+这里的配置不对吧？参见：https://kisstar.xyz/notebook/project/basis/commit-lint.html#%E8%87%AA%E5%AE%9A%E4%B9%89-adapter
+
+当我们使用 `cz-customizable` 做了违背 Angular 风格的提交说明时，就需要使用 `commitlint-config-cz` 而不是 `@commitlint/config-conventional` 规则对其进行校验。
+
+https://www.npmjs.com/package/commitlint-config-cz
+
+
+
+```bash
+commitlint-config-cz
+```
+
+在 `commitlint` 的配置文件中配置：
+
+```js
+module.exports = {
+  extends: ['cz'],
+}
+```
+
 ### 新增 cz-config.js 文件
+
 ```js 
 module.exports = {
   types: [
