@@ -239,6 +239,15 @@ module.exports = {
 ```
 
 ### 效果图
+
+首先安装`commitizen`
+
+```
+npm install -g commitizen
+```
+
+项目使用
+
 ```js
 PS F:\workSpeace\apharbor-frontend> yarn c
 $ git add . && git cz
