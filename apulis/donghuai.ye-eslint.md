@@ -100,6 +100,9 @@
 ```
 
 ## cz-customizable + commitizen git commit message 规范配置
+
+`cz-customizable`是`commitizen` 的一个插件。（https://github.com/leoforfree/cz-customizable）
+
 ```js
 npm install -g @commitlint/cli @commitlint/config-conventional
 npm i cz-customizable --save-dev -g
@@ -240,11 +243,15 @@ module.exports = {
 
 ### 效果图
 
-首先安装`commitizen`
+首先安装`commitizen`，https://www.npmjs.com/package/commitizen
 
 ```
 npm install -g commitizen
 ```
+
+Simply use `git cz` or just `cz` instead of `git commit` when committing.
+
+
 
 项目使用
 
