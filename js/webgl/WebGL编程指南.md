@@ -74,3 +74,53 @@ var FSHADER_SOURCE =
 
 **缓冲区对象**（buffer object）
 
+### 类型化数组
+
+注意，与普通的`Array`数组不同，类型化数组不支持`push()`和`pop()`方法。
+
+注意，创建类型化数组的唯一方法就是使用`new`运算符，不能使用`[]`运算符（那样创建的就是普通数组）。
+
+## Hello Triangle  
+
+## 移动、旋转和缩放
+
+### 平移
+
+修改应当发生在顶点着色器。
+
+### 旋转
+
+### 变换矩阵：旋转
+
+变换矩阵（transformation matrix  ）
+
+### 变换矩阵：平移
+
+### 示例程序 (RotatedTriangle_Matrix.js)  
+
+WebGL和OpenGL一样，矩阵元素是按列主序存储在数组中的。
+
+### 平移：相同的策略
+
+### 变换矩阵：缩放
+
+# 第4章 高级变换与动画基础
+
+## 平移，然后旋转
+
+### 矩阵变换库：cuon-matrix.js  
+
+### 示例程序：RotatedTriangle_Matrix4.js  
+
+### 复合变换
+
+![image-20220417203434871](https://gitee.com/kg_loveyou/cdn/raw/master/image-20220417203434871.png)
+
+**模型变换（model transformation）**，或者**建模变换（modeling transformation）**，响应地，模型变换的矩阵成为**模型矩阵（model matrix）**。
+
+### 示例程序 (RotatedTranslatedTriangle.js)  
+
+​		你可能会注意到，“先平移后旋转”的顺序与构造模型矩阵`<旋转矩阵>X<平移矩阵>`的顺序是相反的，这是因为变换矩阵最终要与三角形的三个顶点的原始坐标矢量相乘，再看一下等式3.4，你就明白了。
+
+## 动画
+
