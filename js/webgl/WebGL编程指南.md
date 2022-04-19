@@ -307,3 +307,37 @@ If the macro is not defined, this part is executed.
 
 **视图矩阵（view matrix  ）**可以表示观察者的状态，含有观察者的视点、观察目标点和上方向等信息。
 
+### 从指定视点观察旋转后的三角形
+
+```
+〈“从视点看上去”的旋转后顶点坐标〉 =〈视图矩阵〉 × 〈旋转矩阵〉 × 〈原始顶点坐标〉
+```
+
+除了旋转矩阵，你还可以使用平移、缩放等基本变换矩阵或它们的组合，这时矩阵被称为**模型矩阵（model matrix）**。这样，上式就可以写成：
+
+**式7.1**
+
+```
+〈视图矩阵〉× 〈模型矩阵〉 × 〈原始顶点坐标〉
+```
+
+
+
+### 用示例程序做实验
+
+**模型视图矩阵（model view matrix  ）**，如下所示：
+
+```
+〈model view matrix〉 = 〈view matrix〉 × 〈model matrix〉
+```
+
+这样，式7.1可以重写为式7.2：
+
+**式7.2：**
+
+```
+〈model view matrix 〉× 〈vertex coordinates〉  
+```
+
+### 示例程序(LookAtTrianglesWithKeys.js)  
+
