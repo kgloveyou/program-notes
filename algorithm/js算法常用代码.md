@@ -34,7 +34,7 @@ https://leetcode-cn.com/problems/partition-equal-subset-sum/solution/fen-ge-deng
 const dp = new Array(n).fill(0).map(v => new Array(target + 1, false));
 ```
 
-## 4、正无穷大的数值
+## 4、正无穷大的数组
 
 ```js
 let dp = Array(amount + 1).fill(Infinity);
