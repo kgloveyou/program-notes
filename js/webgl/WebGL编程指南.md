@@ -239,3 +239,71 @@ The OpenGL ES Shading Language (GLSL ES)
 
 存储在矩阵中的元素是按照列主序排列的。
 
+## 数组
+
+​		GLSL ES 支持数组类型。与JavaScript中的数组不同，GLSL ES 只支持一维数组，而且数组对象不支持`pop()`和`push()`等操作，创建数组时也不需要使用`new`运算符。
+
+## 取样器（Samplers）
+
+## 函数
+
+​		但是，和C与JavaScript不同的是，你不能在函数内部调用它自身（也就是说，递归调用是不允许的）。这项限制的目的也是为了便于编译器对函数进行内联展开。
+
+### 原型声明
+
+Prototype Declarations  
+
+### 参数限定词
+
+Parameter Qualifiers  
+
+## 内置函数
+
+## 全局变量和局部变量
+
+​		局部变量只能在函数内部使用，因此，由于需要在函数外部访问，下一节中将涉及的attribute, uniform, 和 varying 
+
+变量都必须声明为全局变量。
+
+## 存储限定字
+
+Storage Qualifiers  
+
+### const  变量
+
+### Attribute 变量
+
+### Uniform 变量
+
+### Varying  变量
+
+## 精度限定字
+
+## 预处理指令
+
+下面是我们在GLSL ES  中可能用到的三种预处理指令。
+
+```glsl
+#if constant-expression
+If the constant-expression is true, this part is executed.
+#endif
+    
+#ifdef macro
+If the macro is defined, this part is executed.
+#endif
+    
+#ifndef macro
+If the macro is not defined, this part is executed.
+#endif
+```
+
+# 第7章 进入三维世界
+
+## 立方体由三角形构成
+
+## 视点和视线
+
+### 视点、观察目标点和上方向
+
+**视图矩阵（view matrix  ）**可以表示观察者的状态，含有观察者的视点、观察目标点和上方向等信息。
+
