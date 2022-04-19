@@ -231,3 +231,11 @@ Geometric Shape Assembly and Rasterization
 
 The OpenGL ES Shading Language (GLSL ES)  
 
+## GLSL ES  概述
+
+## 矢量和矩阵
+
+### 矩阵构造函数
+
+存储在矩阵中的元素是按照列主序排列的。
+
