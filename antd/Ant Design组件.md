@@ -54,3 +54,22 @@ Col 提供 `flex` 属性以支持填充。
 滚动页面，下面框脱离组件问题。
 
 https://github.com/ant-design/ant-design/issues/8268
+
+
+
+# Upload上传
+
+使用antd的Upload组件和axios上传文件
+
+https://www.cnblogs.com/wurijie/p/13055515.html
+
+
+
+[React AntDesign add uploaded images to FormData](https://stackoverflow.com/questions/54845951/react-antdesign-add-uploaded-images-to-formdata/54855963#54855963)
+
+
+
+Send multipart/form-data with antd upload 
+
+https://github.com/ant-design/ant-design/issues/11616
+
