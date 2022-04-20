@@ -393,3 +393,50 @@ Matrix4.setPerspective(fov, aspect, near, far)
 
 ### 投影矩阵的作用
 
+​		换个角度看，透视投影矩阵实际上将金字塔状的可视空间变换为了盒状的可视空间，这个盒状的可视空间又称**规范立方体（Canonical View Volume）**。
+
+### 使用所有矩阵（模型矩阵、视图矩阵和投影矩阵）
+
+公式7.4是怎么推导出来的？
+
+### 用示例程序做实验
+
+**模型视图投影矩阵（model view projection matrix  ）**
+
+## 正确处理对象的前后关系
+
+### 隐藏面消除
+
+1、开启隐藏面消除功能。
+
+```js
+gl.enable(gl.DEPTH_TEST);  
+```
+
+2、在绘制之前，清除深度缓冲区。
+
+```js
+gl.clear(gl.DEPTH_BUFFER_BIT);
+```
+
+
+
+```js
+gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+```
+
+类似地，同时清除任意两个缓冲区时，都可以使用按位或符号。
+
+
+
+### 示例程序（DepthBuffer.js  ）
+
+在任何三维场景中，你都应该开启隐藏面消除，并在合适的时刻清空深度缓冲区（通常是在绘制每一帧之前）。
+
+### 深度冲突（Z Fighting  ）
+
+WebGL提供一种被称为**多边形偏移（polygon offset  ）**的机制来解决这个问题。
+
+## 立方体
+
+# 第8章 光照
