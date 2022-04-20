@@ -341,3 +341,17 @@ If the macro is not defined, this part is executed.
 
 ### 示例程序(LookAtTrianglesWithKeys.js)  
 
+## 可视范围（正射类型，Box Type）
+
+所有这些限制，包括水平视角、垂直视角和可视深度，定义了**可视空间（viewing volume  ）**。
+
+### 可视空间
+
+有两类常用的可视空间：
+
+- 长方体可视空间，也成盒状空间，由**正射投影（orthographic projection  ）**产生。
+
+- 四棱锥/金字塔可视空间，由**透视投影（perspective projection  ）**产生。
+
+### 定义盒状可视空间
+
