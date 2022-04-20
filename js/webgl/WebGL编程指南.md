@@ -355,3 +355,41 @@ If the macro is not defined, this part is executed.
 
 ### 定义盒状可视空间
 
+**正射投影矩阵（orthographic projection matrix  ）**
+
+### JavaScript  修改HTML元素
+
+打印，保留两位小数
+
+```js
+Math.round(g_near * 100)/100
+```
+
+round() 方法可把一个数字舍入为最接近的整数。
+
+### 补上缺掉的角（LookAtTrianglesWithKeys_ViewVolume.js  ）
+
+### 用示例程序做实验
+
+在“可视空间”一节中曾讲过，如果可视空间近裁减面的宽高比与`<canvas>`不一致，显示出的物体就会被压缩变形。
+
+## 可视空间（透视投影）
+
+Specifying the Visible Range Using a Quadrangular Pyramid  
+
+### 定义透视投影可视空间
+
+aspect  ：宽高比
+
+**透视投影矩阵（perspective projection matrix）.**  
+
+```js
+Matrix4.setPerspective(fov, aspect, near, far)
+
+// fov: 垂直视角，即可视空间顶面和底面的夹角，必须大于0
+// aspect: 指定近裁减面的宽高比
+// near,far: 
+```
+
+### 投影矩阵的作用
+
