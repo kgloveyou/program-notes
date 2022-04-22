@@ -555,3 +555,15 @@ Lighting the Translated-Rotated Object
 
 ### 多关节模型
 
+## 着色器和着色器程序对象：initShaders()  函数的作用
+
+
+
+# 第10章 高级技术
+
+## 用鼠标控制物体旋转
+
+### 如何实现物体旋转
+
+## 选中物体
+
