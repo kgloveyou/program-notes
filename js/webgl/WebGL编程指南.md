@@ -550,3 +550,8 @@ Lighting the Translated-Rotated Object
 ## 绘制和操作由其他对象组成的对象
 
 ### 层次结构
+
+### 单关节模型
+
+### 多关节模型
+
