@@ -576,3 +576,39 @@ Lighting the Translated-Rotated Object
 
 ### 选择一个表面
 
+## HUD（Head Up Display, 平视显示器）
+
+### 如何实现HUD
+
+### 在网页上方显示三维物体
+
+## 雾化（大气效果）
+
+### 如何实现雾化
+
+### 使用 w 值 (Fog_w.js)  
+
+## 绘制圆形的点
+
+### 如何实现圆形的点
+
+在片元着色器中，我们可以使用`discard`语句来放弃当前片元。
+
+```js
+// Fragment shader program
+var FSHADER_SOURCE =
+  '#ifdef GL_ES\n' +
+  'precision mediump float;\n' +
+  '#endif\n' +
+  'void main() {\n' +    // Center coordinate is (0.5, 0.5)
+  '  float d = distance(gl_PointCoord, vec2(0.5, 0.5));\n' +
+  '  if(d < 0.5) {\n' +  // Radius is 0.5
+  '    gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' +
+  '  } else { discard; }\n' +
+  '}\n';
+```
+
+## α混合
+
+## 切换着色器
+
