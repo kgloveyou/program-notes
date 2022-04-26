@@ -626,3 +626,9 @@ var FSHADER_SOURCE =
 
 ### OBJ文件格式
 
+## 处理上下文丢失
+
+Handling Lost Context  
+
+### 如何处理上下文丢失
+
