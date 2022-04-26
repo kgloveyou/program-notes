@@ -2,7 +2,9 @@
 
 ## 勘误表
 
-https://mp.weixin.qq.com/s/kYxypgM__1Co8LsqQSwhKg
+ *2021-12-05*，https://mp.weixin.qq.com/s/HkOHqzZGrzvlBflSjb8OYQ
+
+ *2021-10-30*，https://mp.weixin.qq.com/s/kYxypgM__1Co8LsqQSwhKg
 
 ## 书中代码
 
