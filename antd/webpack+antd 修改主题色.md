@@ -1,5 +1,37 @@
 # webpack+antd 修改主题色
 
+## 定制主题（官方文档）
+
+https://ant-design.gitee.io/docs/react/customize-theme-cn
+
+### 社区教程[#](https://ant-design.gitee.io/docs/react/customize-theme-cn#社区教程)
+
+- [Using Ant Design in Sass-Styled Webpack Projects with `antd-scss-theme-plugin`](https://intoli.com/blog/antd-scss-theme-plugin/)
+
+  只有一个theme.scss文件
+
+- [How to Customize Ant Design with React & Webpack… the Missing Guide](https://medium.com/@GeoffMiller/how-to-customize-ant-design-with-react-webpack-the-missing-guide-c6430f2db10f)
+
+  主题覆盖在编译时完成，因此在运行时没有（内置）主题切换。
+
+- [Theming Ant Design with Sass and Webpack](https://gist.github.com/Kruemelkatze/057f01b8e15216ae707dc7e6c9061ef7)
+
+  使用了两种主题色，可以切换；但是是用scss样式。
+
+- [Using Sass/Scss with React App (create-react-app)](https://medium.com/@mzohaib.qc/using-sass-scss-with-react-app-create-react-app-d03072083ef8)
+
+- [Dynamic Theming in Browser using Ant Design](https://medium.com/@mzohaib.qc/ant-design-dynamic-runtime-theme-1f9a1a030ba0)
+
+- [Zero config custom theme generator](https://www.npmjs.com/package/@emeks/antd-custom-theme-generator)
+
+​		一个npm包，用户生成custom-theme.less文件。@emeks/antd-custom-theme-generator
+
+
+
+## 动态主题（实验性）
+
+https://ant-design.gitee.io/docs/react/customize-theme-variable-cn，没看明白。
+
 ## 少量内容
 
 在cvat-ui\webpack.config.js中，少量内容，可以直接添加，参考文件D:\work_repos\ad-magic-frontend\annot-ui\webpack.config.js
@@ -121,4 +153,8 @@ ess-loader6.0.0之后,javascriptEnabled被放到了lessOptions中（[webpack中l
 // @border-color-base: #f60; // 边框色
 
 ```
+
+## 动态切换主题
+
+https://github.com/GitOfZGT/dynamic-theme-demos/tree/master/projects/webpack-react-antd-dynamic-theme
 
