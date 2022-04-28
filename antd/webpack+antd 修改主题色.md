@@ -22,6 +22,32 @@ https://ant-design.gitee.io/docs/react/customize-theme-cn
 
 - [Dynamic Theming in Browser using Ant Design](https://medium.com/@mzohaib.qc/ant-design-dynamic-runtime-theme-1f9a1a030ba0)
 
+  Ant Design Dynamic/Runtime Theme（*）
+
+  更新主题的代码
+
+  E:\github-demos\antd-theme-webpack-plugin\examples\antd-init\index.js
+
+  ```js
+    handleColorChange = (varname, color) => {
+      const { vars } = this.state;
+      if (varname) vars[varname] = color;
+      console.log(vars);
+      window.less
+        .modifyVars(vars)
+        .then(() => {
+          // message.success(`Theme updated successfully`);
+          this.setState({ vars });
+          localStorage.setItem("app-theme", JSON.stringify(vars));
+        })
+        .catch(error => {
+          message.error(`Failed to update theme`);
+        });
+    };
+  ```
+
+  
+
 - [Zero config custom theme generator](https://www.npmjs.com/package/@emeks/antd-custom-theme-generator)
 
 ​		一个npm包，用户生成custom-theme.less文件。@emeks/antd-custom-theme-generator
@@ -31,6 +57,8 @@ https://ant-design.gitee.io/docs/react/customize-theme-cn
 ## 动态主题（实验性）
 
 https://ant-design.gitee.io/docs/react/customize-theme-variable-cn，没看明白。
+
+
 
 ## 少量内容
 
@@ -157,4 +185,43 @@ ess-loader6.0.0之后,javascriptEnabled被放到了lessOptions中（[webpack中l
 ## 动态切换主题
 
 https://github.com/GitOfZGT/dynamic-theme-demos/tree/master/projects/webpack-react-antd-dynamic-theme
+
+上面设置太麻烦了。
+
+## 实现antd一键更换皮肤（×）
+
+https://juejin.cn/post/6893746081986215944
+
+基于create-react-app脚手架创建的项目，没有webpack.config.js文件（没有eject出来）。
+
+依赖`customize-cra`库，该项目提供了一组实用程序来自定义 create-react-app 版本 2 和 3 配置，利用 react-app-rewired 核心功能。
+
+## react实现antd线上主题动态切换功能（×）
+
+https://juejin.cn/post/6844903910503776269
+
+跟上述文章一模一样。
+
+## admagic切换主题
+
+### 读取配置
+
+annot-ui\src\components\cvat-app.tsx
+
+```tsx
+// 获取platformConfig
+if (!platformConfigInitialized && !platformConfigFetching) {
+    fetchPlatformConfig();
+}
+```
+
+### 实现方案
+
+目前，Ant Design Dynamic/Runtime Theme（*）看来是可以尝试的方案。
+
+这种方案的类似文章：
+
+[Create Dynamic theme with antd and reactjs](https://cloud.tencent.com/developer/article/1653803)
+
+[React+antd在线上动态更换皮肤主题](https://juejin.cn/post/6844903795093159943)
 
