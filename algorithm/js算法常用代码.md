@@ -40,3 +40,12 @@ const dp = new Array(n).fill(0).map(v => new Array(target + 1, false));
 let dp = Array(amount + 1).fill(Infinity);
 ```
 
+## 5、substr与substring的区别
+
+```js
+"hello".substr(1,3)	//第2个参数为子串长度
+'ell'
+"hello".substring(1,3)	//第2个参数为子串结尾索引+1
+'el'
+```
+
