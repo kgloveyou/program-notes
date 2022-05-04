@@ -177,3 +177,38 @@ fruits.pop();
 Banana,Orange,Apple
 ```
 
+## 13、Map数据结构
+
+https://es6.ruanyifeng.com/#docs/set-map#Map
+
+**（1）Map 转为数组**
+
+前面已经提过，Map 转为数组最方便的方法，就是使用扩展运算符（`...`）。
+
+```js
+const myMap = new Map()
+  .set(true, 7)
+  .set({foo: 3}, ['abc']);
+[...myMap]
+// [ [ true, 7 ], [ { foo: 3 }, [ 'abc' ] ] ]
+```
+
+347. `前 K 个高频元素`，巧用该特性实现排序，
+
+     https://leetcode-cn.com/problems/top-k-frequent-elements/solution/-by-uniquelee-711h/
+
+**（2）数组 转为 Map**
+
+将数组传入 Map 构造函数，就可以转为 Map。
+
+```js
+new Map([
+  [true, 7],
+  [{foo: 3}, ['abc']]
+])
+// Map {
+//   true => 7,
+//   Object {foo: 3} => ['abc']
+// }
+```
+
