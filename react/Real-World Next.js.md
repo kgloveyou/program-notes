@@ -134,3 +134,14 @@ Next.js 提供了一种独特的方法来解决这个问题：增量静态再生
 ### 在我们的页面中使用路由变量
 
 ### 在组件中使用路由变量
+
+### 客户端导航
+
+## 提供静态资产（Serving static assets）
+
+Cumulative Layout Shift (CLS)  
+
+### Next.js的自动图片优化
+
+使用`Image` 组件。
+
