@@ -34,3 +34,12 @@ src
 
 我们推荐尽可能的拆分路由组件为更细粒度的组件，对于多个页面可能会用到的组件我们推荐放到 src/components 中，对于只是被单个页面依赖的（区块）组件，我们推荐就近维护到路由组件文件夹下即可。
 
+
+
+# ant design pro v4 从后台服务器请求菜单
+
+https://www.yuque.com/asuncat/blog/wgnx0u
+
+# 基于 Ant Design Pro 的菜单栏权限控制
+
+https://juejin.cn/post/6875880022537109512
