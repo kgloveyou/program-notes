@@ -52,6 +52,12 @@ https://github.com/CurryPaste/ws-heartbeat-ts
 
 
 
+### 问题：
+
+页面中多个组件使用ws实例后，前面定义的`onmessage`方法会被后续的定义覆盖，导致接收不到消息。
+
+https://github.com/CurryPaste/ws-heartbeat-ts/issues/10
+
 ## 多个tab页共享websocket
 
 多个tab页如何共享websocket
