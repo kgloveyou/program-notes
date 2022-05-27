@@ -78,6 +78,14 @@ https://blog.csdn.net/sinat_17775997/article/details/123701827，代码路径：
 
 
 
+## react-use-websocket
+
+https://www.npmjs.com/package/react-use-websocket
+
+没有心跳机制，可行的解决方案：https://github.com/robtaussig/react-use-websocket/issues/133
+
+
+
 ## 参考资料
 
 [ant desgin pro 的项目中 封装的 socket.js](https://www.cnblogs.com/taxun/p/13560138.html)
