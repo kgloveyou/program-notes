@@ -92,3 +92,35 @@ https://www.npmjs.com/package/react-use-websocket
 
 [websocket长连接和公共状态管理方案（vuex + websocket or redux + websocket ）](https://juejin.cn/post/6882930418446925832)
 
+
+
+## dva+subscriptions
+
+[DvaJS的Subscription的使用](https://blog.51cto.com/u_15275953/5131016)
+
+
+
+## 单实例ws监听多个onmessage事件
+
+[Multiple Handlers for Websocket Javascript](https://stackoverflow.com/questions/39210534/multiple-handlers-for-websocket-javascript)
+
+```js
+ws.addEventListener("message", function(event) {
+    var msg = event.data;
+    console.info('Push Message : ' + msg);
+    Ext.toast({
+         html: msg,
+         title: 'Alert',
+         align: 'br',
+         autoShow : true
+    });
+
+});
+
+// some other listener for incoming messages
+ws.addEventListener("message", function(event) {
+    // code here
+});
+```
+
+如果在多个地方添加监听，会导致响应多次
