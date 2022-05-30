@@ -124,3 +124,36 @@ ws.addEventListener("message", function(event) {
 ```
 
 如果在多个地方添加监听，会导致响应多次
+
+
+
+## pubsub-js
+
+https://www.npmjs.com/package/pubsub-js
+
+PubSubJS 是一个用 JavaScript 编写的基于主题的发布/订阅库。
+
+### Basic example
+
+```js
+// create a function to subscribe to topics
+var mySubscriber = function (msg, data) {
+    console.log( msg, data );
+};
+
+// add the function to the list of subscribers for a particular topic
+// we're keeping the returned token, in order to be able to unsubscribe
+// from the topic later on
+var token = PubSub.subscribe('MY TOPIC', mySubscriber);
+
+// publish a topic asynchronously
+PubSub.publish('MY TOPIC', 'hello world!');
+
+// publish a topic synchronously, which is faster in some environments,
+// but will get confusing when one topic triggers new topics in the
+// same execution chain
+// USE WITH CAUTION, HERE BE DRAGONS!!!
+PubSub.publishSync('MY TOPIC', 'hello world!');
+```
+
+[React+Websocket简单实例](https://developer.aliyun.com/article/782771?spm=a2c6h.13262185.profile.11.5addabf9hcjQqA)
