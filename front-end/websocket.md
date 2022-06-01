@@ -54,9 +54,21 @@ https://github.com/CurryPaste/ws-heartbeat-ts
 
 ### 问题：
 
-页面中多个组件使用ws实例后，前面定义的`onmessage`方法会被后续的定义覆盖，导致接收不到消息。
+1、页面中多个组件使用ws实例后，前面定义的`onmessage`方法会被后续的定义覆盖，导致接收不到消息。
 
 https://github.com/CurryPaste/ws-heartbeat-ts/issues/10
+
+2、ws服务器重启后，重连失败
+
+
+
+## message-center-frontend中定义的useWebsocket.jsx
+
+D:\work_repos\message-center-frontend\src\hooks\useWebsocket.jsx
+
+每调用一次`const { ws } = useWebsocket();`会创建一个新的连接。
+
+
 
 ## 多个tab页共享websocket
 
@@ -157,3 +169,4 @@ PubSub.publishSync('MY TOPIC', 'hello world!');
 ```
 
 [React+Websocket简单实例](https://developer.aliyun.com/article/782771?spm=a2c6h.13262185.profile.11.5addabf9hcjQqA)
+
