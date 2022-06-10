@@ -87,6 +87,10 @@ const memoizedValue = useMemo(() => computeExpensiveValue(a, b), [a, b]);
 
 
 
+useMemo和useEffect的执行时机是不一致的：useEffect执行的是副作用，所以一定是在渲染之后执行的，useMemo是需要有返回值的，而返回值可以直接参与渲染的，所以useMemo是在渲染期间完成的
+
+
+
 ### useCallback
 
 https://zh-hans.reactjs.org/docs/hooks-reference.html#usecallback
