@@ -61,7 +61,7 @@ def auto_delete_all(file_dir,target):
     print("已自动删除%s文件夹"%(target))
 
 # 输入目录地址
-root = r"K:\laptop\e\编程\JavaScript\Node.js"
+root = r"D:"
 # 输入文件夹名称
 target = "node_modules"
 # # 最近30天修改过的文件夹 不删除node_modules
