@@ -181,6 +181,76 @@ useEffect( () => {
 
 **Cleanup function: Remove listeners, unsubscribe, etc.**  
 
+​		当依赖数组中传递的值是布尔、字符串或数字类型时，这将工作得很好。 但是当你处理复杂的值（例如对象或数组）时，它会遇到一些问题。（https://dev.to/ms_yogii/useeffect-dependency-array-and-object-comparison-45el）
+
+​		解决方式有两种：
+
+- 考虑一个将所有用户详细信息作为属性传递给函数的对象。 在您的应用程序中，您只想在用户的用户名更改时执行副作用。 因此，在这种情况下，依赖关系变得非常清晰！ 与其将整个用户详细信息对象传递给 `useEffect`，不如仅传递重要的详细信息。 像这样的东西-
+
+  ```jsx
+  function UserProfile({ userDetails }) {
+    const [error, setError] = useState(‘’);
+  
+    useEffect(() => {
+      if (userDetails.username) {
+        // Do something…!
+      }
+    }, [userDetails.username])
+  }
+  ```
+
+- Memoizing the object
+
+  为了解决所有这些问题，记忆对象成为一种非常简单且易于维护的解决方案。 让我们看看如何 -
+
+  记忆一个对象意味着我们试图保持一个对象的记忆。 更好的说法是，我们缓存一个对象并在我们的函数中维护它的一个副本。 当函数重新渲染时，这个相同的副本将在我们的函数中使用，直到该对象的任何属性都没有改变。 这样，我们最大限度地减少了创建对象的昂贵操作，并保持了一种捕捉变化的方法。
+
+  对于这个记忆，我们使用 `useMemo` hook。 让我们看看代码 -
+
+  ```jsx
+  function UserProfile({ userDetails }) {
+    const [error, setError] = useState('');
+    const { username, email, address } = userDetails;
+  
+    const user = useMemo(() => createUser({ username, email, address }), [
+      username,
+      email,
+      address,
+    ]);
+  
+    useEffect(() => {
+      if (username) {
+        // Do something…!
+      }
+    }, [user]);
+  }
+  ```
+
+  和上面的函数一样，createUser 函数只有在username、email 和address发生变化时才会被调用，并且会创建新的 `User` 对象。这样我们可以确保在依赖数组中比较正确的对象副本，并优化不必要的重新渲染，
+
+  
+
+​		这是使用 useEffect 时的棘手主题之一，因为我们往往会忽略 react 会比较对象的引用这一事实。 将对象直接传递给 useEffect 会使函数出错，我们最终会花费大量时间来找出到底是什么错误！！ （发生在我身上很多！）
+
+
+
+​		合格的代码示例：(https://deepscan.io/docs/rules/react-useless-dependency-of-hook)
+
+```jsx
+import React, { useEffect, useMemo } from 'react';
+
+export function HelloColor(props) {
+  let style = useMemo(() => ({ color: props.color }), [props.color]);
+  useEffect(
+    () => { doSomething(style); },
+    [style]
+  );
+  return <div style={style}>Hello</div>;
+}
+```
+
+
+
 ### 4.1.5 Summarizing the ways to call the useEffect hook  
 
 | Call pattern                        | Code pattern                                                 | Execution pattern                                            |
@@ -1011,7 +1081,7 @@ function AppProvider({ children }) {
 
 **为状态值及其更新函数使用单独的context**
 
-​		当 context provider的值改变时，它的consumers会重新渲染。 A provider 也可能由于其父级重新渲染而重新渲染。 If the provider’s value is an object that the code creates every time the provider renders,则该值在每次渲染时都会发生变化，即使您分配给对象的属性值保持不变。 
+​		当 context provider的值改变时，它的consumers会重新渲染。 A provider 也可能由于其父级重新渲染而重新渲染。 If the provider’s value is an object that the code creates every time the provider renders,则该值在每次渲染时都会发生变化，即使你分配给对象的属性值保持不变。 
 
 ​		所以，我们有两个问题：
 
@@ -1055,7 +1125,7 @@ function AppProvider({ children }) {
 const MyContext = createContext(defaultValue);  
 ```
 
-​		如果相应的provider没有为该context设置任何值，则 `useContext` hook将返回该context对象的默认值。 如果您的应用使用默认语言或主题，这可能会很有用；provider可用于覆盖默认值，但如果不包含provider，一切仍然有效。
+​		如果相应的provider没有为该context设置任何值，则 `useContext` hook将返回该context对象的默认值。 如果你的应用使用默认语言或主题，这可能会很有用；provider可用于覆盖默认值，但如果不包含provider，一切仍然有效。
 
 ## 概述
 
