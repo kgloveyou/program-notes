@@ -21,10 +21,16 @@ return +n
 ## 3、创建二维数组并初始化为0
 
 ```js
-a = Array(5).fill(0).map(x => Array(10).fill(0))
+a = Array(5).fill(0).map(() => Array(10).fill(0));
 ```
 
 以上代码创建5*10列，值为0的数组。
+
+```js
+const f = new Array(m).fill(0).map(() => new Array(n).fill(0));
+```
+
+以上代码创建m*n列，值为0的数组。
 
 
 
