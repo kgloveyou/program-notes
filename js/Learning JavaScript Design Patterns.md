@@ -353,3 +353,169 @@ An observable object usually contains 3 important parts:
 A popular library that uses the observable pattern is RxJS.
 
 > ReactiveX 将观察者模式与迭代器模式和函数式编程与集合相结合，以满足对管理事件序列的理想方式的需求。 -RxJS
+
+#### 优点
+
+使用观察者模式是执行关注点分离和单一职责原则的好方法。 观察者对象与可观察对象没有紧密耦合，并且可以随时（解）耦合。 可观察对象负责监控事件，而观察者只是处理接收到的数据。
+
+#### 缺点
+
+如果观察者变得过于复杂，则在通知所有订阅者时可能会导致性能问题。
+
+### Mixin Pattern
+
+mixin 是一个对象，我们可以使用它来向另一个对象或类添加可重用的功能，而无需使用继承。 我们不能单独使用 mixin：它们的唯一目的是在没有继承的情况下向对象或类添加功能。
+
+```js
+class Dog {
+  constructor(name) {
+    this.name = name;
+  }
+}
+
+const dogFunctionality = {
+  bark: () => console.log("Woof!"),
+  wagTail: () => console.log("Wagging my tail!"),
+  play: () => console.log("Playing!")
+};
+
+Object.assign(Dog.prototype, dogFunctionality);
+```
+
+#### React (pre ES6)
+
+在引入 ES6 类之前，Mixins 经常被用来为 React 组件添加功能。 React 团队不鼓励使用 mixin，因为它很容易给组件增加不必要的复杂性，使其难以维护和重用。 React 团队鼓励使用高阶组件，现在通常可以用 Hooks 代替。
+
+
+
+Mixins 允许我们通过将功能注入到对象的原型中轻松地向对象添加功能而无需继承。 修改对象的原型被视为不好的做法，因为它可能导致原型污染和我们功能来源的不确定性。
+
+### 原型模式
+
+在许多相同类型的对象之间共享属性
+
+原型模式是在许多相同类型的对象之间共享属性的有用方式。 原型是 JavaScript 原生的对象，对象可以通过原型链访问。
+
+```js
+class Dog {
+  constructor(name) {
+    this.name = name;
+  }
+
+  bark() {
+    return `Woof!`;
+  }
+}
+
+const dog1 = new Dog("Daisy");
+const dog2 = new Dog("Max");
+const dog3 = new Dog("Spot");
+```
+
+请注意这里的构造函数如何包含一个 name 属性，而类本身包含一个 bark 属性。 当使用 ES6 类时，在类本身上定义的所有属性，在本例中为 bark，都会自动添加到原型中。
+
+我们可以通过访问构造函数的`prototype`属性，或通过任何实例的 `__proto__` 属性直接看到`prototype`。
+
+```js
+console.log(Dog.prototype);
+// constructor: ƒ Dog(name, breed) bark: ƒ bark()
+
+console.log(dog1.__proto__);
+// constructor: ƒ Dog(name, breed) bark: ƒ bark()
+```
+
+
+
+很清楚为什么它被称为原型链：当我们尝试访问对象上不直接可用的属性时，JavaScript 会递归地遍历 `__proto__` 指向的所有对象，直到找到该属性！
+
+#### Object.create
+
+`Object.create` 方法允许我们创建一个新对象，我们可以将其原型的值显式传递给该对象。
+
+```js
+const dog = {
+  bark() {
+    return `Woof!`;
+  }
+};
+
+const pet1 = Object.create(dog);
+```
+虽然 pet1 本身没有任何属性，但它确实可以访问其原型链上的属性！ 由于我们将 dog 对象作为 pet1 的原型传递，我们可以访问 bark 属性。
+```js
+const dog = {
+  bark() {
+    console.log(`Woof!`);
+  }
+};
+
+const pet1 = Object.create(dog);
+
+pet1.bark(); // Woof!
+console.log("Direct properties on pet1: ", Object.keys(pet1));	
+//Direct properties on pet1:  []
+
+console.log("Properties on pet1's prototype: ", Object.keys(pet1.__proto__));
+// Properties on pet1's prototype:  (1) ["bark"]
+```
+
+
+
+原型模式允许我们轻松地让对象访问和继承其他对象的属性。 由于原型链允许我们访问不是直接在对象本身上定义的属性，我们可以避免方法和属性的重复，从而减少使用的内存量。
+
+### Container/Presentational Pattern
+
+在 React 中，强制分离关注点的一种方法是使用 Container/Presentational 模式。 使用这种模式，我们可以将视图与应用程序逻辑分开。
+
+#### 展示组件
+
+一个展示组件通过 `props` 接收它的数据。 它的主要功能是简单地以我们希望的方式展示它接收到的数据，包括样式，而不修改该数据。
+
+展示组件通常是无状态的：它们不包含自己的 React 状态，除非它们需要用于 UI 目的的状态。 他们收到的数据不会被展示组件本身更改。
+
+展示组件从容器组件接收数据。
+
+#### 容器组件
+
+容器组件的主要功能是将数据传递给它们所包含的展示组件。
+
+#### Hooks
+
+在许多情况下，可以用 React Hooks 替换 Container/Presentational 模式。 Hooks 的引入使开发人员可以轻松添加状态，而无需容器组件来提供该状态。
+
+```jsx
+export default function useDogImages() {
+  const [dogs, setDogs] = useState([]);
+
+  useEffect(() => {
+    fetch("https://dog.ceo/api/breed/labrador/images/random/6")
+      .then(res => res.json())
+      .then(({ message }) => setDogs(message));
+  }, []);
+
+  return dogs;
+}
+```
+
+通过使用这个hook，我们不再需要包装 `DogImagesContainer` 容器组件来获取数据，并将其发送到展示的 `DogImages` 组件。 相反，我们可以直接在我们的演示 `DogImages` 组件中使用这个hook！
+
+```jsx
+import React from "react";
+import useDogImages from "./useDogImages";
+
+export default function DogImages() {
+  const dogs = useDogImages();
+
+  return dogs.map((dog, i) => <img src={dog} key={i} alt="Dog" />);
+}
+```
+
+Hooks 使得在组件中分离逻辑和视图变得容易，就像容器/展示模式一样。 它为我们节省了将展示组件包装在容器组件中所需的额外层。
+
+#### 优点
+
+#### 缺点
+
+Container/Presentational 模式使得将应用程序逻辑与呈现逻辑分离变得很容易。 然而，Hooks 使得无需使用Container/Presentational 模式就可以实现相同的结果，也无需将无状态的功能组件重写为类组件。注意今天，我们不需要创建类组件来使用 状态了。
+
+尽管我们仍然可以使用 Container/Presentational 模式，即使使用 React Hooks，这种模式在较小的应用程序中很容易被过度使用。
