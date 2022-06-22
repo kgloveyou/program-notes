@@ -522,6 +522,134 @@ Container/Presentational 模式使得将应用程序逻辑与呈现逻辑分离�
 
 ### 模块模式
 
-将您的代码拆分成更小的、可重用的部分
+将你的代码拆分成更小的、可重用的部分
 
-除了能够将您的代码拆分成更小的可重用部分外，模块还允许您将文件中的某些值保密。 默认情况下，模块内的声明范围（封装）到该模块。 如果我们不显式导出某个值，则该值在该模块之外不可用。 这降低了代码库其他部分中声明的值的名称冲突风险，因为这些值在全局范围内不可用。
+除了能够将你的代码拆分成更小的可重用部分外，模块还允许你将文件中的某些值保密。 默认情况下，模块内的声明范围（封装）到该模块。 如果我们不显式导出某个值，则该值在该模块之外不可用。 这降低了代码库其他部分中声明的值的名称冲突风险，因为这些值在全局范围内不可用。
+
+#### ES2015 模块
+
+```js
+import * as math from "./math.js";
+
+math.default(7, 8);
+math.multiply(8, 9);
+math.subtract(10, 3);
+math.square(3);
+```
+
+#### React
+
+#### 动态导入
+
+在文件顶部导入所有模块时，所有模块都会在文件的其余部分之前加载。 在某些情况下，我们只需要根据某个条件导入一个模块。 通过动态导入，我们可以按需导入模块。
+
+```jsx
+import("module").then(module => {
+  module.default();
+  module.namedExport();
+});
+
+// Or with async/await
+(async () => {
+  const module = await import("module");
+  module.default();
+  module.namedExport();
+})();
+```
+
+让我们动态导入前面段落中使用的 math.js 示例。
+
+只有当用户点击按钮时，模块才会被加载。
+
+```jsx
+const button = document.getElementById("btn");
+
+button.addEventListener("click", () => {
+  import("./math.js").then((module) => {
+    console.log("Add: ", module.add(1, 2));
+    console.log("Multiply: ", module.multiply(3, 2));
+
+    const button = document.getElementById("btn");
+    button.innerHTML = "Check the console";
+  });
+});
+
+/*************************** */
+/**** Or with async/await ****/
+/*************************** */
+// button.addEventListener("click", async () => {
+//   const module = await import("./math.js");
+//   console.log("Add: ", module.add(1, 2));
+//   console.log("Multiply: ", module.multiply(3, 2));
+// });
+
+```
+
+通过动态导入模块，我们可以减少页面加载时间。 我们只需要在用户需要时加载、解析和编译用户真正需要的代码。
+
+除了能够按需导入模块外，import() 函数还可以接收表达式。 它允许我们传递模板文字，以便根据给定值动态加载模块。
+
+
+
+用户单击“单击以加载图像”按钮后，将加载每个图像。 图像是本地 .png 文件，它们根据我们传递给字符串的 num 值加载。
+
+```jsx
+const res = await import(`../assets/dog${num}.png`);
+```
+
+这样，我们不依赖于硬编码的模块路径。 它为你根据用户输入、从外部源接收的数据、函数的结果等导入模块的方式增加了灵活性。
+
+### 中介者/中间件模式
+
+中介者模式使组件可以通过一个中心点相互交互：中介者。 中介者不是直接相互交谈，而是接收请求，并将它们转发！ 在 JavaScript 中，中介通常只是一个对象字面量或一个函数。
+
+您可以将此模式与空中交通管制员和飞行员之间的关系进行比较。 与其让飞行员直接相互交谈（这可能最终会变得非常混乱），不如飞行员与空中交通管制员交谈。 空中交通管制员确保所有飞机都接收到安全飞行所需的信息，而不会撞到其他飞机。
+
+尽管我们希望不在 JavaScript 中控制飞机，但我们经常不得不处理对象之间的多向数据。 如果有大量组件，组件之间的通信会变得相当混乱。
+
+不是让每个对象直接与其他对象对话，从而产生多对多关系，而是由中介处理对象的请求。 中介处理此请求，并将其发送到需要的位置。
+
+[](https://res.cloudinary.com/ddxwdqwkr/image/upload/v1609056523/patterns.dev/Screen_Shot_2020-12-23_at_11.23.32_PM_wjft0a.png)
+
+中介者模式的一个很好的用例是聊天室！ 聊天室中的用户不会直接相互交谈。 相反，聊天室充当用户之间的中介。
+
+```js
+class ChatRoom {
+  logMessage(user, message) {
+    const sender = user.getName();
+    console.log(`${new Date().toLocaleString()} [${sender}]: ${message}`);
+  }
+}
+
+class User {
+  constructor(name, chatroom) {
+    this.name = name;
+    this.chatroom = chatroom;
+  }
+
+  getName() {
+    return this.name;
+  }
+
+  send(message) {
+    this.chatroom.logMessage(this, message);
+  }
+}
+
+const chatroom = new ChatRoom();
+
+const user1 = new User("John Doe", chatroom);
+const user2 = new User("Jane Doe", chatroom);
+
+user1.send("Hi there!");
+user2.send("Hey!");
+
+```
+
+#### 案例分析
+
+Express.js 是一个流行的 Web 应用程序服务器框架。 我们可以为用户可以访问的某些路由添加回调。
+
+
+
+中间件模式让我们很容易简化对象之间的多对多关系，让所有通信都流经一个中心点。
