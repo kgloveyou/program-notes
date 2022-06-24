@@ -4,21 +4,6 @@ https://www.patterns.dev/posts/singleton-pattern/
 
 ## Design Patterns
 
-### Hooks Pattern
-
-With the `useEffect` hook, we can *"hook into"* a components lifecycle. The `useEffect` hook effectively combines the `componentDidMount`, `componentDidUpdate`, and `componentWillUnmount` lifecycle methods.
-
-```jsx
-componentDidMount() { ... }
-useEffect(() => { ... }, [])
-
-componentWillUnmount() { ... }
-useEffect(() => { return () => { ... } }, [])
-
-componentDidUpdate() { ... }
-useEffect(() => { ... })
-```
-
 ### 单例模式
 
 `Object.freeze` 方法确保消费代码不能修改 Singleton。 无法添加或修改冻结实例上的属性，这降低了意外覆盖 Singleton 上的值的风险。
@@ -819,3 +804,696 @@ HOC 可以传递给元素的属性的名称可能会导致命名冲突。
 
 
 当使用多个组合的 HOC 时，它们都将 props 传递给包裹在其中的元素，很难确定哪个 HOC 负责哪个 prop。 这可能会妨碍调试和轻松扩展应用程序。
+
+### Render Props 模式
+
+通过 props 将 JSX 元素传递给组件
+
+另一种使组件非常可重用的方法是使用 render prop 模式。 render prop 是组件上的属性，其值是返回 JSX 元素的函数。 除了 render prop 之外，组件本身不渲染任何东西。 相反，组件只是调用 render prop，而不是实现自己的渲染逻辑。
+
+假设我们有一个 `Title` 组件。 在这种情况下，`Title` 组件除了渲染我们传递的值之外不应该做任何事情。 我们可以为此使用render prop！ 让我们将希望 `Title` 组件渲染的值传递给 `render` prop。
+
+```jsx
+import React from "react";
+import { render } from "react-dom";
+import "./styles.css";
+
+const Title = (props) => props.render();
+
+render(
+  <div className="App">
+    <Title render={() => <h1>✨ First render prop! ✨</h1>} />
+    <Title render={() => <h2>🔥 Second render prop! 🔥</h2>} />
+    <Title render={() => <h3>🚀 Third render prop! 🚀</h3>} />
+  </div>,
+  document.getElementById("root")
+);
+
+```
+
+尽管它们被称为*render* 属性，但渲染属性不一定名称是`render`。
+
+
+
+A component that takes a render prop usually does a lot more than simply invoking the `render` prop. Instead, we usually want to pass data from the component that takes the render prop, to the element that we pass as a render prop!
+
+```jsx
+function Component(props) {
+  const data = { ... }
+
+  return props.render(data)
+}
+```
+
+render prop 现在可以接收我们作为参数传递的这个值。
+
+```jsx
+<Component render={data => <ChildComponent data={data} />}
+```
+
+#### Lifting state
+
+#### Render props
+
+```jsx
+function Input(props) {
+  const [value, setValue] = useState("");
+
+  return (
+    <>
+      <input
+        type="text"
+        value={value}
+        onChange={e => setValue(e.target.value)}
+        placeholder="Temp in °C"
+      />
+      {props.render(value)}
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <div className="App">
+      <h1>☃️ Temperature Converter 🌞</h1>
+      <Input
+        render={value => (
+          <>
+            <Kelvin value={value} />
+            <Fahrenheit value={value} />
+          </>
+        )}
+      />
+    </div>
+  );
+}
+```
+
+#### Children as a function
+
+除了常规的 JSX 组件，我们还可以将函数作为子组件传递给 React 组件。 这个功能可以通过 children 属性提供给我们，从技术上讲，它也是一个 render prop。
+
+让我们更改 Input 组件。 我们将只传递一个函数作为 Input 组件的子组件，而不是显式传递 render prop。
+
+```jsx
+export default function App() {
+  return (
+    <div className="App">
+      <h1>☃️ Temperature Converter 🌞</h1>
+      <Input>
+        {value => (
+          <>
+            <Kelvin value={value} />
+            <Fahrenheit value={value} />
+          </>
+        )}
+      </Input>
+    </div>
+  );
+}
+```
+
+我们可以通过 Input 组件上可用的 `props.children` 属性访问此函数。 我们不会使用用户输入的值调用 `props.render`，而是使用用户输入的值调用 `props.children`。
+
+```jsx
+function Input(props) {
+  const [value, setValue] = useState("");
+
+  return (
+    <>
+      <input
+        type="text"
+        value={value}
+        onChange={e => setValue(e.target.value)}
+        placeholder="Temp in °C"
+      />
+      {props.children(value)}
+    </>
+  );
+}
+```
+
+#### Hooks
+
+在某些情况下，我们可以用 Hooks 替换 render props。 [Apollo Client](https://www.apollographql.com/docs/react) 就是一个很好的例子。
+
+#### 优点
+
+
+
+#### 缺点
+
+我们试图用 render props 解决的问题，在很大程度上已经被 React Hooks 所取代。 由于 Hooks 改变了我们向组件添加可重用性和数据共享的方式，它们在许多情况下可以取代 render props 模式。
+
+由于我们无法将生命周期方法添加到 render props，我们只能在不需要更改它们接收到的数据的组件上使用它。
+
+### Hooks 模式
+
+使用函数在整个应用程序的多个组件之间重用有状态逻辑
+
+
+
+React 16.8 引入了一个名为 [Hooks](https://reactjs.org/docs/hooks-intro.html) 的新特性。 Hooks 使得使用 React 状态和生命周期方法成为可能，而无需使用 ES2015 类组件。
+
+虽然 Hooks 不一定是一种设计模式，但 Hooks 在你的应用程序设计中扮演着非常重要的角色。 许多传统的设计模式都可以被 Hooks 取代。
+
+#### 类组件
+
+虽然在引入 React Hooks 之后我们仍然可以使用类组件，但是使用类组件可能会有一些缺点！ 让我们看看使用类组件时最常见的一些问题。
+
+##### 了解 ES2015 类
+
+##### 重构
+
+##### 复杂性
+
+随着我们向类组件添加更多逻辑，组件的大小会迅速增加。 该组件中的逻辑可能会变得混乱和非结构化，这会使开发人员难以理解在类组件中使用某些逻辑的位置。 这会使调试和优化性能变得更加困难。
+
+生命周期方法也需要在代码中进行大量重复。 我们来看一个例子，它使用了一个 `Counter` 组件和一个 `Width` 组件。
+
+#### Hooks
+
+很明显，类组件在 React 中并不总是一个很棒的特性。 为了解决 React 开发者在使用类组件时可能遇到的常见问题，React 引入了 React Hooks。 React Hooks 是可用于管理组件状态和生命周期方法的函数。 React Hooks 可以：
+
+- 向函数式组件添加状态
+- 管理组件的生命周期，而无需使用诸如 `componentDidMount` 和 `componentWillUnmount` 之类的生命周期方法
+- 在整个应用程序的多个组件中重用相同的有状态逻辑
+
+##### State Hook
+
+##### Effect Hook
+
+With the `useEffect` hook, we can *"hook into"* a components lifecycle. The `useEffect` hook effectively combines the `componentDidMount`, `componentDidUpdate`, and `componentWillUnmount` lifecycle methods.
+
+```jsx
+componentDidMount() { ... }
+useEffect(() => { ... }, [])
+
+componentWillUnmount() { ... }
+useEffect(() => { return () => { ... } }, [])
+
+componentDidUpdate() { ... }
+useEffect(() => { ... })
+```
+
+##### Custom Hooks
+
+除了 React 提供的内置 hooks（`useState`、`useEffect`、`useReducer`、`useRef`、`useContext`、`useMemo`、`useImperativeHandle`、`useLayoutEffect`、`useDebugValue`、`useCallback`）外，我们还可以轻松创建自己的自定义 hooks。
+
+你可能已经注意到所有的 hooks 都是以`use`开始的。 为了让 React 检查它是否违反 [Hooks 的规则](https://reactjs.org/docs/hooks-rules.html)，以 `use` 开始你的 hooks 是很重要的。
+
+```jsx
+function useKeyPress(targetKey) {
+  const [keyPressed, setKeyPressed] = React.useState(false);
+
+  function handleDown({ key }) {
+    if (key === targetKey) {
+      setKeyPressed(true);
+    }
+  }
+
+  function handleUp({ key }) {
+    if (key === targetKey) {
+      setKeyPressed(false);
+    }
+  }
+
+  React.useEffect(() => {
+    window.addEventListener("keydown", handleDown);
+    window.addEventListener("keyup", handleUp);
+
+    return () => {
+      window.removeEventListener("keydown", handleDown);
+      window.removeEventListener("keyup", handleUp);
+    };
+  }, []);
+
+  return keyPressed;
+}
+```
+
+我们现在可以在多个组件中重用 `useKeyPress` hook，而不是将按键逻辑保留在 `Input` 组件的本地，而不必一遍又一遍地重写相同的逻辑。
+
+Hooks 的另一个巨大优势是社区可以构建和共享 Hooks。 我们只是自己编写了 `useKeyPress` 钩子，但实际上根本没有必要！ 该钩子已经[由其他人构建](https://github.com/streamich/react-use/blob/master/docs/useKeyPress.md)，如果我们刚刚安装它，就可以在我们的应用程序中使用它！
+
+这里有一些网站列出了社区构建的所有钩子，并准备在你的应用程序中使用。
+
+- **[React Use](https://github.com/streamich/react-use)**
+- **[useHooks](https://usehooks.com/)**
+- **[Collection of React Hooks](https://nikgraf.github.io/react-hooks/)**
+
+让我们重写上一节中显示的计数器和宽度示例。 我们将使用 React Hooks 重写应用程序，而不是使用类组件。
+
+```jsx
+import React, { useState, useEffect } from "react";
+import "./styles.css";
+
+import { Count } from "./Count";
+import { Width } from "./Width";
+
+function useCounter() {
+  const [count, setCount] = useState(0);
+
+  const increment = () => setCount(count + 1);
+  const decrement = () => setCount(count - 1);
+
+  return { count, increment, decrement };
+}
+
+function useWindowWidth() {
+  const [width, setWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.addEventListener("resize", handleResize);
+  });
+
+  return width;
+}
+
+export default function App() {
+  const counter = useCounter();
+  const width = useWindowWidth();
+
+  return (
+    <div className="App">
+      <Count
+        count={counter.count}
+        increment={counter.increment}
+        decrement={counter.decrement}
+      />
+      <div id="divider" />
+      <Width width={width} />
+    </div>
+  );
+}
+```
+
+使用 React Hooks 可以更清晰地将我们组件的逻辑分成几个更小的部分。 重用相同的有状态逻辑变得更加容易，如果我们想让组件有状态，我们不再需要将功能组件重写为类组件。 不再需要对 ES2015 类有很好的了解，并且拥有可重用的有状态逻辑增加了组件的可测试性、灵活性和可读性。
+
+##### Additional Hooks guidance
+
+###### Adding Hooks
+
+**1. useState**
+
+**2. useEffect**
+
+`useEffect` Hook 用于在函数组件的主要生命周期事件期间运行代码。 函数组件的主体不允许突变（mutations）、订阅（subscriptions）、计时器（timers）、日志记录（logging）和其他副作用（side effects）。 如果它们被允许，可能会导致 UI 中出现令人困惑的错误和不一致。 `useEffect` hook可防止所有这些“副作用”，并允许 UI 顺利运行。 它是 `componentDidMount` 、 `componentDidUpdate` 和 `componentWillUnmount` 的组合，都在一个地方。
+
+**3. useContext**
+
+`useContext` Hook 接受一个上下文对象，它是从 `React.createcontext` 返回的值，并返回该上下文的当前上下文值。 `useContext` Hook 还可以与 React Context API 一起使用，以便在整个应用程序中共享数据，而无需将你的应用程序属性向下传递到各个级别。
+
+需要注意的是，传递给 `useContext` 钩子的参数必须是上下文对象本身，并且任何调用 `useContext` 的组件总是在上下文值发生变化时重新渲染。
+
+**4. useReducer**
+
+`useReducer` Hook 提供了 `setState` 的替代方案，当你具有涉及多个子值的复杂状态逻辑或下一个状态取决于前一个状态时，它尤其可取。 它接受一个`reducer`函数和一个初始状态输入，并通过数组解构返回当前状态和一个`dispatch`函数作为输出。 `useReducer` 还优化了触发深度更新的组件的性能。
+
+##### 使用Hooks的优缺点
+
+以下是使用 Hooks 的一些好处：
+
+**更少的代码行** Hooks 允许你按关注点和功能而不是生命周期对代码进行分组。 这使得代码不仅更简洁，而且更短。 下面是一个使用 React 的可搜索产品数据表的简单无状态组件的比较，以及使用 `useState` 关键字后它在 Hooks 中的外观。
+
+**简化复杂的组件**
+
+JavaScript 类可能难以管理，难以与热重载一起使用，并且可能不会缩小。 React Hooks 解决了这些问题并确保函数式编程变得容易。 有了 Hooks 的实现，我们就不需要类组件了。
+
+**重用有状态逻辑**
+
+JavaScript 中的类鼓励多层次的继承，这会迅速增加整体复杂性和出错的可能性。 但是，Hooks 允许你在不编写类的情况下使用状态和其他 React 功能。 使用 React，你始终可以重用有状态逻辑，而无需一遍又一遍地重写代码。 这减少了出错的机会，并允许使用普通函数进行组合。
+
+**Sharing non-visual logic**
+
+但是，Hooks 的引入解决了这个问题，因为它允许将有状态逻辑提取到一个简单的 JavaScript 函数中。
+
+
+
+当然，Hooks 有一些潜在的缺点值得牢记：
+
+- 必须尊重它的规则，没有 linter 插件，很难知道哪个规则被破坏了。
+- 需要相当长的时间练习才能正确使用（Exp: useEffect）。
+- 注意错误使用（Exp: useCallback, useMemo）。
+
+#### React Hooks vs 类
+
+以下是 Hooks 和 Classes 之间的一些区别，可帮助你做出决定：
+
+| React Hooks                                     | Classes                                                      |
+| ----------------------------------------------- | ------------------------------------------------------------ |
+| 它有助于避免多个层次结构并使代码更清晰          | Generally, when you use HOC or *renderProps,* you have to restructure your App with multiple hierarchies when you try to see it in DevTools |
+| It provides uniformity across React components. | Classes confuse both humans and machines due to the need to understand binding and the context in which functions are called. |
+
+### 享元模式（Flyweight Pattern）
+
+Reuse existing instances when working with identical objects
+
+当我们创建大量相似对象时，享元模式是一种节省内存的有用方法。
+
+```jsx
+class Book {
+  constructor(title, author, isbn) {
+    this.title = title;
+    this.author = author;
+    this.isbn = isbn;
+  }
+}
+
+const books = new Map();
+const bookList = [];
+
+const addBook = (title, author, isbn, availability, sales) => {
+  const book = {
+    ...createBook(title, author, isbn),
+    sales,
+    availability,
+    isbn
+  };
+
+  bookList.push(book);
+  return book;
+};
+
+const createBook = (title, author, isbn) => {
+  const existingBook = books.has(isbn);
+
+  if (existingBook) {
+    return books.get(isbn);
+  }
+
+  const book = new Book(title, author, isbn);
+  books.set(isbn, book);
+
+  return book;
+};
+
+addBook("Harry Potter", "JK Rowling", "AB123", false, 100);
+addBook("Harry Potter", "JK Rowling", "AB123", true, 50);
+addBook("To Kill a Mockingbird", "Harper Lee", "CD345", true, 10);
+addBook("To Kill a Mockingbird", "Harper Lee", "CD345", false, 20);
+addBook("The Great Gatsby", "F. Scott Fitzgerald", "EF567", false, 20);
+
+console.log("Total amount of copies: ", bookList.length);
+console.log("Total amount of books: ", books.size);
+
+```
+
+当你创建大量对象时，享元模式很有用，这可能会耗尽所有可用的 RAM。 它使我们能够最大限度地减少消耗的内存量。
+
+在 JavaScript 中，我们可以通过[原型继承](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Inheritance_and_the_prototype_chain)轻松解决这个问题。 如今，硬件拥有 GB 的 RAM，这使得享元模式变得不那么重要了。
+
+### 工厂模式
+
+使用工厂模式，我们可以使用工厂函数来创建新对象。 当一个函数返回一个新对象而不使用 new 关键字时，它就是一个工厂函数！
+
+```js
+const createUser = ({ firstName, lastName, email }) => ({
+  firstName,
+  lastName,
+  email,
+  fullName() {
+    return `${this.firstName} ${this.lastName}`;
+  }
+});
+
+const user1 = createUser({
+  firstName: "John",
+  lastName: "Doe",
+  email: "john@doe.com"
+});
+
+const user2 = createUser({
+  firstName: "Jane",
+  lastName: "Doe",
+  email: "jane@doe.com"
+});
+
+console.log(user1);
+console.log(user2);
+```
+
+如果我们要创建相对复杂和可配置的对象，工厂模式会很有用。 可能会发生键和值的值取决于特定环境或配置的情况。 使用工厂模式，我们可以轻松创建包含自定义键和值的新对象！
+
+```js
+const createObjectFromArray = ([key, value]) => ({
+  [key]: value
+});
+
+createObjectFromArray(["name", "John"]); // { name: "John" }
+```
+
+#### 优点
+
+当我们必须创建多个共享相同属性的较小对象时，工厂模式很有用。 工厂函数可以根据当前环境或用户特定的配置轻松返回自定义对象。
+
+#### 缺点
+
+在 JavaScript 中，工厂模式只不过是一个不使用 new 关键字就返回对象的函数。 [ES6 箭头函数](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions#Arrow_functions)允许我们创建每次隐式返回一个对象的小型工厂函数。
+
+但是，在许多情况下，每次创建新实例而不是新对象可能更节省内存。
+
+```js
+class User {
+  constructor(firstName, lastName, email) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.email = email;
+  }
+
+  fullName() {
+    return `${this.firstName} ${this.lastName}`;
+  }
+}
+
+const user1 = new User({
+  firstName: "John",
+  lastName: "Doe",
+  email: "john@doe.com"
+});
+
+const user2 = new User({
+  firstName: "Jane",
+  lastName: "Doe",
+  email: "jane@doe.com"
+});
+```
+
+### 复合模式
+
+创建多个组件协同工作以执行单个任务
+
+在我们的应用程序中，我们经常有属于彼此的组件。 它们通过共享状态相互依赖，并共同共享逻辑。 你经常会在`select`、下拉组件或菜单项等组件中看到这一点。 复合组件模式允许你创建所有组件一起工作以执行任务。
+
+#### Context API
+
+使用复合组件模式和 React 的 [Context API](https://reactjs.org/docs/context.html) 非常适合这个例子！
+
+FlyOut.js
+
+```jsx
+import React from "react";
+import Icon from "./Icon";
+
+const FlyOutContext = React.createContext();
+
+export function FlyOut(props) {
+  const [open, toggle] = React.useState(false);
+
+  return (
+    <div className={`flyout`}>
+      <FlyOutContext.Provider value={{ open, toggle }}>
+        {props.children}
+      </FlyOutContext.Provider>
+    </div>
+  );
+}
+
+function Toggle() {
+  const { open, toggle } = React.useContext(FlyOutContext);
+
+  return (
+    <div className="flyout-btn" onClick={() => toggle(!open)}>
+      <Icon />
+    </div>
+  );
+}
+
+function List({ children }) {
+  const { open } = React.useContext(FlyOutContext);
+  return open && <ul className="flyout-list">{children}</ul>;
+}
+
+function Item({ children }) {
+  return <li className="flyout-item">{children}</li>;
+}
+
+FlyOut.Toggle = Toggle;
+FlyOut.List = List;
+FlyOut.Item = Item;
+
+```
+
+FlyoutMenu.js
+
+```jsx
+import React from "react";
+import "./styles.css";
+import { FlyOut } from "./FlyOut";
+
+export default function FlyoutMenu() {
+  return (
+    <FlyOut>
+      <FlyOut.Toggle />
+      <FlyOut.List>
+        <FlyOut.Item>Edit</FlyOut.Item>
+        <FlyOut.Item>Delete</FlyOut.Item>
+      </FlyOut.List>
+    </FlyOut>
+  );
+}
+```
+
+#### [React.Children.map](https://reactjs.org/docs/react-api.html#reactchildrenmap)
+
+We can also implement the Compound Component pattern by mapping over the children of the component. We can add the `open` and `toggle` properties to these elements, by [cloning](https://reactjs.org/docs/react-api.html#cloneelement) them with the additional props.
+
+FlyOut.js
+
+```js
+import React from "react";
+import Icon from "./Icon";
+
+export function FlyOut(props) {
+  const [open, toggle] = React.useState(false);
+
+  return (
+    <div className={`flyout`}>
+      {React.Children.map(props.children, child =>
+        React.cloneElement(child, { open, toggle })
+      )}
+    </div>
+  );
+}
+
+function Toggle({ open, toggle }) {
+  return (
+    <div className="flyout-btn" onClick={() => toggle(!open)}>
+      <Icon />
+    </div>
+  );
+}
+
+function List({ children, open }) {
+  return open && <ul className="flyout-list">{children}</ul>;
+}
+
+function Item({ children }) {
+  return <li className="flyout-item">{children}</li>;
+}
+
+FlyOut.Toggle = Toggle;
+FlyOut.List = List;
+FlyOut.Item = Item;
+
+```
+
+#### 优点
+
+复合组件管理它们自己的内部状态，它们在几个子组件之间共享。 在实现复合组件时，我们不必担心自己管理状态。
+
+导入复合组件时，我们不必显式导入该组件上可用的子组件。
+
+```jsx
+import { FlyOut } from "./FlyOut";
+
+export default function FlyoutMenu() {
+  return (
+    <FlyOut>
+      <FlyOut.Toggle />
+      <FlyOut.List>
+        <FlyOut.Item>Edit</FlyOut.Item>
+        <FlyOut.Item>Delete</FlyOut.Item>
+      </FlyOut.List>
+    </FlyOut>
+  );
+}
+```
+
+
+
+#### 缺点
+
+当使用 `React.Children.map` 提供值时，组件嵌套是有限的。 只有父组件的直接子组件才能访问 `open` 和 `toggle` 属性，这意味着我们不能将这些组件中的任何一个包装在另一个组件中。
+
+### 命令模式
+
+使用命令模式，我们可以将执行某个任务的对象与调用该方法的对象分离。
+
+假设我们有一个在线食品配送平台。 用户可以下达、跟踪和取消订单。
+
+```js
+class OrderManager {
+  constructor() {
+    this.orders = [];
+  }
+
+  execute(command, ...args) {
+    return command.execute(this.orders, ...args);
+  }
+}
+
+class Command {
+  constructor(execute) {
+    this.execute = execute;
+  }
+}
+
+function PlaceOrderCommand(order, id) {
+  return new Command(orders => {
+    orders.push(id);
+    console.log(`You have successfully ordered ${order} (${id})`);
+  });
+}
+
+function CancelOrderCommand(id) {
+  return new Command(orders => {
+    orders = orders.filter(order => order.id !== id);
+    console.log(`You have canceled your order ${id}`);
+  });
+}
+
+function TrackOrderCommand(id) {
+  return new Command(() =>
+    console.log(`Your order ${id} will arrive in 20 minutes.`)
+  );
+}
+
+const manager = new OrderManager();
+
+manager.execute(new PlaceOrderCommand("Pad Thai", "1234"));
+manager.execute(new TrackOrderCommand("1234"));
+manager.execute(new CancelOrderCommand("1234"));
+```
+
+#### 优点
+
+命令模式允许我们将方法与执行操作的对象分离。 如果你正在处理具有特定生命周期的命令，或者应该在特定时间排队和执行的命令，它会给你更多的控制权。
+
+#### 缺点
+
+命令模式的用例非常有限，并且经常向应用程序添加不必要的样板（boilerplate ）。
+
+## 渲染模式（Rendering Patterns）
+
+### 简介
+
+如今，可以通过多种方式在 Web 上渲染内容。 决定如何以及在何处获取和渲染内容是应用程序性能的关键。 可用的框架和库可用于实现不同的渲染模式，如客户端渲染、静态渲染、水化（Hydration）、渐进式渲染和服务器端渲染。 在决定哪种模式最适合我们的应用程序之前，了解每种模式的含义很重要。
+
+Chrome 团队[鼓励](https://developers.google.com/web/updates/2019/02/rendering-on-the-web)开发人员考虑静态渲染或服务器端渲染，而不是完全补水（rehydration）的方法。 随着时间的推移，默认情况下的渐进式加载和渲染技术可能有助于在使用现代框架时实现性能和功能交付的良好平衡
+
+以下部分将提供有关衡量应用程序在 Web 渲染方面的性能要求的指南，并建议最能满足这些要求的模式。 随后，我们将深入探索每种模式并了解如何实现它。 我们还将讨论可用于实现这些模式的 Next.js。 但是，在我们进入可用模式或 Next.js 之前，让我们先看看我们是如何到达这里的，以及导致创建 React 框架和 Next.js 的驱动程序是什么。
+
+#### 渲染 - 关键性能指标
