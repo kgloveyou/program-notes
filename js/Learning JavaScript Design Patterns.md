@@ -653,3 +653,169 @@ Express.js 是一个流行的 Web 应用程序服务器框架。 我们可以为
 
 
 中间件模式让我们很容易简化对象之间的多对多关系，让所有通信都流经一个中心点。
+
+### HOC 模式
+
+在我们的应用程序中，我们经常希望在多个组件中使用相同的逻辑。 此逻辑可以包括将特定样式应用于组件、要求授权或添加全局状态。
+
+能够在多个组件中重用相同逻辑的一种方法是使用高阶组件模式。 这种模式允许我们在整个应用程序中重用组件逻辑。
+
+高阶组件 (HOC) 是接收另一个组件的组件。 HOC 包含我们想要应用于作为参数传递的组件的某些逻辑。 应用该逻辑后，HOC 返回带有附加逻辑的元素。
+
+假设我们一直想为应用程序中的多个组件添加某种样式。 不用每次都在本地创建样式对象，我们可以简单地创建一个 HOC，将样式对象添加到我们传递给它的组件中
+
+```jsx
+function withStyles(Component) {
+  return props => {
+    const style = { padding: '0.2rem', margin: '1rem' }
+    return <Component style={style} {...props} />
+  }
+}
+
+const Button = () = <button>Click me!</button>
+const Text = () => <p>Hello World!</p>
+
+const StyledButton = withStyles(Button)
+const StyledText = withStyles(Text)
+```
+
+
+
+高阶组件模式允许我们为多个组件提供相同的逻辑，同时将所有逻辑保存在一个地方。 `withLoader` HOC 并不关心它接收到的组件或 url：只要它是一个有效的组件和一个有效的 API 端点，它就会简单地将数据从那个 API 端点传递给我们传递的组件。
+
+#### Composing
+
+
+
+>*A well-known library used for composing HOCs is* [recompose](https://github.com/acdlite/recompose)*. Since HOCs can largely be replaced by React Hooks, the recompose library is no longer maintained, thus won't be covered in this article.*
+
+#### Hooks
+
+在某些情况下，我们可以用 React Hooks 替换 HOC 模式。
+
+
+
+一般来说，React Hooks 不会取代 HOC 模式。
+
+*"In most cases, Hooks will be sufficient and can help reduce nesting in your tree."* - [React Docs](https://reactjs.org/docs/hooks-faq.html#do-hooks-replace-render-props-and-higher-order-components)
+
+正如 React 文档告诉我们的，使用 Hooks 可以减少组件树的深度。 使用 HOC 模式，很容易得到一个深度嵌套的组件树。
+
+```jsx
+<withAuth>
+  <withLayout>
+    <withLogging>
+      <Component />
+    </withLogging>
+  </withLayout>
+</withAuth>
+```
+
+通过直接向组件添加 Hook，我们不再需要包装组件。
+
+
+
+使用高阶组件可以为许多组件提供相同的逻辑，同时将该逻辑全部保存在一个地方。 Hooks 允许我们从组件中添加自定义行为，如果多个组件依赖此行为，与 HOC 模式相比，这可能会增加引入错误的风险。
+
+##### HOC 的最佳用例：
+
+- 整个应用程序中的许多组件都需要使用相同的、未定制的行为。
+- 该组件可以独立工作，无需添加自定义逻辑。
+
+##### Hooks 的最佳用例：
+
+- 必须为使用它的每个组件自定义行为。
+- 该行为不会在整个应用程序中传播，只有一个或几个组件使用该行为。
+- 该行为为组件添加了许多属性
+
+#### 案例分析
+
+一些依赖 HOC 模式的库在发布后添加了 Hooks 支持。 [Apollo Client](https://www.apollographql.com/docs/react) 就是一个很好的例子。
+
+使用 Apollo Client 的一种方法是通过 `graphql()` 高阶组件。
+
+```jsx
+import React from "react";
+import "./styles.css";
+
+import { graphql } from "react-apollo";
+import { ADD_MESSAGE } from "./resolvers";
+
+class Input extends React.Component {
+  constructor() {
+    super();
+    this.state = { message: "" };
+  }
+
+  handleChange = (e) => {
+    this.setState({ message: e.target.value });
+  };
+
+  handleClick = () => {
+    this.props.mutate({ variables: { message: this.state.message } });
+  };
+
+  render() {
+    return (
+      <div className="input-row">
+        <input
+          onChange={this.handleChange}
+          type="text"
+          placeholder="Type something..."
+        />
+        <button onClick={this.handleClick}>Add</button>
+      </div>
+    );
+  }
+}
+
+export default graphql(ADD_MESSAGE)(Input);
+```
+
+使用 `graphql()` HOC，我们可以使来自客户端的数据可用于由高阶组件包装的组件！ 虽然我们目前仍然可以使用 `graphql()` HOC，但使用它也有一些缺点。
+
+在 Hooks 发布后，Apollo 在 Apollo Client 库中添加了 Hooks 支持。 开发人员现在可以通过库提供的挂钩直接访问数据，而不是使用 `graphql()` 高阶组件。
+
+让我们看一个示例，该示例使用与我们之前在示例中使用 `graphql()` 高阶组件看到的完全相同的数据。 这一次，我们将使用 Apollo Client 为我们提供的 `useMutation` 钩子向组件提供数据。
+
+```jsx
+import React, { useState } from "react";
+import "./styles.css";
+
+import { useMutation } from "@apollo/react-hooks";
+import { ADD_MESSAGE } from "./resolvers";
+
+export default function Input() {
+  const [message, setMessage] = useState("");
+  const [addMessage] = useMutation(ADD_MESSAGE, {
+    variables: { message }
+  });
+
+  return (
+    <div className="input-row">
+      <input
+        onChange={(e) => setMessage(e.target.value)}
+        type="text"
+        placeholder="Type something..."
+      />
+      <button onClick={addMessage}>Add</button>
+    </div>
+  );
+}
+```
+
+通过使用 `useMutation` 钩子，我们减少了向组件提供数据所需的代码量。
+
+除了减少样板文件之外，在一个组件中使用多个解析器的数据也更容易。 不必组合多个高阶组件，我们可以简单地在组件中编写多个钩子。 通过这种方式，了解数据如何传递到组件要容易得多，并且可以在重构组件或将它们分解成更小的部分时改善开发人员的体验。
+
+#### 优点
+
+使用高阶组件模式允许我们将想要重用的逻辑全部保存在一个地方。 这通过一遍又一遍地重复代码降低了在整个应用程序中意外传播错误的风险，每次都可能引入新的错误。 通过将逻辑全部保存在一个地方，我们可以保持代码 DRY 并轻松实施关注点分离。
+
+#### 缺点
+
+HOC 可以传递给元素的属性的名称可能会导致命名冲突。
+
+
+
+当使用多个组合的 HOC 时，它们都将 props 传递给包裹在其中的元素，很难确定哪个 HOC 负责哪个 prop。 这可能会妨碍调试和轻松扩展应用程序。
