@@ -501,7 +501,7 @@ Hooks 使得在组件中分离逻辑和视图变得容易，就像容器/展示�
 
 #### 缺点
 
-Container/Presentational 模式使得将应用程序逻辑与呈现逻辑分离变得很容易。 然而，Hooks 使得无需使用Container/Presentational 模式就可以实现相同的结果，也无需将无状态的功能组件重写为类组件。注意今天，我们不需要创建类组件来使用 状态了。
+Container/Presentational 模式使得将应用程序逻辑与渲染逻辑分离变得很容易。 然而，Hooks 使得无需使用Container/Presentational 模式就可以实现相同的结果，也无需将无状态的功能组件重写为类组件。注意今天，我们不需要创建类组件来使用 状态了。
 
 尽管我们仍然可以使用 Container/Presentational 模式，即使使用 React Hooks，这种模式在较小的应用程序中很容易被过度使用。
 
@@ -1497,3 +1497,525 @@ Chrome 团队[鼓励](https://developers.google.com/web/updates/2019/02/renderin
 以下部分将提供有关衡量应用程序在 Web 渲染方面的性能要求的指南，并建议最能满足这些要求的模式。 随后，我们将深入探索每种模式并了解如何实现它。 我们还将讨论可用于实现这些模式的 Next.js。 但是，在我们进入可用模式或 Next.js 之前，让我们先看看我们是如何到达这里的，以及导致创建 React 框架和 Next.js 的驱动程序是什么。
 
 #### 渲染 - 关键性能指标
+
+#### 模式 - 快速浏览
+
+Client-Side Rendering (CSR) and Server-Side Rendering (SSR) 
+
+客户端渲染 (CSR) 和服务器端渲染 (SSR) 形成了可用于渲染的选择范围的两个极端。下图中列出的其他模式使用不同的方法来提供从 CSR 和 SSR 中借用的某些功能组合。
+
+#### 结论
+
+[](https://res.cloudinary.com/ddxwdqwkr/image/upload/v1616883143/patterns.dev/renderingwebap--iujq895dom.png)
+
+##### 概括
+
+根据应用程序的类型或页面类型，某些模式可能比其他模式更合适。 下图重新审视、总结和比较了我们在前几节中讨论的每种模式的亮点，并提供了每种模式的用例。
+
+### React.js 概述
+
+React 当然不是唯一的 UI 库。 [Preact](https://preactjs.com/)、[Vue](https://vuejs.org/)、[Angular](https://angular.io/)、[Svelte](https://svelte.dev/)、[Lit](https://lit.dev/) 和许多其他工具也非常适合从可重用元素组成界面。鉴于 React 的受欢迎程度，有必要了解一下它的工作原理，因为我们将使用它来了解本指南中的一些设计、渲染和性能模式。
+
+因为 React 以组合为中心，它可以完美地映射到你的设计系统的元素。 因此，从本质上讲，为 React 设计实际上会奖励你以模块化方式思考。 它允许你在组合页面或视图之前设计单个组件，因此你可以完全了解每个组件的范围和用途——这个过程称为组件化。
+
+### Next.js 概述
+
+Vercel 的混合 React 应用程序框架（Vercel's framework for hybrid React applications）
+
+#### Next.js 简介
+
+Next.js 由 Vercel 创建，是一个用于混合 React 应用程序的框架。 通常很难理解加载内容的所有不同方式。 Next.js 将其抽象化以使其尽可能简单。 该框架允许你构建可扩展的、高性能的 React 代码，并带有零配置方法。 这使开发人员可以专注于构建功能。
+
+让我们探索与我们的讨论相关的 Next.js 功能
+
+##### 基本特征
+
+**预渲染**
+
+默认情况下，Next.js 会提前为每个页面生成 HTML，而不是在客户端。 这个过程称为[预渲染](https://nextjs.org/docs/basic-features/pages#pre-rendering)。 Next.js 确保使页面完全交互所需的 JavaScript 代码与生成的 HTML 相关联。 此 JavaScript 代码在页面加载后运行。 此时，React JS 在 Shadow DOM 中工作，以确保渲染的内容与 React 应用程序将渲染的内容匹配，而无需实际操作它。 这个过程称为[hydration](https://blog.somewhatabstract.com/2020/03/16/hydration-and-server-side-rendering/).。
+
+每个页面都是从 pages 目录中的 .js、.jsx、.ts 或 .tsx 文件导出的 React 组件。 路由是根据文件名确定的。 例如，pages/about.js 对应于路由 /about。 Next.js 支持通过服务器端渲染 (SSR) 和静态生成进行预渲染。 你还可以在同一个应用程序中混合使用不同的渲染方法，其中一些页面使用 SSR 生成，而另一些页面使用静态生成。 客户端渲染也可用于渲染这些页面的某些部分。
+
+**数据获取**
+
+Next.js 支持使用 SSR 和静态生成来获取数据。 Next.js 框架中的以下功能使这成为可能。
+
+1. [getStaticProps](https://nextjs.org/docs/basic-features/data-fetching#getstaticprops-static-generation)
+   - Used with Static generation to render data
+2. [getStaticPaths](https://nextjs.org/docs/basic-features/data-fetching#getstaticpaths-static-generation)
+   - Used with Static generation to render dynamic routes
+3. [getServerSideProps](https://nextjs.org/docs/basic-features/data-fetching#getserversideprops-server-side-rendering)
+   - Applicable to SSR
+
+**静态文件服务**
+
+像图像这样的静态文件可以在根目录中名为 `public` 的文件夹下[提供](https://nextjs.org/docs/basic-features/static-file-serving)。 然后可以使用根 URL 在不同页面上的 <img> 标记代码中引用相同的图像。 例如，`src=/logo.png`。
+
+**自动图像优化**
+
+Next.js 实现了[自动图像优化](https://nextjs.org/docs/basic-features/image-optimization)，它允许在浏览器支持时以现代格式调整大小、优化和提供图像。 因此，在需要时，会针对较小的视口调整大图像的大小。 图像优化是通过导入 Next.js Image 组件来实现的，该组件是 HTML <img> 元素的扩展。 要使用 Image 组件，应按如下方式导入。
+
+```jsx
+import Image from 'next/image'
+```
+
+可以使用以下代码在页面上提供图像组件。
+
+```jsx
+<Image src="/logo.png" alt="Logo" width={500} height={500} />
+```
+
+**路由**
+
+Next.js 支持通过 `pages` 目录进行路由。 该目录或其嵌套子目录中的每个 .js 文件都成为具有相应路由的页面。 Next.js 还支持使用命名参数创建[动态路由](https://nextjs.org/docs/routing/dynamic-routes)，其中显示的实际文档由参数的值确定。
+
+例如，页面 `pages/products/[pid].js` 将匹配 `/post/1` 之类的路由，其中 `pid=1` 作为查询参数之一。 Next.js 还支持[链接到其他页面上的这些动态路由](https://nextjs.org/docs/api-reference/next/link#if-the-route-has-dynamic-segments)
+
+**代码拆分**
+
+代码拆分可确保仅将所需的 JavaScript 发送到客户端，这有助于提高性能。 Next.js 支持两种类型的代码拆分。
+
+- 基于路由：这是在 Next.js 中默认实现的。 当用户访问一个路由时，Next.js 只发送初始路由所需的代码。 当用户在应用程序中导航时，根据需要下载其他块。 这限制了需要一次解析和编译的代码量，从而缩短了页面加载时间。
+
+- 基于组件：这种类型的代码拆分允许将大型组件拆分为单独的块，这些块可以在需要时延迟加载。 Next.js 通过[动态 import()](https://nextjs.org/docs/advanced-features/dynamic-import) 支持基于组件的代码拆分。 这允许你动态导入 JavaScript 模块（包括 React 组件）并将每个导入加载为单独的块。
+
+### 客户端渲染
+
+在客户端渲染 (Client-Side Rendering，CSR) 中，服务器仅渲染页面的准系统 HTML 容器。 在页面上显示内容所需的逻辑、数据获取、模板和路由由在浏览器/客户端中执行的 JavaScript 代码处理。 CSR 作为一种构建单页应用程序的方法变得流行起来。 它有助于模糊网站和已安装应用程序之间的区别。
+
+为了更好地了解其他模式提供的好处，让我们首先更深入地了解客户端渲染 (CSR)，并找出它在哪些情况下效果很好，以及它的缺点是什么。
+
+##### CSR - 基本结构
+
+##### JavaScript 包和性能（JavaScript bundles and Performance）
+
+如上图所示，随着 bundle.js 大小的增加，FCP 和 TTI 被向前推进。 这意味着用户将在 FP 和 FCP 之间的整个持续时间内看到一个空白屏幕。
+
+##### 客户端 React - 优点和缺点
+
+使用 React，大部分应用程序逻辑都在客户端执行，并通过 API 调用与服务器交互以获取或保存数据。 几乎所有的 UI 都是在客户端上生成的。 整个 Web 应用程序在第一个请求时加载。 当用户通过单击链接进行导航时，不会向服务器生成用于渲染页面的新请求。 代码在客户端上运行以更改视图/数据。
+
+CSR 允许我们拥有一个单页应用程序，该应用程序支持无需页面刷新的导航并提供出色的用户体验。 由于为更改视图而处理的数据有限，页面之间的路由通常更快，从而使 CSR 应用程序看起来更具响应性。 CSR 还允许开发人员在客户端和服务器代码之间实现清晰的分离。
+
+尽管它提供了出色的交互体验，但该 CSR 存在一些缺陷。
+
+1. **SEO 考虑**：大多数网络爬虫可以直接解释服务器渲染的网站。 在客户端渲染的情况下，事情会变得稍微复杂一些，因为大型有效负载和网络请求的瀑布（例如 API 响应）可能会导致有意义的内容渲染速度不够快，以至于爬虫无法对其进行索引。 爬虫可能理解 JavaScript，但也有限制。 因此，需要一些变通方法来使客户端渲染的网站 SEO 友好。
+2. **性能**：使用客户端渲染，交互过程中的响应时间大大提高，因为没有到服务器的往返。 但是，对于浏览器第一次在客户端渲染内容，它们必须等待 JavaScript 先加载并开始处理。 因此，用户在初始页面加载之前会遇到一些延迟。 这可能会影响用户体验，因为 JS 包的大小变大和/或客户端没有足够的处理能力。
+3. **代码可维护性**：某些代码元素可能会以不同的语言在客户端和服务器 (API) 中重复。 在其他情况下，可能无法完全分离业务逻辑。 这方面的示例可能包括货币和日期字段的验证和格式化逻辑。
+4. **数据获取**：对于客户端渲染，数据获取通常是事件驱动的。 该页面最初可以在没有任何数据的情况下加载。 随后可以使用 API 调用在页面加载或按钮点击等事件发生时获取数据。 根据数据的大小，这可能会增加应用程序的加载/交互时间。
+
+这些考虑因素的重要性可能因应用程序而异。 开发人员通常对寻找 SEO 友好的解决方案感兴趣，这些解决方案可以在不影响交互时间的情况下更快地提供页面。 根据应用要求，分配给不同性能标准的优先级可能不同。 有时，使用客户端渲染并进行一些调整可能就足够了，而不是采用完全不同的模式。
+
+**提高CSR的性能**
+
+由于 CSR 的性能与 JavaScript 包的大小成反比，我们能做的最好的事情就是构建我们的 JavaScript 代码以获得最佳性能。 以下是可以提供帮助的指针列表。
+
+- **预算 JavaScript(Budgeting JavaScript)**：确保你的初始页面加载的 JavaScript 预算相当紧张。 一个小于 100-170KB 的初始压缩包是一个很好的起点。 然后可以根据需要按需加载代码
+- **预加载**：此技术可用于在页面生命周期的早期预加载页面所需的关键资源。 关键资源可能包括 JavaScript，它可以通过在 HTML 的 <head> 部分中包含以下指令来预加载。
+
+```html
+<link rel="preload" as="script" href="critical.js">
+```
+
+这会通知浏览器在页面渲染机制启动之前开始加载`critical.js` 文件。 因此，该脚本将更早可用，并且不会阻塞页面渲染机制，从而提高性能。
+
+- **懒加载**：通过懒加载，你可以识别非关键资源并仅在需要时加载这些资源。 使用这种方法可以缩短初始页面加载时间，因为初始加载的资源大小会减少。 例如，聊天小部件组件通常不会在页面加载时立即需要，并且可以延迟加载。
+- **代码拆分**：为了避免大量的 JavaScript 代码，你可以开始拆分你的包。 像 [Webpack](https://webpack.js.org/guides/code-splitting/) 这样的打包工具支持代码拆分，它可以用来创建多个可以在运行时动态加载的包。 代码拆分还使你能够延迟加载 JavaScript 资源。
+- **Application shell caching with service workers:** This technique involves caching the application shell which is the minimal HTML, CSS, and JavaScript powering a user interface. Service workers can be used to cache the application shell offline. This can be useful in providing a native single-page app experience where the remaining content is loaded progressively as needed.
+
+通过这些技术，CSR 可以帮助提供更快的单页应用程序体验，并具有良好的 FCP 和 TTI。 接下来，我们将看看服务器端渲染在频谱的另一端有什么可用的。
+
+### 服务端渲染
+
+服务器端渲染 (Server-side rendering，SSR) 是最古老的网页内容渲染方法之一。 SSR 为响应用户请求而渲染的页面内容生成完整的 HTML。 内容可能包括来自数据存储或外部 API 的数据。
+
+连接和获取操作在服务器上处理。 格式化内容所需的 HTML 也在服务器上生成。 因此，使用 SSR，我们可以避免为数据获取和模板进行额外的往返。 因此，客户端不需要渲染代码，也不需要将与此对应的 JavaScript 发送到客户端。
+
+使用 SSR，每个请求都被独立处理，并将由服务器作为新请求进行处理。 即使两个连续请求的输出差别不大，服务器也会从头开始处理和生成。 由于服务器对多个用户是公用的，因此处理能力在给定时间由所有活动用户共享。
+
+#### 经典的 SSR 实现
+
+#### SSR - 优点和缺点
+
+在服务器上执行渲染代码并减少 JavaScript 具有以下优点。
+
+**较少的 JavaScript 导致更快的 FCP 和 TTI**
+
+**为客户端 JavaScript 提供额外预算**
+
+开发团队需要使用 JS 预算来限制页面上的 JS 数量以实现所需的性能。 使用 SSR，由于你直接消除了渲染页面所需的 JS，因此它为应用程序可能需要的任何第三方 JS 创建了额外的空间。
+
+**SEO enabled**
+
+搜索引擎爬虫可以轻松爬取 SSR 应用程序的内容，从而确保页面上的搜索引擎优化更高。
+
+
+
+由于上述优点，SSR 非常适合静态内容。 但是，它确实有一些缺点，因此它并不适合所有场景。
+
+**Slow \**TTFB\****
+
+由于所有处理都在服务器上进行，如果出现以下一种或多种情况，服务器的响应可能会延迟
+
+- 多个同时用户导致服务器负载过重。
+- 网络慢
+- 服务器代码未优化。
+
+**某些交互需要重新加载整页**
+
+由于客户端上并非所有代码都可用，因此所有导致整个页面重新加载的关键操作都需要频繁地往返服务器。 这可能会增加交互之间的时间，因为用户需要在操作之间等待更长的时间。 因此，单页应用程序无法使用 SSR。
+
+
+
+为了解决这些缺点，现代框架和库允许在服务器和客户端上为同一应用程序进行渲染。 我们将在以下部分详细介绍这些内容。 首先，让我们看一下使用 Next.js 的更简单形式的 SSR。
+
+#### SSR with Next.js
+
+#### React for the Server
+
+React 可以同构渲染，这意味着它既可以在浏览器上运行，也可以在服务器等其他平台上运行。 因此，可以使用 React 在服务器上渲染 UI 元素。
+
+React 也可以与通用代码一起使用，这将允许相同的代码在多个环境中运行。 这可以通过在服务器上使用 Node.js 或所谓的 Node 服务器来实现。 因此，通用 JavaScript 可用于在服务器上获取数据，然后使用同构 React 渲染它。
+
+让我们看一下使这成为可能的 react 函数。
+
+```jsx
+ReactDOMServer.renderToString(element)
+```
+
+这个函数返回一个对应于 React 元素的 HTML 字符串。 然后可以将 HTML 渲染给客户端以加快页面加载速度。
+
+### 静态渲染
+
+Deliver pre-rendered HTML content that was generated when the site was built
+
+静态渲染或静态生成 (Static rendering or static generation，SSG) 尝试通过向客户端提供在构建站点时生成的预渲染 HTML 内容来解决这些问题。
+
+与用户可以访问的每个路由相对应的静态 HTML 文件会提前生成。 这些静态 HTML 文件可能在服务器或 CDN 上可用，并在客户端请求时获取。
+
+静态文件也可以被缓存，从而提供更大的弹性。 由于 HTML 响应是预先生成的，因此服务器上的处理时间可以忽略不计，从而导致更快的 TTFB 和更好的性能。 在理想情况下，客户端 JS 应该是最小的，并且静态页面应该在客户端收到响应后立即变为交互式。 因此，SSG 有助于实现更快的 FCP/TTI。
+
+#### SSG - 基本结构
+
+顾名思义，静态渲染非常适合静态内容，不需要根据登录用户定制页面（例如个性化推荐）。 因此，诸如“关于我们”、“联系我们”、网站的博客页面或电子商务应用程序的产品页面等静态页面是静态渲染的理想选择。 Next.js、Gatsby 和 VuePress 等框架支持静态生成。 让我们从这个没有任何数据的静态内容渲染的简单 [Next.js 示例](https://vercel.com/blog/nextjs-server-side-rendering-vs-static-generation#about-us-page-static-generation-without-data)开始。
+
+Next.js:
+
+```js
+// pages/about.js
+
+export default function About() {
+ return <div>
+   <h1>About Us</h1>
+   {/* ... */}
+ </div>
+}
+```
+
+当站点被构建（使用`next build`）时，这个页面将被预渲染成一个 HTML 文件 `about.html` 可在路径 `/about` 访问。
+
+#### SSG with Data
+
+“关于我们”或“联系我们”页面中的静态内容可能会按原样渲染，而无需从数据存储中获取数据。 但是，对于单个博客页面或产品页面等内容，来自数据存储的数据必须与特定模板合并，然后在构建时渲染为 HTML。
+
+生成的 HTML 页面的数量将分别取决于博客文章的数量或产品的数量。 要访问这些页面，你可能还会有列表页面，这些页面将是 HTML 页面，其中包含分类和格式化的数据项列表。 这些场景可以使用 Next.js 静态渲染来解决。 我们可以根据可用项目生成列表页面或单个项目页面。 让我们看看如何。
+
+##### 列表页面 - 所有项目
+
+列表页面的生成是页面上要显示的内容依赖于外部数据的场景。 该数据将在构建时从数据库中获取以构建页面。 在 Next.js 中，这可以通过在页面组件中导出函数 `getStaticProps()` 来实现。 该函数在构建服务器上的构建时调用以获取数据。 然后可以将数据传递给页面的 props 以预渲染页面组件。 让我们看一下生成产品列表页面的代码，该页面最初是作为[本文](https://vercel.com/blog/nextjs-server-side-rendering-vs-static-generation#all-products-page-static-generation-with-data)的一部分共享的。
+
+```jsx
+
+// This function runs at build time on the build server
+export async function getStaticProps() {
+ return {
+   props: {
+     products: await getProductsFromDatabase()
+   }
+ }
+}
+
+// The page component receives products prop from getStaticProps at build time
+export default function Products({ products }) {
+ return (
+   <>
+     <h1>Products</h1>
+     <ul>
+       {products.map((product) => (
+         <li key={product.id}>{product.name}</li>
+       ))}
+     </ul>
+   </>
+ )
+}
+```
+
+该函数不会包含在客户端 JS 包中，因此甚至可以用于直接从数据库中获取数据。
+
+##### 详细信息页面 - 每个项目
+
+#### SSG - 主要考虑因素
+
+如前所述，SSG 为网站带来了出色的性能，因为它减少了客户端和服务器上所需的处理。 这些网站也是 SEO 友好的，因为内容已经存在，并且可以由网络爬虫渲染，无需额外的努力。 虽然性能和 SEO 使 SSG 成为一种出色的渲染模式，但在评估 SSG 对特定应用程序的适用性时需要考虑以下因素。
+
+1. **大量 HTML 文件**：需要为用户可能访问的每个可能的路径生成单独的 HTML 文件。 例如，将其用于博客时，将为数据存储中可用的每篇博客文章生成一个 HTML 文件。 随后，对任何帖子的编辑都需要重新构建，以使更新反映在静态 HTML 文件中。 维护大量 HTML 文件可能具有挑战性。
+2. **托管依赖**：要使 SSG 站点超快并快速响应，用于存储和提供 HTML 文件的托管平台也应该是好的。 如果一个经过良好调整的 SSG 网站托管在多个 CDN 上以利用边缘缓存，则可以实现最佳性能。
+3. **动态内容**：每次内容更改时都需要构建和重新部署 SSG 站点。 如果在任何内容更改后尚未构建和部署站点，则显示的内容可能已过时。 这使得 SSG 不适合高度动态的内容。
+
+### 增量静态生成
+
+构建网站后更新静态内容
+
+静态生成 (SSG) 解决了 SSR 和 CSR 的大部分问题，但适用于渲染大部分静态内容。 当要渲染的内容是动态的或经常变化时，它会带来限制。
+
+想象一个有多个帖子的不断增长的博客。 你可能不会仅仅因为你想更正其中一个帖子中的错字而重新构建和重新部署该站点。 同样，一篇新的博客文章也不应该要求对所有现有页面进行重新构建。 因此，SSG 本身不足以渲染大型网站或应用程序。
+
+增量静态生成 (iSSG) 模式是作为 SSG 的升级引入的，以帮助解决动态数据问题并帮助静态站点扩展大量频繁变化的数据。 iSSG 允许你通过在后台预渲染页面子集来更新现有页面并添加新页面，即使有新的页面请求进来。
+
+#### iSSG - 示例代码
+
+iSSG 在两个方面工作，以在现有静态站点构建后逐步引入更新。
+
+1. 允许添加新页面
+2. 允许更新现有页面，也称为增量静态“重新”生成
+
+##### 添加新页面
+
+延迟加载概念用于在构建后在网站上包含新页面。 这意味着在第一个请求时立即生成新页面。 在生成发生时，可以在前端向用户显示后备页面或加载指示器。 将此与前面讨论的 SSG 场景进行比较，以了解每个产品的单个详细信息页面。 404 错误页面在此处显示为不存在页面的后备。
+
+现在让我们看看使用 iSSG 延迟加载不存在的页面所需的 Next.js 代码。
+
+
+
+在这里，我们使用了 `fallback: true`。 现在，如果与特定产品对应的页面不可用，我们会显示该页面的后备版本，例如，如上面 Product 功能中所示的加载指示器。 同时，Next.js 会在后台生成页面。 一旦生成，它将被缓存并显示，而不是备用页面。 页面的缓存版本现在将根据请求立即显示给任何后续访问者。 对于新页面和现有页面，我们可以设置 Next.js 应该重新验证和更新它的过期时间。 这可以通过使用 revalidate 属性来实现，如下节所示。
+
+##### 更新现有页面
+
+要重新渲染现有页面，请为页面定义合适的超时。 这将确保在定义的超时期限过去后重新验证页面。 超时可以设置为低至 1 秒。 用户将继续看到页面的先前版本，直到页面完成重新验证。 因此，iSSG 使用 [stale-while-revalidate](https://web.dev/stale-while-revalidate/) 策略，其中用户在重新验证发生时接收缓存或陈旧版本。 重新验证完全在后台进行，无需完全重建。
+
+让我们回到基于数据库中的数据为产品生成静态列表页面的示例。 为了使它服务于一个相对动态的产品列表，我们将包含代码来设置重建页面的超时。 这是包含超时后代码的样子。
+
+
+
+60 秒后重新验证页面的代码包含在 `getStaticProps()` 函数中。 当请求进入可用的静态页面时，首先提供服务。 每隔一分钟，静态页面就会在后台使用新数据刷新。 生成后，静态文件的新版本将可用，并将在随后的一分钟内为任何新请求提供服务。 此功能在 Next.js 9.5 及更高版本中可用。
+
+#### iSSG 优势
+
+iSSG 提供了 SSG 的所有优势，而且还提供了更多优势。 以下列表详细介绍了它们。
+
+1. **动态数据**：第一个优势显然是为什么要设想 iSSG。 它能够支持动态数据而无需重建站点。
+2. **速度**：iSSG 至少与 SSG 一样快，因为数据检索和渲染仍然在后台进行。 客户端或服务器上几乎不需要处理。
+3. **可用性**：任何页面的最新版本将始终在线供用户访问。 即使在后台重新生成失败，旧版本仍然保持不变。
+4. **一致性**：由于每次在服务器上进行一页重新生成，因此数据库和后端的负载较低且性能一致。 因此，延迟没有峰值。
+5. **易于分发**：就像 SSG 站点一样，iSSG 站点也可以通过用于提供预渲染网页的 CDN 网络进行分发。
+
+### Progressive Hydration
+
+延迟加载页面中不太重要的部分的 JavaScript
+
+#### 介绍
+
+服务器渲染的应用程序使用服务器为当前导航生成 HTML。 一旦服务器完成生成 HTML 内容，其中还包含正确显示静态 UI 所需的 CSS 和 JSON 数据，它会将数据发送到客户端。 由于服务器为我们生成了标记，客户端可以快速解析并显示在屏幕上，从而生成快速的 **First Contentful Paint**！
+
+尽管服务器渲染提供了更快的 **First Contentful Paint**，但它并不总是提供更快的 **Time To Interactive**。 尚未加载必要的 JavaScript 以便能够与我们的网站进行交互。 按钮可能看起来是交互式的，但它们还不是可以交互的。 只有在 JavaScript 包被加载和处理后，处理程序才会被附加。 这个过程称为 *hydration*：React 检查当前的 DOM 节点，并使用相应的 JavaScript **hydrates** 节点。
+
+用户在屏幕上看到非交互式 UI 的时间也被称为**恐怖谷**（When a component is fully visible to the user, but no handlers have been attached yet to make the component interactive.）：虽然用户可能认为他们可以与网站交互，但组件上还没有附加处理程序。 这对用户来说可能是一种令人沮丧的体验，因为 UI 可能看起来像是被冻结了！
+
+从服务器接收到的 DOM 组件可能需要一段时间才能完全 hydrated。 在对组件进行 hydrated 之前，需要加载、处理和执行 JavaScript 文件。 不像我们之前所做的那样一次对整个应用程序进行hydrate，我们还可以逐步对 DOM 节点进行 *hydrate* 。 渐进式hydration 使得随着时间的推移单独**hydrate**（Attaching handlers to a DOM node whose HTML contents were server-rendered, making the component interactive.）节点成为可能，这使得只请求最少必要的 JavaScript 成为可能。
+
+通过渐进式地hydrating 应用程序，我们可以延迟页面中不太重要的部分的 hydration 。 这样，我们可以减少为了使页面具有交互性而必须请求的 JavaScript 数量，并且仅在用户需要时才对节点进行**hydrate**。 渐进式hydration 还有助于避免最常见的 SSR Rehydration 陷阱，即服务器渲染的 DOM 树被破坏然后立即重建。
+
+
+
+#### Progressive Hydration 实现
+
+pass
+
+### 流式服务器端渲染
+
+响应用户请求生成要在服务器上渲染的 HTML
+
+#### 流式服务器渲染
+
+我们可以通过流式服务器渲染我们应用程序的内容来减少交互时间，同时仍然服务器渲染我们的应用程序。 我们可以将其拆分为更小的块，而不是生成一个包含当前导航所需标记的大型 HTML 文件！ 节点（Node ）流允许我们将数据流式传输到响应对象中，这意味着我们可以不断地将数据向下发送到客户端。 客户端收到数据块的那一刻，就可以开始渲染内容。
+
+pass
+
+### React Server Components
+
+pass
+
+### Selective Hydration
+
+pass
+
+# 性能模式
+
+## 优化你的加载顺序
+
+了解如何优化加载顺序以提高应用的可用速度
+
+
+
+在每次成功的网页加载中，一些关键组件和资源都会在正确的时间变得可用，从而为您提供流畅的加载体验。 这可确保用户认为应用程序的性能非常出色。 这种出色的用户体验通常也应该转化为通过 [Core Web Vitals](https://web.dev/vitals/)。
+
+用于衡量性能的关键指标（例如首次内容绘制、最大内容绘制、首次输入延迟等）直接取决于关键资源的加载顺序。 例如，如果没有加载像[hero image](https://en.wikipedia.org/wiki/Hero_image)这样的关键资源，则该页面无法拥有其 LCP。 这篇文章讲的是资源的加载顺序和Web Vitals的关系。 我们的目标是就如何优化加载顺序以获得更好的 Web Vitals 提供明确的指导。
+
+在我们建立一个理想的加载顺序之前，让我们首先尝试理解为什么要获得正确的加载顺序如此困难。
+
+### 为什么难以实现最佳加载？ #
+
+我们有独特的机会为我们合作伙伴的许多网站进行性能分析。 我们发现了多个困扰不同合作伙伴网站页面高效加载的类似问题。
+
+开发人员的期望与浏览器如何优先处理页面上的资源之间通常存在严重差距。 这通常会导致次优的性能分数。 我们进一步分析以发现造成这种差距的原因，以下几点总结了我们分析的本质。
+
+#### 次优测序（**Sub-optimal sequencing**）
+
+[Web Vitals](https://res.cloudinary.com/ddxwdqwkr/image/upload/v1616883143/patterns.dev/renderingwebap--iujq895dom.png) 优化不仅需要很好地理解每个指标所代表的含义，还需要了解它们出现的顺序以及它们与不同关键资源的关系。 FCP 发生在 LCP 之前，LCP 发生在 FID 之前。 因此，实现 FCP 所需的资源应优先于 LCP 所需的资源，然后是 FID 所需的资源。
+
+资源通常没有按正确的顺序排序和流水线。 这可能是因为开发人员没有意识到指标对资源负载的依赖性。 因此，相关资源有时无法在正确的时间用于触发相应的指标。
+
+**例子**：
+
+a) 当 FCP 触发时，hero image应该可以用于触发 LCP。
+b) 在 LCP 触发时，应下载、解析并准备好（或已经执行）JavaScript (JS) 以解除阻塞交互 (FID)。
+
+#### 网络/CPU 利用率
+
+资源也没有适当地流水线以确保充分的 CPU 和网络利用率。 当进程绑定网络时，这会导致 CPU 出现“死区时间”，反之亦然。
+
+一个很好的例子是可以同时或顺序下载的脚本。 由于在并发下载期间带宽被划分，因此对于顺序下载和并发下载，下载所有脚本的总时间是相同的。 如果您同时下载脚本，则下载期间 CPU 利用率不足。 但是，如果您按顺序下载脚本，CPU 可以在下载第一个脚本后立即开始处理。 这会导致更好的 CPU 和网络利用率。
+
+#### 第三方 (3P) 产品
+
+3P 库通常需要向网站添加通用特性和功能。 第三方包括为网站提供支持的广告、分析、社交小部件、实时聊天和其他嵌入。 第三方库带有自己的 JavaScript、图像、字体等
+
+3P 产品通常没有动力去优化和支持消费者网站的加载性能。 它们可能有大量的 JavaScript 执行成本，会延迟交互性，或者妨碍其他关键资源的下载。
+
+包含 3P 产品的开发人员可能倾向于更多地关注他们在功能方面增加的价值，而不是对性能的影响。 因此，有时会随意添加 3P 资源，而没有充分考虑它如何适合整个加载顺序。 这使得它们难以控制和安排。
+
+#### 平台怪癖
+
+浏览器在优先处理请求和实现提示的方式上可能有所不同。 如果您对平台及其怪癖有深入的了解，优化会更容易。 特定浏览器的特定行为使得难以始终如一地实现所需的加载顺序。
+
+这方面的一个例子是 chromium 平台上的预加载错误。 Preload (<link rel=preload>) 指令可以用来告诉浏览器尽快下载关键资源。 仅当您确定资源将在当前页面上使用时才应使用它。 Chromium 中的错误导致它的行为使得通过 <link rel=preload> 发出的请求总是在预加载扫描程序看到的其他请求之前启动，即使这些请求具有更高的优先级。 诸如此类的问题影响了优化计划。
+
+#### HTTP2 优先级
+
+协议本身并没有提供很多选项或旋钮来调整资源的顺序和优先级。 即使提供了更好的优先级原语，HTTP2 优先级也存在一些潜在的问题，这使得优化排序变得困难。 主要是，我们无法预测服务器或 CDN 将按什么顺序优先处理单个资源的请求。 一些 CDN 重新确定请求的优先级，而另一些则实施部分、有缺陷或没有优先级。
+
+#### 资源级优化
+
+## 静态导入
+
+导入已被另一个模块导出的代码
+
+
+
+`import` 关键字允许我们导入已由另一个模块导出的代码。 默认情况下，我们静态导入的所有模块都会添加到初始包中。 使用默认 ES2015 导入语法 `import module from 'module'` 导入的模块是静态导入的。
+
+
+
+幸运的是，有很多方法可以加快加载时间！ 我们并不总是必须一次导入所有模块：也许有些模块应该只根据用户交互来渲染，例如本例中的 `EmojiPicker`，或者在页面下方渲染。 我们可以在 `App` 组件渲染其内容并且用户能够与我们的应用程序交互之后 *动态地* 导入模块，而不是静态导入所有组件。
+
+## 动态导入
+
+按需导入部分代码
+
+
+
+在我们的聊天应用程序中，我们有四个关键组件：`UserInfo`、`ChatList`、`ChatInput` 和 `EmojiPicker`。 但是，在初始页面加载时，只有三个组件会立即使用：`UserInfo`、`ChatList` 和 `ChatInput`。 `EmojiPicker` 不是直接可见的，如果用户甚至不会单击 `Emoji` 来切换 `EmojiPicker`，甚至可能根本不会渲染。 这意味着我们不必要地将 `EmojiPicker` 模块添加到我们的初始包中，这可能会增加加载时间！
+
+为了解决这个问题，我们可以 *动态导入* `EmojiPicker` 组件。 我们不会静态导入它，而是仅在要显示 `EmojiPicker` 时才导入它。 在 React 中动态导入组件的一种简单方法是使用 [React Suspense](https://reactjs.org/docs/concurrent-mode-suspense.html)。 `React.Suspense` 组件接收应该动态加载的组件，这使得 `App` 组件可以通过暂停 `EmojiPicker` 模块的导入来更快地渲染其内容！ 当用户点击表情符号时，`EmojiPicker` 组件第一次被渲染。 `EmojiPicker` 组件渲染一个 `Suspense` 组件，该组件接收延迟导入的模块：在本例中为 `EmojiPicker`。 `Suspense` 组件接受一个 `fallback` 属性，它接收应该在suspended 组件仍在加载时渲染的组件！
+
+无需将 `EmojiPicker` 添加到初始包中，我们可以将其拆分为自己的包并减小初始包的大小！
+
+较小的初始包大小意味着更快的初始加载：用户不必长时间盯着空白的加载屏幕。 `fallback`组件让用户知道我们的应用程序没有冻结：他们只需要等待一小会儿就可以处理和执行模块。
+
+```jsx
+import React, { Suspense, lazy } from "react";
+// import Send from "./icons/Send";
+// import Emoji from "./icons/Emoji";
+const Send = lazy(() =>
+  import(/*webpackChunkName: "send-icon" */ "./icons/Send")
+);
+const Emoji = lazy(() =>
+  import(/*webpackChunkName: "emoji-icon" */ "./icons/Emoji")
+);
+// Lazy load EmojiPicker  when <EmojiPicker /> renders
+const Picker = lazy(() =>
+  import(/*webpackChunkName: "emoji-picker" */ "./EmojiPicker")
+);
+
+const ChatInput = () => {
+  const [pickerOpen, togglePicker] = React.useReducer(state => !state, false);
+
+  return (
+    <Suspense fallback={<p id="loading">Loading...</p>}>
+      <div className="chat-input-container">
+        <input type="text" placeholder="Type a message..." />
+        <Emoji onClick={togglePicker} />
+        {pickerOpen && <Picker />}
+        <Send />
+      </div>
+    </Suspense>
+  );
+};
+
+console.log("ChatInput loaded", Date.now());
+
+export default ChatInput;
+
+```
+
+### Loadable Components
+
+服务器端渲染还不支持 React Suspense。 React Suspense 的一个很好的替代方案是[loadable-components](https://loadable-components.com/docs/getting-started/)组件库，它可以在 SSR 应用程序中使用。
+
+## Import On Visibility
+
+当非关键组件在视口中可见时，加载它们
+
+除了用户交互之外，我们经常有在初始页面上不可见的组件。 一个很好的例子是延迟加载图像，这些图像在视口中不直接可见，但只有在用户向下滚动时才会加载。
+
+由于我们不会立即请求所有图像，因此我们可以减少初始加载时间。 我们可以对组件做同样的事情！ 为了知道组件当前是否在我们的视口中，我们可以使用 [IntersectionObserver API](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API)，或者使用 `react-lazyload` 或 `react-loadable-visibility` 等库来快速添加导入可见性到我们的应用程序。
+
+ChatInput.js
+
+```js
+import React from "react";
+import Send from "./icons/Send";
+import Emoji from "./icons/Emoji";
+import LoadableVisibility from "react-loadable-visibility/react-loadable";
+
+const EmojiPicker = LoadableVisibility({
+  loader: () => import("./EmojiPicker"),
+  loading: <p id="loading">Loading</p>
+});
+
+const ChatInput = () => {
+  const [pickerOpen, togglePicker] = React.useReducer(state => !state, false);
+
+  return (
+    <div className="chat-input-container">
+      <input type="text" placeholder="Type a message..." />
+      <Emoji onClick={togglePicker} />
+      {pickerOpen && <EmojiPicker />}
+      <Send />
+    </div>
+  );
+};
+
+console.log("ChatInput loading", Date.now());
+
+export default ChatInput;
+
+```
+
+每当 `EmojiPicker` 渲染到屏幕上时，在用户单击 Gif 按钮后，`react-loadable-visibility` 会检测到 `EmojiPicker` 元素应该在屏幕上可见。 只有这样，它才会在用户看到正在渲染的加载组件时开始导入模块。
+
+这个 fallback 组件让用户知道我们的应用程序没有冻结：他们只需要等待一小会儿就可以加载、解析、编译和执行模块！
+
+## Import On Interaction
+
+当用户与需要它的 UI 交互时加载非关键资源
