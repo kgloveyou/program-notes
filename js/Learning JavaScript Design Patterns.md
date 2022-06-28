@@ -2410,3 +2410,31 @@ Webpack 文档[清楚地解释了 tree-shaking](https://webpack.js.org/guides/tr
 Inform the browser of critical resources before they are discovered
 
 [Preload](https://developer.mozilla.org/en-US/docs/Web/HTML/Preloading_content) (<link rel="preload">) 是一种[浏览器优化](https://web.dev/uses-rel-preload/)，允许更早地请求关键资源（可能较晚发现）。 如果您愿意考虑如何手动订购关键资源的加载，它会对 [Core Web Vitals](https://web.dev/vitals) 中的加载性能和指标产生积极影响。 也就是说，预加载不是灵丹妙药，需要权衡取舍。
+
+
+
+### 在单页应用中预加载（Preload in single-page apps）
+
+虽然 **prefetching** 是缓存可能很快会被请求的资源的好方法，但我们可以 **preload** 需要立即使用的资源。 可能是在初始渲染中使用的某种字体，或者是用户立即看到的某些图像。
+
+### Preload + the `async` hack
+
+### Preload in Chrome 95+
+
+### Conclusions
+
+同样，谨慎使用预加载并始终衡量其在生产中的影响。 如果您的图像的预加载在文档中比它更早，这可以帮助浏览器发现它（并相对于其他资源进行排序）。 如果使用不当，预加载可能会导致您的图像延迟 First Contentful Paint（例如 CSS、字体）——这与您想要的相反。 另请注意，要使此类重新优先级工作有效，还取决于服务器正确地对请求进行[优先级排序](https://github.com/andydavies/http2-prioritization-issues#cdns--cloud-hosting-services)。
+
+您可能还会发现 <link rel="preload"> 对于需要获取脚本而[不执行](https://developer.mozilla.org/en-US/docs/Web/HTML/Preloading_content#scripting_and_preloads)脚本的情况很有帮助。
+
+各种 web.dev 文章都涉及如何使用 Preload 来：
+
+- 预加载交互所需的关键脚本
+- 预加载您最大的 Contentful Paint 图像
+- 在防止布局变化的同时加载字体
+
+## Prefetch
+
+获取和缓存可能很快会被请求的资源
+
+## 优化加载第三方
