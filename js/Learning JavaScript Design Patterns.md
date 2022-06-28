@@ -1857,7 +1857,7 @@ pass
 
 
 
-在每次成功的网页加载中，一些关键组件和资源都会在正确的时间变得可用，从而为您提供流畅的加载体验。 这可确保用户认为应用程序的性能非常出色。 这种出色的用户体验通常也应该转化为通过 [Core Web Vitals](https://web.dev/vitals/)。
+在每次成功的网页加载中，一些关键组件和资源都会在正确的时间变得可用，从而为你提供流畅的加载体验。 这可确保用户认为应用程序的性能非常出色。 这种出色的用户体验通常也应该转化为通过 [Core Web Vitals](https://web.dev/vitals/)。
 
 用于衡量性能的关键指标（例如首次内容绘制、最大内容绘制、首次输入延迟等）直接取决于关键资源的加载顺序。 例如，如果没有加载像[hero image](https://en.wikipedia.org/wiki/Hero_image)这样的关键资源，则该页面无法拥有其 LCP。 这篇文章讲的是资源的加载顺序和Web Vitals的关系。 我们的目标是就如何优化加载顺序以获得更好的 Web Vitals 提供明确的指导。
 
@@ -1884,7 +1884,7 @@ b) 在 LCP 触发时，应下载、解析并准备好（或已经执行）JavaSc
 
 资源也没有适当地流水线以确保充分的 CPU 和网络利用率。 当进程绑定网络时，这会导致 CPU 出现“死区时间”，反之亦然。
 
-一个很好的例子是可以同时或顺序下载的脚本。 由于在并发下载期间带宽被划分，因此对于顺序下载和并发下载，下载所有脚本的总时间是相同的。 如果您同时下载脚本，则下载期间 CPU 利用率不足。 但是，如果您按顺序下载脚本，CPU 可以在下载第一个脚本后立即开始处理。 这会导致更好的 CPU 和网络利用率。
+一个很好的例子是可以同时或顺序下载的脚本。 由于在并发下载期间带宽被划分，因此对于顺序下载和并发下载，下载所有脚本的总时间是相同的。 如果你同时下载脚本，则下载期间 CPU 利用率不足。 但是，如果你按顺序下载脚本，CPU 可以在下载第一个脚本后立即开始处理。 这会导致更好的 CPU 和网络利用率。
 
 #### 第三方 (3P) 产品
 
@@ -1896,9 +1896,9 @@ b) 在 LCP 触发时，应下载、解析并准备好（或已经执行）JavaSc
 
 #### 平台怪癖
 
-浏览器在优先处理请求和实现提示的方式上可能有所不同。 如果您对平台及其怪癖有深入的了解，优化会更容易。 特定浏览器的特定行为使得难以始终如一地实现所需的加载顺序。
+浏览器在优先处理请求和实现提示的方式上可能有所不同。 如果你对平台及其怪癖有深入的了解，优化会更容易。 特定浏览器的特定行为使得难以始终如一地实现所需的加载顺序。
 
-这方面的一个例子是 chromium 平台上的预加载错误。 Preload (<link rel=preload>) 指令可以用来告诉浏览器尽快下载关键资源。 仅当您确定资源将在当前页面上使用时才应使用它。 Chromium 中的错误导致它的行为使得通过 <link rel=preload> 发出的请求总是在预加载扫描程序看到的其他请求之前启动，即使这些请求具有更高的优先级。 诸如此类的问题影响了优化计划。
+这方面的一个例子是 chromium 平台上的预加载错误。 Preload (<link rel=preload>) 指令可以用来告诉浏览器尽快下载关键资源。 仅当你确定资源将在当前页面上使用时才应使用它。 Chromium 中的错误导致它的行为使得通过 <link rel=preload> 发出的请求总是在预加载扫描程序看到的其他请求之前启动，即使这些请求具有更高的优先级。 诸如此类的问题影响了优化计划。
 
 #### HTTP2 优先级
 
@@ -2018,4 +2018,395 @@ export default ChatInput;
 
 ## Import On Interaction
 
-当用户与需要它的 UI 交互时加载非关键资源
+对于非关键资源，当用户与需要它的 UI 交互时再进行加载
+
+你的页面可能包含并非立即需要的组件或资源的代码或数据。 例如，用户看不到的部分用户界面，除非他们单击或滚动页面的某些部分。 这可以适用于你编写的多种第一方代码，但这也适用于第三方小部件，例如视频播放器或聊天小部件，你通常需要单击按钮才能显示主界面。
+
+如果成本高昂，急切地（即立即）加载这些资源可能会[阻塞主线程](https://web.dev/long-tasks-devtools/)，从而推迟用户与页面更关键部分交互的时间。 这可能会影响交互就绪指标，例如[首次输入延迟](https://web.dev/fid/)、[总阻塞时间](https://web.dev/lighthouse-total-blocking-time/)和[交互时间](https://web.dev/interactive/)。 你可以在更合适的时候加载它们，而不是立即加载这些资源，例如：
+
+- 当用户第一次点击与该组件交互时
+- 将组件滚动到视图中
+- 或延迟加载该组件，直到浏览器空闲（通过 [requestIdleCallback](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestIdleCallback)）。
+
+加载资源的不同方式在高层次上是：
+
+- Eager - 立即加载资源（加载脚本的正常方式）
+- Lazy ([Route-based](https://web.dev/code-splitting-with-dynamic-imports-in-nextjs/#route-based-and-component-based-code-splitting)) - 当用户导航到一个路由或组件时加载
+- Lazy (On interaction) - 当用户点击 UI 时加载（例如 Show Chat）
+- Lazy (In viewport) - 当用户滚动到组件时加载
+- [Prefetch](https://web.dev/link-prefetch/) - 在需要之前加载，但在加载关键资源之后
+- [Preload](https://web.dev/preload-critical-assets/)  - 急切地，具有更大的紧迫性
+
+### "Fake" loading third-party UI with a facade
+
+[facade](https://github.com/patrickhulce/third-party-web/blob/10ec0f8f30bbbb73e2de5640cb652a07dd4d7d11/facades.md) 外观是一个简单的“预览”或“占位符”，用于模拟基本体验的成本更高的组件，例如使用图像或屏幕截图。 这是我们在 Lighthouse 团队中用于这个想法的术语。
+
+当用户点击“预览”（外观）时，资源的代码被加载。 这限制了用户如果不打算使用某项功能则需要支付体验成本。 同样，facades 可以在悬停时[preconnect](https://web.dev/uses-rel-preconnect/)到必要的资源。
+
+**注意**：第三方资源通常被添加到页面中，而没有充分考虑它们如何适应网站的整体加载。 同步加载的第三方脚本会阻止浏览器解析器并可能延迟 hydration。 如果可能，应使用 async/defer（或其他方法）加载 3P 脚本，以确保 1P 脚本不会因网络带宽而不足。 除非它们很关键，否则它们可以成为使用交互时导入等模式转移到延迟延迟加载的良好候选者。
+
+### Video Player Embeds
+
+“facade”的一个很好的例子是 Paul Irish 的 [YouTube Lite Embed](https://github.com/paulirish/lite-youtube-embed)。 这提供了一个自定义元素，它接受一个 YouTube 视频 ID 并显示一个最小的缩略图和播放按钮。 点击元素会动态加载完整的 YouTube 嵌入代码，这意味着从不点击播放的用户无需支付获取和处理它的成本。
+
+![](Learning JavaScript Design Patterns.assets/image2_egy8ct_c_scale_w_1280.png)
+
+一些 Google 网站在生产中使用了类似的技术。 在 Android.com 上，不是急切地加载嵌入的 YouTube 视频播放器，而是向用户显示带有假播放器按钮的缩略图。 当他们点击它时，会加载一个modal ，使用嵌入的full-fat YouTube 视频播放器自动播放视频：
+
+![](Learning JavaScript Design Patterns.assets/image3_zykzg7_c_scale_w_1280.png)
+
+### Authentication
+
+应用程序可能需要通过客户端 JavaScript SDK 支持对服务的身份验证。 这些有时会很大，并且 JS 执行成本很高，如果用户不打算登录，可能宁愿不急切地预先加载它们。 相反，当用户单击“登录”按钮时动态导入身份验证库，使主线程在初始加载期间更加自由。
+
+### Chat widgets
+
+### Others
+
+当用户单击“滚动到顶部”按钮时，[Ne-digital](https://medium.com/ne-digital/how-to-reduce-next-js-bundle-size-68f7ac70c375) 使用 React 库以动画方式滚动回页面顶部。 他们没有急切地为此加载 react-scroll 依赖项，而是在与按钮交互时加载它，节省了约 7KB：
+
+```js
+handleScrollToTop() {
+    import('react-scroll').then(scroll => {
+      scroll.animateScroll.scrollToTop({
+      })
+    })
+}
+```
+
+### How do you import-on-interaction?
+
+#### Vanilla JavaScript
+
+在 JavaScript 中，[动态 import()](https://v8.dev/features/dynamic-import) 启用延迟加载模块并返回一个promise，并且在正确应用时会非常强大。 下面是一个在按钮事件监听器中使用动态导入来导入 lodash.sortby 模块然后使用它的示例。
+
+```js
+const btn = document.querySelector('button');
+
+btn.addEventListener('click', e => {
+  e.preventDefault();
+  import('lodash.sortby')
+    .then(module => module.default)
+    .then(sortInput()) // use the imported dependency
+    .catch(err => { console.log(err) });
+});
+```
+
+在动态导入之前或对于它不适合的用例，使用基于 Promise 的脚本加载器将脚本动态注入页面也是一种选择（请参阅此处以获取演示 a sign-in facade 的[完整实现](https://glitch.com/edit/#!/tree-fluffy-stop?path=script.js%3A1%3A0)）：
+
+```js
+const loginBtn = document.querySelector('#login');
+
+loginBtn.addEventListener('click', () => {
+  const loader = new scriptLoader();
+  loader.load([
+      '//apis.google.com/js/client:platform.js?onload=showLoginScreen'
+  ]).then(({length}) => {
+      console.log(`${length} scripts loaded!`);
+  });
+});
+```
+
+#### React
+
+通过[代码拆分](https://web.dev/reduce-javascript-payloads-with-code-splitting/)来打破这项工作的负载是相对简单的。 `React.lazy` 方法使使用动态导入在组件级别上对 React 应用程序进行代码拆分变得容易。 `React.lazy` 函数提供了一种内置的方法，可以将应用程序中的组件分离为单独的 JavaScript 块，而无需进行大量工作。 然后，当你将其与 `Suspense` 组件耦合时，你可以处理加载状态。
+
+```js
+import React, { lazy, Suspense } from 'react';
+import MessageList from './MessageList';
+import MessageInput from './MessageInput';
+
+const EmojiPicker = lazy(
+  () => import('./EmojiPicker')
+);
+
+const Channel = () => {
+  ...
+  return (
+    <div>
+      <MessageList />
+      <MessageInput />
+      {emojiPickerOpen && (
+        <Suspense fallback={<div>Loading...</div>}>
+          <EmojiPicker />
+        </Suspense>
+      )}
+    </div>
+  );
+};
+```
+
+我们可以将此想法扩展为仅在 <MessageInput> 中单击 Emoji 图标时导入 Emoji Picker 组件的代码，而不是在应用程序最初加载时急切地导入代码：
+
+```jsx
+import React, { useState, createElement } from 'react';
+import MessageList from './MessageList';
+import MessageInput from './MessageInput';
+import ErrorBoundary from './ErrorBoundary';
+
+const Channel = () => {
+  const [emojiPickerEl, setEmojiPickerEl] = useState(null);
+
+  const openEmojiPicker = () => {
+    import(/* webpackChunkName: "emoji-picker" */ './EmojiPicker')
+      .then(module => module.default)
+      .then(emojiPicker => {
+        setEmojiPickerEl(createElement(emojiPicker));
+      });
+  };
+
+  const closeEmojiPickerHandler = () => {
+    setEmojiPickerEl(null);
+  };
+
+  return (
+    <ErrorBoundary>
+      <div>
+        <MessageList />
+        <MessageInput onClick={openEmojiPicker} />
+        {emojiPickerEl}
+      </div>
+    </ErrorBoundary>
+  );
+};
+```
+
+![](Learning JavaScript Design Patterns.assets/image9_h0g6sw_c_scale_w_1280.png)
+
+#### Vue
+
+在 Vue.js 中，类似的 import-on-interaction 模式可以通过几种不同的方式实现。 一种方法是使用包装在函数中的动态导入来动态导入 `Emojipicker` Vue 组件，即 `() => import("./Emojipicker")`。 通常这样做会使 Vue.js 在需要渲染时延迟加载组件。
+
+然后，我们可以在用户交互之后对延迟加载进行控制。 在选择器的父 `div` 上使用条件 `v-if`，通过单击按钮进行切换，然后我们可以在用户单击时有条件地获取和渲染 `Emojipicker` 组件。
+
+```vue
+<template>
+  <div>
+    <button @click="show = true">Load Emoji Picker</button>
+    <div v-if="show">
+      <emojipicker></emojipicker>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  data: () => ({ show: false }),
+  components: {
+    Emojipicker: () => import('./Emojipicker')
+  }
+};
+</script>
+```
+
+大多数支持动态组件加载的框架和库（包括 [Angular](https://johnpapa.net/angular-9-lazy-loading-components/)）都应该可以使用 import-on-interaction。
+
+### 第一方代码的交互导入作为渐进式加载的一部分
+
+交互驱动的延迟加载有很多重要方面：
+
+- 首先，我们最初下载最少的代码，以便页面在视觉上快速完成。 
+- 接下来，当用户开始与页面交互时，我们使用这些交互来确定要加载哪些其他代码。 例如加载“more filters”组件的代码。
+- 这意味着页面上许多功能的代码永远不会发送到浏览器，因为用户不需要使用它们。
+
+#### 我们如何避免丢失早期点击？
+
+#### 数据呢？
+
+用于渲染页面的初始数据包含在初始页面的 SSR HTML 中并进行流式传输。 延迟加载的数据是根据用户交互下载的，因为我们知道它与哪个组件一起使用。
+
+这样就完成了交互时导入图片，其中数据获取的工作方式类似于 CSS 和 JS 的功能。 由于组件知道它需要什么代码和数据，它的所有资源都只是一个请求。
+
+当我们在构建期间创建组件及其依赖关系图时，此功能会起作用。 Web 应用程序能够在任何时候引用此图并快速获取任何组件所需的资源（代码和数据）。 这也意味着我们基于组件而不是路由进行代码拆分。
+
+有关上述示例的演练，请参阅[使用 JavaScript 社区提升 Web 平台](https://www.youtube.com/watch?v=-xZHWK-vHbQ)。
+
+### 权衡取舍
+
+将昂贵的工作转移到更接近用户交互的位置可以优化页面初始加载的速度，但该技术并非没有权衡取舍。
+
+**如果用户点击后加载脚本需要很长时间会怎样？**
+
+在 Google Hotels 示例中，小粒度块将用户等待很长时间以获取和执行代码和数据的机会降到最低。 在其他一些情况下，较大的依赖性确实可能会在较慢的网络上引入这种担忧。
+
+减少这种情况发生机会的一种方法是在页面中的关键内容加载完成后更好地分解（break-up）或预取（prefetch ）这些资源的加载。 我鼓励衡量它的影响，以确定它在你的应用程序中的实际应用程度。
+
+**在用户交互之前缺少功能怎么办？**
+
+facades 的另一个权衡是在用户交互之前缺乏功能。 例如，嵌入式视频播放器将无法自动播放媒体。 如果此类功能很关键，你可能会考虑加载资源的替代方法，例如延迟加载这些第三方 iframe 以将它们滚动到视图中，而不是将加载推迟到交互之前。
+
+### Replacing interactive embeds with a static variant
+
+我们已经讨论了交互时导入模式和渐进式加载，but what about going entirely static for the embeds use-case？
+
+在某些情况下，可能会立即需要来自嵌入的最终渲染内容，例如在初始视口中可见的社交媒体帖子。 当嵌入引入 2-3MB 的 JavaScript 时，这也可能带来其自身的挑战。 因为需要立即嵌入内容，所以延迟加载和facades 可能不太适用。
+
+如果针对性能进行优化，则可以用看起来相似的静态变体完全替换嵌入，链接到更具交互性的版本（例如原始社交媒体帖子）。 在构建时，可以提取嵌入的数据并将其转换为静态 HTML 版本。
+
+这是@wongmjane 在他们的博客上用于一种社交媒体嵌入的方法，既提高了页面加载性能，又消除了由于嵌入代码增强后备文本而导致的累积布局偏移，从而导致布局偏移。
+
+虽然静态替换对性能有好处，但它们通常需要做一些自定义的事情，所以在评估你的选项时要记住这一点。
+
+### 结论
+
+第一方 JavaScript 通常会影响 Web 上现代页面的交互准备情况，但它通常会在网络上延迟来自第一方或第三方源的非关键 JS 的延迟，从而使主线程保持忙碌。
+
+一般来说，避免在文档头部同步第三方脚本，目标是在第一方 JS 加载完成后加载非阻塞的第三方脚本。 交互时导入等模式为我们提供了一种将非关键资源的加载延迟到用户更有可能需要他们支持的 UI 的点的方法。
+
+## Route Based Splitting
+
+根据当前路由动态加载组件
+
+我们可以通过添加基于路由的拆分来请求仅特定路由所需的资源。 通过将 **React Suspense** 或 `loadable-components` 与 `react-router` 等库结合起来，我们可以根据当前路由动态加载组件。
+
+```jsx
+import React, { lazy, Suspense } from "react";
+import { render } from "react-dom";
+import { Switch, Route, BrowserRouter as Router } from "react-router-dom";
+
+const App = lazy(() => import(/* webpackChunkName: "home" */ "./App"));
+const Overview = lazy(() =>
+  import(/* webpackChunkName: "overview" */ "./Overview")
+);
+const Settings = lazy(() =>
+  import(/* webpackChunkName: "settings" */ "./Settings")
+);
+
+render(
+  <Router>
+    <Suspense fallback={<div>Loading...</div>}>
+      <Switch>
+        <Route exact path="/">
+          <App />
+        </Route>
+        <Route path="/overview">
+          <Overview />
+        </Route>
+        <Route path="/settings">
+          <Settings />
+        </Route>
+      </Switch>
+    </Suspense>
+  </Router>,
+  document.getElementById("root")
+);
+
+module.hot.accept();
+```
+
+通过延迟加载每个路由的组件，我们只请求包含当前路由所需代码的包。 由于大多数人已经习惯了在重定向期间可能会有一些加载时间，因此它是延迟加载组件的理想场所！
+
+## Bundle Splitting
+
+将你的代码拆分为可重复使用的小块
+
+
+
+我们希望尽快向用户显示数据。 较大的包会导致加载时间、处理时间和执行时间的增加。 如果我们可以减小这个包的大小以加快速度，那就太好了。
+
+我们可以将包拆分成多个更小的包，而不是请求一个包含不必要代码的巨大包！
+
+## PRPL Pattern
+
+通过预缓存（precaching）、延迟加载（lazy loading）和最小化往返（minimizing roundtrips）优化初始加载
+
+PRPL 模式侧重于四个主要的性能考虑：
+
+- （Pushing）有效地推送关键资源，从而最大限度地减少到服务器的往返次数并减少加载时间。
+- （Rendering）尽快渲染初始路由，提升用户体验
+- （Pre-caching）后台为经常访问的路由预缓存资产，最大限度减少对服务器的请求量，实现更好的离线体验
+- （Lazily loading）延迟加载不经常请求的路由或资产
+
+
+
+当我们想要访问一个网站时，我们首先必须向服务器发出请求以获取这些资源。 入口点指向的文件从服务器返回，通常是我们应用程序的初始 HTML 文件！ 浏览器的 HTML 解析器一开始从服务器接收数据，就开始解析这些数据。 如果解析器发现需要更多资源，例如样式表或脚本，则会向服务器发送另一个 HTTP 请求以获取这些资源！
+
+必须重复请求资源并不是最优的，因为我们试图最小化客户端和服务器之间的往返次数！
+
+
+
+HTTP/2 相比 HTTP/1.1 引入了一些重大的变化，这使得我们更容易优化客户端和服务器之间的消息交换。
+
+HTTP/1.1 在请求和响应中使用换行符分隔的明文协议，而 HTTP/2 将请求和响应拆分为称为帧的较小部分。 包含标头和正文字段的 HTTP 请求至少分为两个帧：标头帧和数据帧！
+
+HTTP/1.1 在客户端和服务器之间最多有 6 个 TCP 连接。 在通过同一个 TCP 连接发送新请求之前，必须先解决前一个请求！ 如果前一个请求需要很长时间才能解决，则此请求会阻止其他请求的发送。 这种常见的问题称为行头阻塞，并且会增加某些资源的加载时间！
+
+HTTP/2 使用了双向流，这使得拥有一个包含多个双向流的 TCP 连接成为可能，可以在客户端和服务器之间承载多个请求和响应帧！
+
+一旦服务器接收到该特定请求的所有请求帧，它就会重新组合它们并生成响应帧。 这些响应帧被发送回客户端，客户端重新组合它们。 由于流是双向的，我们可以通过同一流发送请求和响应帧。（**多路复用**）
+
+HTTP/2 通过允许在前一个请求解决之前在同一个 TCP 连接上发送多个请求来解决行头阻塞问题！
+
+HTTP/2 还引入了一种更优化的数据获取方式，称为**服务器推送**。 不必每次都通过发送 HTTP 请求来明确地请求资源，服务器可以通过“推送”这些资源来自动发送额外的资源。
+
+客户端收到额外资源后，这些资源将存储在浏览器缓存中。 当在解析入口文件时发现资源时，浏览器可以快速从缓存中获取资源，而不必向服务器发出 HTTP 请求！
+
+尽管推送资源减少了接收额外资源的时间，但服务器推送不支持 HTTP 缓存！ 我们下次访问该网站时将无法使用推送的资源，并且必须再次请求。 为了解决这个问题，PRPL 模式在初始加载后使用[service workers](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API)来缓存这些资源，以确保客户端不会发出不必要的请求。
+
+
+
+作为网站的作者，我们通常知道哪些资源对早期获取至关重要，而浏览器会尽力猜测这一点。 幸运的是，我们可以通过向关键资源添加预加载（`preload`）资源提示来帮助浏览器！
+
+通过告诉浏览器你想预加载某个资源，你就是在告诉浏览器你想比浏览器发现它更快地获取它！ 预加载是优化加载对当前路由至关重要的资源所需时间的好方法。
+
+尽管预加载资源是减少往返次数和优化加载时间的好方法，但推送太多文件可能是有害的。 浏览器的缓存是有限的，您可能会通过请求客户端实际不需要的资源来不必要地使用带宽。
+
+
+
+PRPL 模式专注于优化初始负载。 在初始路由完全加载和渲染之前，没有其他资源被加载！
+
+我们可以通过将我们的应用程序代码拆分成小的、高性能的bundles 来实现这一点。 这些bundles 应该使用户可以仅在需要时加载他们需要的资源，同时还可以最大限度地提高缓存能力！
+
+缓存较大的bundles 可能是一个问题。 可能会发生多个bundles 共享相同资源的情况。
+
+
+
+浏览器很难识别捆绑包的哪些部分在多个路由之间共享，因此无法缓存这些资源。缓存资源对于减少到服务器的往返次数以及使我们的应用程序离线友好非常重要！
+
+在使用 PRPL 模式时，我们需要确保我们请求的包包含我们当时需要的最少量资源，并且可以被浏览器缓存。在某些情况下，这可能意味着完全没有捆绑包会更好，我们可以简单地使用未捆绑的模块！
+
+通过将浏览器和服务器配置为支持 HTTP/2 推送并有效地缓存资源，可以轻松地模拟通过捆绑应用程序来动态请求最少资源的好处。对于不支持 HTTP/2 服务器推送的浏览器，我们可以创建一个经过优化的构建，以最大限度地减少往返次数。客户端不必知道它接收的是捆绑资源还是非捆绑资源：服务器为每个浏览器提供适当的构建。
+
+
+
+PRPL 模式通常使用应用程序外壳（app shell）作为其主要入口点，这是一个包含应用程序大部分逻辑并在路由之间共享的最小文件！ 它还包含应用程序的路由器，它可以动态请求必要的资源。
+
+PRPL 模式确保在初始路由在用户设备上可见之前没有其他资源被请求或渲染。 成功加载初始路由后，可以安装server worker，以便在后台获取其他经常访问的路由的资源！
+
+由于这些数据是在后台获取的，因此用户不会遇到任何延迟。 如果用户想要导航到 Service Worker 缓存的经常访问的路由，Service Worker 可以快速从缓存中获取所需的资源，而不必向服务器发送请求。
+
+可以动态导入不经常访问的路由资源。
+
+## Tree Shaking
+
+通过消除死代码来减小包大小（Reduce the bundle size by eliminating dead code）
+
+在将死代码添加到我们的包之前消除死代码的过程称为 tree-shaking。（在添加到包之前消除死代码。）
+
+尽管 tree-shaking 适用于诸如 math 模块之类的简单模块，但在某些情况下 tree-shaking 可能会很棘手。
+
+### 概念
+
+Tree Shaking 旨在从最终的 JavaScript 包中删除永远不会使用的代码。如果做得好，它可以减少 JavaScript 包的大小并减少下载、解析和（在某些情况下）执行时间。对于大多数使用模块捆绑器（module bundler）（如 webpack 或 Rollup）的现代 JavaScript 应用程序，您的捆绑器是您希望自动删除死代码的工具。 ⁣⁣ ⁣⁣
+
+将您的应用程序及其依赖项视为抽象语法树（我们希望“摇动”语法树以优化它）。树中的每个节点都是为您的应用提供功能的依赖项。在 Tree Shaking 中，输入文件被视为图形。图中的每个节点都是一个顶级语句，在代码中称为“part”。 Tree Shaking 是一种图遍历，它从入口点开始并标记任何遍历的路径以供包含。⁣⁣ ⁣⁣
+
+每个组件都可以声明符号、引用符号并依赖其他文件。甚至“part”也被标记为是否有副作用。例如，语句 `let firstName = 'Jane'` 没有副作用，因为如果不需要 firstName，则可以删除该语句而不会观察到任何差异。但是语句 `let firstName = getName()` 有副作用，因为在不改变代码含义的情况下无法删除对 getName() 的调用，即使没有什么需要 firstName。 ⁣⁣
+
+### Imports
+
+只有使用 ES2015 模块语法（`import` and `export`）定义的模块才能进行**tree-shaken**。 导入模块的方式指定模块是否可以**tree-shaken**。
+
+摇树首先访问具有副作用的入口点文件的所有部分，然后继续遍历图的边，直到到达新的部分。 遍历完成后，JavaScript 包仅包含遍历期间到达的部分。 其他部分被排除在外。 ⁣ ⁣⁣ 假设我们定义了以下 `utility.js` 文件：⁣⁣ ⁣⁣
+
+### Side Effects
+
+当我们导入一个 ES6 模块时，这个模块会立即执行。 可能发生的情况是，尽管我们没有在代码中的任何地方引用模块的导出，但模块本身会在执行时影响全局范围（例如 polyfill 或全局样式表）。 这称为**副作用**。 虽然我们没有引用模块本身的导出，但如果模块开始时有导出值，则由于导入时的特殊行为，模块不能被摇树！
+
+Webpack 文档[清楚地解释了 tree-shaking](https://webpack.js.org/guides/tree-shaking/#clarifying-tree-shaking-and-sideeffects) 以及如何避免破坏它。
+
+## Preload
+
+Inform the browser of critical resources before they are discovered
+
+[Preload](https://developer.mozilla.org/en-US/docs/Web/HTML/Preloading_content) (<link rel="preload">) 是一种[浏览器优化](https://web.dev/uses-rel-preload/)，允许更早地请求关键资源（可能较晚发现）。 如果您愿意考虑如何手动订购关键资源的加载，它会对 [Core Web Vitals](https://web.dev/vitals) 中的加载性能和指标产生积极影响。 也就是说，预加载不是灵丹妙药，需要权衡取舍。
