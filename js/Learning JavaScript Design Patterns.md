@@ -2438,3 +2438,6 @@ Inform the browser of critical resources before they are discovered
 获取和缓存可能很快会被请求的资源
 
 ## 优化加载第三方
+
+减少第三方脚本对您网站的性能影响。
+
