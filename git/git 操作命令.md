@@ -248,6 +248,16 @@ git diff 分支1 分支2
 git diff 分支1 分支2 --stat
 ```
 
+
+
+比较不同分支上某个文件
+
+```bash
+git diff aistudio-v1.4.1 aistudio-v1.4.2 -- ui.Dockerfile
+```
+
+
+
 ## 删除分支
 
 https://www.freecodecamp.org/news/how-to-delete-a-git-branch-both-locally-and-remotely/
