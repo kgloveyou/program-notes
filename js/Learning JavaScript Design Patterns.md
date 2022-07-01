@@ -2349,7 +2349,7 @@ HTTP/2 还引入了一种更优化的数据获取方式，称为**服务器推�
 
 通过告诉浏览器你想预加载某个资源，你就是在告诉浏览器你想比浏览器发现它更快地获取它！ 预加载是优化加载对当前路由至关重要的资源所需时间的好方法。
 
-尽管预加载资源是减少往返次数和优化加载时间的好方法，但推送太多文件可能是有害的。 浏览器的缓存是有限的，您可能会通过请求客户端实际不需要的资源来不必要地使用带宽。
+尽管预加载资源是减少往返次数和优化加载时间的好方法，但推送太多文件可能是有害的。 浏览器的缓存是有限的，你可能会通过请求客户端实际不需要的资源来不必要地使用带宽。
 
 
 
@@ -2387,9 +2387,9 @@ PRPL 模式确保在初始路由在用户设备上可见之前没有其他资源
 
 ### 概念
 
-Tree Shaking 旨在从最终的 JavaScript 包中删除永远不会使用的代码。如果做得好，它可以减少 JavaScript 包的大小并减少下载、解析和（在某些情况下）执行时间。对于大多数使用模块捆绑器（module bundler）（如 webpack 或 Rollup）的现代 JavaScript 应用程序，您的捆绑器是您希望自动删除死代码的工具。 ⁣⁣ ⁣⁣
+Tree Shaking 旨在从最终的 JavaScript 包中删除永远不会使用的代码。如果做得好，它可以减少 JavaScript 包的大小并减少下载、解析和（在某些情况下）执行时间。对于大多数使用模块捆绑器（module bundler）（如 webpack 或 Rollup）的现代 JavaScript 应用程序，你的捆绑器是你希望自动删除死代码的工具。 ⁣⁣ ⁣⁣
 
-将您的应用程序及其依赖项视为抽象语法树（我们希望“摇动”语法树以优化它）。树中的每个节点都是为您的应用提供功能的依赖项。在 Tree Shaking 中，输入文件被视为图形。图中的每个节点都是一个顶级语句，在代码中称为“part”。 Tree Shaking 是一种图遍历，它从入口点开始并标记任何遍历的路径以供包含。⁣⁣ ⁣⁣
+将你的应用程序及其依赖项视为抽象语法树（我们希望“摇动”语法树以优化它）。树中的每个节点都是为你的应用提供功能的依赖项。在 Tree Shaking 中，输入文件被视为图形。图中的每个节点都是一个顶级语句，在代码中称为“part”。 Tree Shaking 是一种图遍历，它从入口点开始并标记任何遍历的路径以供包含。⁣⁣ ⁣⁣
 
 每个组件都可以声明符号、引用符号并依赖其他文件。甚至“part”也被标记为是否有副作用。例如，语句 `let firstName = 'Jane'` 没有副作用，因为如果不需要 firstName，则可以删除该语句而不会观察到任何差异。但是语句 `let firstName = getName()` 有副作用，因为在不改变代码含义的情况下无法删除对 getName() 的调用，即使没有什么需要 firstName。 ⁣⁣
 
@@ -2409,7 +2409,7 @@ Webpack 文档[清楚地解释了 tree-shaking](https://webpack.js.org/guides/tr
 
 Inform the browser of critical resources before they are discovered
 
-[Preload](https://developer.mozilla.org/en-US/docs/Web/HTML/Preloading_content) (<link rel="preload">) 是一种[浏览器优化](https://web.dev/uses-rel-preload/)，允许更早地请求关键资源（可能较晚发现）。 如果您愿意考虑如何手动订购关键资源的加载，它会对 [Core Web Vitals](https://web.dev/vitals) 中的加载性能和指标产生积极影响。 也就是说，预加载不是灵丹妙药，需要权衡取舍。
+[Preload](https://developer.mozilla.org/en-US/docs/Web/HTML/Preloading_content) (<link rel="preload">) 是一种[浏览器优化](https://web.dev/uses-rel-preload/)，允许更早地请求关键资源（可能较晚发现）。 如果你愿意考虑如何手动订购关键资源的加载，它会对 [Core Web Vitals](https://web.dev/vitals) 中的加载性能和指标产生积极影响。 也就是说，预加载不是灵丹妙药，需要权衡取舍。
 
 
 
@@ -2423,14 +2423,14 @@ Inform the browser of critical resources before they are discovered
 
 ### Conclusions
 
-同样，谨慎使用预加载并始终衡量其在生产中的影响。 如果您的图像的预加载在文档中比它更早，这可以帮助浏览器发现它（并相对于其他资源进行排序）。 如果使用不当，预加载可能会导致您的图像延迟 First Contentful Paint（例如 CSS、字体）——这与您想要的相反。 另请注意，要使此类重新优先级工作有效，还取决于服务器正确地对请求进行[优先级排序](https://github.com/andydavies/http2-prioritization-issues#cdns--cloud-hosting-services)。
+同样，谨慎使用预加载并始终衡量其在生产中的影响。 如果你的图像的预加载在文档中比它更早，这可以帮助浏览器发现它（并相对于其他资源进行排序）。 如果使用不当，预加载可能会导致你的图像延迟 First Contentful Paint（例如 CSS、字体）——这与你想要的相反。 另请注意，要使此类重新优先级工作有效，还取决于服务器正确地对请求进行[优先级排序](https://github.com/andydavies/http2-prioritization-issues#cdns--cloud-hosting-services)。
 
-您可能还会发现 <link rel="preload"> 对于需要获取脚本而[不执行](https://developer.mozilla.org/en-US/docs/Web/HTML/Preloading_content#scripting_and_preloads)脚本的情况很有帮助。
+你可能还会发现 <link rel="preload"> 对于需要获取脚本而[不执行](https://developer.mozilla.org/en-US/docs/Web/HTML/Preloading_content#scripting_and_preloads)脚本的情况很有帮助。
 
 各种 web.dev 文章都涉及如何使用 Preload 来：
 
 - 预加载交互所需的关键脚本
-- 预加载您最大的 Contentful Paint 图像
+- 预加载你最大的 Contentful Paint 图像
 - 在防止布局变化的同时加载字体
 
 ## Prefetch
@@ -2439,5 +2439,521 @@ Inform the browser of critical resources before they are discovered
 
 ## 优化加载第三方
 
-减少第三方脚本对您网站的性能影响。
+减少第三方脚本对你网站的性能影响。
 
+第三方资源可能会减慢网站的速度，并且可能是优化的挑战。 你可以遵循某些最佳实践来有效地加载或延迟不同类型的第三方。 你还可以使用框架级组件，例如 [Next.js 脚本组件](https://nextjs.org/docs/basic-features/script)，它提供了一个模板，用于为加载第三方脚本的“何时”和“如何”构建框架。 或者，像 [Partytown](https://github.com/BuilderIO/partytown) 这样的实验性想法可能会引起人们的兴趣。
+
+很难找到一个在孤岛中运营的现代网站。 大多数网站共存并依赖于网络上的其他几个来源来获取数据、功能、内容等等。 位于另一个域上并由你的站点使用的任何资源都是你站点的第三方 (3P) 资源。 网站上包含的典型第三方资源包括
+
+- 地图、视频、社交媒体和聊天服务的嵌入
+- 广告
+- 分析组件和标签管理器
+- A/B 测试和个性化脚本
+- 提供即用型辅助功能的实用程序库，例如用于数据可视化或动画的辅助功能。
+- reCAPTCHA 或 CAPTCHA 用于机器人检测。
+
+我们已经包含了一些适用于不同类型的第三方脚本的策略和最佳实践。 Next.js 脚本组件包含了许多这些最佳实践，你可以在本文的后半部分了解它。 让我们首先看看如何确定第三方脚本是否会损害页面的性能。
+
+### 评估 3P 资源的性能影响
+
+### 优化策略
+
+1. **替换或删除**：如果第三方脚本提供的值与其性能成本不成比例，请考虑将其删除。 你还可以评估其他轻量级但提供类似功能的替代方案。 在本案例研究中，我们讨论了如何通过切换具有更轻量级替代品和类似功能的软件包来提高电影应用程序的性能。
+2. **优化加载顺序**：加载过程包括在浏览器中加载多个第一方和第三方资源。 要设计最佳加载策略，你需要考虑为不同资源分配的浏览器优先级、它们在页面上的位置以及网页中每个资源的价值。 我们为 [React/Next.js 应用程序提出了一个最佳加载顺序](React/Next.js 应用程序提出了一个最佳加载顺序)。 我们现在将看到这如何适用于各种第三方资源，以及我们可以采取哪些步骤来优化加载它们。
+
+### 高效加载 3P 脚本
+
+以下是经过时间考验的最佳实践，在正确使用时可以减少第三方资源对性能的影响。
+
+**使用 async 或 defer 来防止脚本阻止其他内容。**
+**适用于**：非关键脚本（标签管理器、分析）(tag managers, analytics)
+
+`defer`：脚本在解析器执行时并行获取，脚本执行延迟到解析完成。 Defer 应该是延迟执行直到 DOM 构建之后的默认选择。（下载完成，等HTML解析完成才执行）
+
+`async`：脚本在解析时并行获取，但在阻塞解析器时立即执行。 对于具有依赖项的模块脚本，脚本及其所有依赖项都在延迟队列中执行。 对需要在加载过程早期运行的脚本使用异步。 例如，你可能希望尽早执行特定的分析脚本，而不会丢失任何早期页面加载数据。（下载完成，立即执行）
+
+```html
+<script src="https://example.com/deferthis.js" defer></script>
+<script src="https://example.com/asyncthis.js" async></script>
+```
+
+![](Learning JavaScript Design Patterns.assets/optimizingthir--k6owmtevvl.png)
+
+这里值得一提的一个警告是，`async` 和`defer` 降低了浏览器分配的资源优先级，导致它在稍后加载。 [优先级提示](https://web.dev/priority-hints/)的新功能可以帮助解决此问题。
+
+
+
+**使用资源提示建立与所需来源的早期连接**
+**适用于**：关键脚本、字体、CSS、来自第三方 CDN 的图像
+
+由于每个第三方服务器可能需要 DNS 查找、重定向和多次往返，连接到第三方来源可能会很慢。 资源提示 dns-prefetch 和 preconnect 通过在生命周期的早期启动连接来帮助减少此设置所需的时间。
+
+包含与域对应的 [dns-prefetch](https://developer.mozilla.org/en-US/docs/Web/Performance/dns-prefetch) 资源提示将提前执行 DNS 查找，从而减少与 dns 查找相关的延迟。 你可以将此与最关键资源的 [preconnect](https://developer.mozilla.org/en-US/docs/Web/HTML/Link_types/preconnect) 配对。 除了 DNS 查找之外，预连接还通过执行 TCP 往返和处理 TLS 协商来启动与第三方域的连接。
+
+```html
+<head>
+    <link rel="preconnect" href="http://example.com">
+    <link rel="dns-prefetch" href="http://example.com">
+</head>
+```
+
+我们关于理想加载顺序的帖子提供了应使用预连接的第三方资源列表。
+
+在此案例研究中，使用资源提示的好处显而易见，Andy Davies 讨论了使用预连接如何通过启动与第三方图像 CDN 的早期连接来帮助减少主要产品图像的加载时间。
+
+>“现实世界的指标显示，中位数提高了 400 毫秒，在 95 个百分位提高了 1 秒以上。”
+
+同样，你可以使用资源提示来优化关键第三方的加载时间，例如机器人检测 (reCaptcha) 和同意管理（consent management）。
+
+
+
+**延迟加载非首屏 3P 资源**
+**适用于**：YouTube、地图、广告和社交媒体等嵌入
+
+1. 用于社交媒体供稿（social media feeds）、广告、YouTube 视频和地图的第三方嵌入可能会减慢网页速度。 但是，所有此类嵌入可能在页面加载时对用户不可见，并且可能在用户向下滚动到它们时被延迟加载。 你可以根据所需的浏览器支持使用不同的延迟加载方法。
+2. 属性可与通常用于加载第三方嵌入的图像和 iframe 一起使用，例如用于 YouTube 或 Google 地图的嵌入。
+   使用 [IntersectionObserver API](https://developers.google.com/web/updates/2016/04/intersectionobserver) 的自定义实现允许你检测观察到的元素何时进入或退出浏览器的视口。
+3. [Lazy-sizes](https://github.com/aFarkas/lazysizes) - 一个流行的 JavaScript 库，为你实现延迟加载。
+
+延迟加载嵌入的一种变体使用在页面加载时向用户显示的静态或动态外观（facade ）。 除了地图嵌入，你可以使用实际嵌入的静态图像来显示地图嵌入上的特定区域。 或者，你可以使用看起来像嵌入但仅在用户单击或与之交互时加载的外观。 为流行的嵌入实现外观的一些方法包括用于地图的 [Map Static API](https://developers.google.com/maps/documentation/maps-static/overview)、用于 Twitter 嵌入的 [Tweetpik](https://tweetpik.com/)、用于 YouTube 的 [lite-youtube-embed](https://github.com/paulirish/lite-youtube-embed)、用于聊天小部件的 [React-live-chat-loader](https://github.com/calibreapp/react-live-chat-loader)。 [此处](https://web.dev/embed-best-practices/)提供了有关这些技术的全面讨论。
+
+关于延迟加载和外观的一些注意事项
+
+- YouTube 外观的行为在 iOS 和 macOS 11+ 上的 Safari 上略有不同。 第一次点击/单击会加载实际的视频嵌入。 用户必须再次点击才能播放视频。
+- 如果未指定嵌入的大小，延迟加载可能会导致布局变化并影响用户体验。 为了防止布局变化，你应该为所有延迟加载的嵌入或其容器元素指定大小。
+
+
+
+**自托管 3P 脚本以防止往返**
+**适用于**：JavaScript 文件、字体
+
+尽管 preconnect 或 dns-prefetch 允许你尽早启动到第三方来源的连接，但仍然需要连接。 此外，对于第三方来源，你需要依赖他们的缓存策略，这可能不是最佳的。
+
+在同一源上自托管脚本副本可让你更好地控制用于脚本的加载和缓存过程。 自托管减少了 DNS 查找所需的时间，并允许你使用 [HTTP 缓存](https://developers.google.com/web/fundamentals/performance/optimizing-content-efficiency/http-caching)改进脚本的缓存策略。 你还可以使用 [HTTP/2 服务器推送](HTTP/2 服务器推送)来推送你知道用户需要的脚本。 自托管第三方脚本的[一个很好的例子](https://medium.com/caspertechteam/we-shaved-1-7-seconds-off-casper-com-by-self-hosting-optimizely-2704bcbff8ec)是 [Casper.com](https://casper.com/)，它通过 [Optimizely](https://www.optimizely.com/) 提供的自托管第三方脚本将其主页的开始渲染时间缩短了 1.7 秒。
+
+对于第三方脚本的自托管副本，你必须确保根据对原始脚本的更改定期更新你的副本。 如果没有更新，脚本可能会过时，缺少与依赖项相对应的重要修复或更改。 在服务器而不是 CDN 上自托管也会阻止你利用 CDN 采用的[边缘缓存](https://www.cloudflare.com/learning/cdn/glossary/edge-server/)机制。
+
+**尽可能使用 service workers 缓存脚本**
+**适用于**：JavaScript 文件、字体
+
+对于频繁更改的脚本，自托管可能不是一个选项。 你可以使用 service workers 来改进此类第三方脚本的缓存，同时还可以利用 CDN 边缘缓存。 这种技术使你可以更好地控制网络上重新获取的频率。 该技术可以与预连接结合使用，以进一步降低获取操作的网络成本。 你还可以加载资源，以便将对非必要第三方脚本的请求推迟到页面到达关键用户时刻。
+
+**遵循理想的加载顺序**
+考虑上述针对不同类型第三方的指南及其对页面的价值。 根据每个资源的预期用途，你可以遵循[理想的资源加载顺序](https://www.patterns.dev/posts/loading-sequence/#proposed-sequence-with-3p)，以最佳方式交错（interlace ）第一方和第三方资源，以加快页面加载速度。
+
+### Best practices by script type
+
+有些脚本比其他脚本更容易优化。 与网络性能专家就优化不同的第三方、观察到的一些典型约束以及他们加载第三方的愿望清单进行了讨论，这让我们得出了一些有趣的结论。 普遍的共识是，大多数用户在看到某个阈值的内容之前不会与网站进行交互。 以下是针对不同脚本类型的指南。
+
+#### 非关键 JavaScript
+
+大多数第三方（例如聊天小部件或分析脚本）对用户体验并不重要，并且可能会延迟。 使用 `defer` 脚本属性是延迟这些脚本的加载和执行的最常用方法。
+
+广告或分析团队可能会担心延迟脚本对应用程序的可见性和广告收入的影响。 [Telegraph 案例研究](https://medium.com/the-telegraph-engineering/improving-third-party-web-performance-at-the-telegraph-a0a1000be5)经常在这种情况下被引用，其中推迟所有脚本不会扭曲任何分析或广告指标。 相反，First Ad Loaded 指标平均提高了 4 秒。 一些开发人员还设计了将第三方的加载[延迟到页面变得可交互之后](https://www.renderbetter.com/guides/improving-shopify-site-speed-can-increase-conversions-case-study)的解决方案。
+
+#### 机器人检测/ReCaptcha
+
+由于你希望阻止机器人访问 Web 表单，因此开发人员通常会尽早加载这些脚本。 但是，ReCaptcha 具有相当大的 JS 负载和主线程占用空间，因此有动机将其推迟到需要时加载。 优化此脚本的几种方法是
+
+- 仅将其加载到带有用户表单输入的几个页面上，这些表单输入可能会被机器人发送垃圾邮件。
+- 当用户与表单元素交互时延迟加载脚本，例如，在表单焦点上。
+- 当你需要在页面加载时执行脚本时，使用资源提示建立早期连接。 
+
+#### Google Tag Manager (GTM)
+
+大型网站通常会向营销团队或代理机构提供 Google 跟踪代码管理器访问权限。这允许他们向网站上的所有页面添加新的营销标签，以便更好地跟踪。性能并不是营销团队最关心的问题，他们可能都不知道轻率地添加标签会降低网站速度。 GTM 脚本的优化更多是关于控制谁访问 GTM 并监控他们所做的更改。
+
+你可以首先确保网站所有者拥有该帐户，而不是外部机构。这允许你为可以添加、编辑和发布标签的人员定义精细的访问权限。可以在开发和营销部门之间建立更好的协作，以审核新标签并删除未使用的标签。
+
+你的网站可能并非所有页面都需要 GTM。 （例如，营销团队没有理由跟踪电子商务网站结帐页面上的事件）。应单独审核页面，以便删除不必要的 GTM 包含。如果用户拒绝 cookie，使用 cookie 横幅的网站也可以选择不加载 GTM。最后，如果你必须在页面上加载 GTM，你可以推迟脚本在加载主要内容后触发。
+
+另一个适用于较旧的第三方脚本标签的优化与 `document.write()` 有关。 使用 document.write() 注入脚本是不安全的，并且可能会导致基于浏览器和脚本类型的警告或错误。 一些第三方脚本仍然使用这种方法。 GTM 在其[自定义 HTML 标签创建接口](https://support.google.com/tagmanager/answer/6107167?hl=en)中提供了一个名为 Support document.write() 的配置。 如果启用此功能，Google 跟踪代码管理器会暂时将默认 document.write() 函数替换为其自己的安全版本。
+
+#### A/B 测试和个性化
+
+网站会进行 A/B 测试，以检查哪个版本的网页效果更好。 为识别的用户样本中的不同用户加载页面的两个变体之一。 A/B 测试会显著影响运行它们的页面的性能，每次测试都会增加 1 秒的加载时间。 目前，许多 A/B 测试是通过第三方从外部获取的，开发人员几乎无法控制为更改这些测试的 UI 而执行的 JavaScript 代码。
+
+站点个性化是一个相关概念，它涉及运行脚本以根据已知数据为不同用户提供量身定制的体验。 这些脚本又很重且难以优化。 与 A/B 测试脚本一样，个性化脚本也需要尽早运行，因为渲染的 UI 取决于脚本的输出。 为 A/B 测试和个性化开发基于服务器的自定义解决方案是优化 A/B 测试的理想方法。 但是，它可能并不总是可行的。
+
+要优化第三方 A/B 测试脚本，你可以限制接收脚本的用户数量。 该脚本根据启发式方法识别要显示的版本，并为用户启用正确的版本。 这可能会减慢所有用户的页面速度。 谷歌的优化允许为目标用户配置规则。 其中许多规则可以在 Google 服务器上进行评估，因此对非目标用户的性能影响很小。
+
+#### YouTube 和地图嵌入
+
+这些嵌入很重，开发人员必须探索延迟加载或点击加载模式来加载嵌入以优化它们。 鼓励使用 lite-youtube-embed 之类的解决方案，同时注意在 iOS/macOS-Safari 中需要双击/单击才能使用此外观播放视频。
+
+#### 社交媒体嵌入
+
+一些社交媒体嵌入提供了延迟加载脚本的选项（例如，Facebook 嵌入中的数据延迟）。 你可以对此进行探索以提高性能。 另一种选择是使用手动创建的图像外观或使用诸如 tweetpik 之类的工具。
+
+### 开箱即用的优化
+
+为了优化第三方，开发团队应该了解资源提示、延迟加载、HTTP 缓存和服务工作者的细微差别，然后在他们的解决方案中实现这些。 一些框架和库以开发人员可以轻松使用的方式封装了这些最佳实践。
+
+[由 Builder.io 创建的 Partytown](https://github.com/BuilderIO/partytown) 是一个实验性库，可帮助在 [web woker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) 而不是主线程上运行资源密集型脚本。 他们的理念是主线程应该专用于你的代码，并且任何不需要关键路径的脚本都可以被沙箱化并隔离给 Web Worker。 Partytown 允许你配置对主线程 API 的访问，例如 cookie、localStorage、userAgent 等。API 调用也可以使用参数记录下来，以便更好地了解脚本的作用。
+
+JavaScript 代理和 service worker 处理 web worker 和主线程之间的通信。 Partytown 脚本必须自托管在与 HTML 文档相同的服务器上。 它可以与 React 或 Next.js 应用程序一起使用，甚至可以在没有任何框架的情况下使用。 每个可以在 Web 服务器中执行的第三方脚本都应将其开始脚本标签的 type 属性设置为 text/partytown，如下所示。
+
+```html
+<script type="text/partytown">
+    // Third-party analytics scripts
+</script>
+```
+
+该库还提供了一个 React Partytown 组件，你可以直接将其包含在你的 React 或 Next.js 项目中。 它可以包含在文档 <head> 中，如下所示的 Next.js 文档。
+
+```jsx
+import { Partytown } from '@builder.io/partytown/react';
+import Document, { Html, Head, Main, NextScript } from 'next/document';
+
+export default class MyDocument extends Document {
+ render() {
+   return (
+     <Html>
+       <Head>
+         <Partytown />
+       </Head>
+       <body>
+         <Main />
+         <NextScript />
+       </body>
+     </Html>
+   );
+ }
+```
+
+Partytown 还包括用于常见分析库（如 Google Tag Manager）的 React 组件。 以下示例显示了如何将其添加到 React/Next.js 项目中。
+
+```jsx
+import { Partytown, GoogleTagManager, GoogleTagManagerNoScript } from '@builder.io/partytown/react';
+import Document, { Html, Head, Main, NextScript } from 'next/document';
+
+export default class MyDocument extends Document {
+ render() {
+   return (
+     <Html>
+       <Head>
+         <GoogleTagManager containerId={'GTM-XXXXX'} />
+         <Partytown />
+       </Head>
+       <body>
+         <GoogleTagManagerNoScript containerId={'GTM-XXXXX'} />
+         <Main />
+         <NextScript />
+       </body>
+     </Html>
+   );
+ }
+```
+
+Next.js 本身通过其 Script 组件为第三方脚本提供了开箱即用的优化。 让我们看看这如何让我们提高不同第三方的加载性能。
+
+### Next.js 脚本组件
+
+Next.js 11 于 2021 年年中发布，其组件基于 Google Aurora 团队引入的一致性方法。 一致性是一个提供精心设计的解决方案和规则以支持最佳加载和核心网络生命力的系统。 一致性将最佳实践编码为开发人员可以轻松实施的规则集。 强大的默认设置和可操作的规则构成了该系统的基础。 它们使开发人员可以轻松地做正确的事情并防止反模式潜入。
+
+Next.js 脚本组件通过提供可提高加载性能的可定制模板来使用一致性。 Script 组件封装了 <script> 标签，并允许你使用 strategy 属性设置第三方脚本的加载优先级。 策略属性可以取三个值。
+
+1. beforeInteractive：用于在页面变为交互式之前浏览器应该执行的关键脚本。 （例如，机器人检测）
+2. afterInteractive：用于页面交互后浏览器可以运行的脚本。 （例如，标签管理器）这是应用的默认策略，相当于使用 defer 加载脚本
+3. lazyOnload：用于在浏览器空闲时可以延迟加载的脚本。
+
+设置策略有助于 Next.js 自动应用优化和最佳实践来加载脚本，同时确保最佳加载顺序。 你可以使用带有策略属性的脚本标签，如下所示。 与原生 HTML 脚本标签不同，你不能将 next/script 标签放在 next/head 组件或 pages/document.js 中。
+
+。。。
+
+脚本组件允许你处理前面讨论的许多用例。 你可以使用它来加载用于分析、社交媒体、实用程序库等的第三方脚本。 以下示例演示了如何将上述策略应用于不同类型的第三方脚本。
+
+#### 尽早加载 polyfill
+
+#### 延迟加载社交媒体嵌入
+
+#### 在加载时有条件地执行代码
+
+#### 在脚本标签中使用内联脚本
+
+#### 将属性转发给第三方脚本
+
+#### 加载分析脚本
+
+### 结论
+
+在组合来自你服务器的资源与来自网络其他角落的资源组合你的网页时，你必须经常监控这些资源之间的相互作用。 你可以从正确排序资源并遵循最佳实践开始。 你还可以依赖在设计中内置了这些最佳实践的框架或解决方案。
+
+随着站点的发展，性能报告和定期审计可以帮助消除冗余并优化影响性能的脚本。 最后，我们总是希望有众所周知的性能问题的第三方能够在他们的最后优化代码，或者公开能够解决这些问题的变通方法的 API。
+
+## List Virtualization
+
+使用列表虚拟化优化列表性能
+
+在本指南中，我们将讨论列表虚拟化（也称为窗口化（windowing））。 这是在动态列表中仅渲染可见的内容行而不是整个列表的想法。 渲染的行只是完整列表的一小部分，可见的内容（窗口）随着用户滚动而移动。 这可以提高渲染性能。
+
+如果你使用 React 并且需要高效地显示大量数据列表，你可能熟悉 react-[virtualized](https://bvaughn.github.io/react-virtualized/)。 这是 Brian Vaughn 的一个窗口（windowing ）库，它只渲染列表中当前可见的项目（在滚动的“视口”内）。 这意味着你无需支付一次渲染数千行数据的成本。 这篇文章附带了一个使用 react-window 进行列表虚拟化的视频演练。
+
+### 列表虚拟化如何工作？
+
+“虚拟化”项目列表涉及维护一个窗口并在列表中移动该窗口。 react-virtualized 中的窗口通过以下方式工作：
+
+- 具有相对定位（窗口）的小型容器 DOM 元素（例如 <ul>）
+
+- 有一个用于滚动的大 DOM 元素
+
+- 绝对定位容器内的子元素，设置它们的顶部、左侧、宽度和高度样式。
+
+  
+
+  虚拟化不是一次渲染列表中的 1000 个元素（这会导致初始渲染速度变慢或影响滚动性能），而是专注于仅渲染用户可见的项目。 
+
+![](Learning JavaScript Design Patterns.assets/1EIwO5-1280w.avif)
+
+
+
+这有助于在中低端设备上保持快速列表渲染。 你可以在用户滚动时获取/显示更多项目，卸载以前的条目并用新条目替换它们。
+
+### A smaller alternative to react-virtualized
+
+[react-window](https://react-window.now.sh/) 是同一作者对 react-virtualized 的重写，旨在更小、更快和更 [tree-shakeable](https://developers.google.com/web/fundamentals/performance/optimizing-javascript/tree-shaking/)。
+
+这两个包的 API 是相似的，并且在它们不同的地方，react-window 往往更简单。 react-window 的组件包括：
+
+#### List 
+
+#### Grid 
+
+#### More in-depth react-window examples
+
+[Scott Taylor](https://github.com/staylor) 使用 `react-window` 和 `FixedSizeGrid` 实现了一个开源的 [Pitchfork 音乐评论刮板 (src)](http://pitchfork.highforthis.com/)。 这是该应用程序的运行视频：
+
+Pitchfork scraper 使用 [react-window-infinite-loader](https://github.com/bvaughn/react-window-infinite-loader) （[演示](https://codesandbox.io/s/5wqo7z2np4)），它有助于将大型数据集分解为可以在滚动到视图中时加载的块。
+
+下面是 react-window-infinite-loader 如何在此应用程序中合并的片段：
+
+#### react-window 缺少什么？
+
+react-window 还没有 react-virtualized 的完整 API 界面，所以如果考虑的话，请检查比较文档。 少了什么东西？
+
+- WindowScroller - 这是一个 react-virtualized 组件，可以根据窗口的滚动位置滚动列表。 目前没有计划为 react-window 实现此功能，因此你需要在用户空间中解决此问题。
+
+- AutoSizer - HOC 增长以适应所有可用空间，自动调整单个子项的宽度和高度。 Brian 将其实现为一个独立的包。 请关注此问题以获取最新信息。
+
+- CellMeasurer - HOC 通过以用户不可见的方式渲染单元格的内容来自动测量单元格的内容。 关注此处以讨论支持。
+
+  
+
+  也就是说，我们发现 react-window 足以满足我们的大部分需求，它包含开箱即用的内容。 
+
+### Improvements in the web platform
+
+一些现代浏览器现在支持[CSS content-visibility](https://web.dev/content-visibility/)。 `content-visibility:auto` 允许你在需要时跳过渲染和绘制屏幕外内容。 如果你的 HTML 文档很长且渲染成本很高，请考虑试用该属性。
+
+对于动态内容的渲染列表，我仍然推荐使用 react-window 之类的库。 很难有这样一个库的`content-visbility:hidden`版本，它可以像今天许多列表虚拟化库一样使用 `display:none` 或在屏幕外删除 DOM 节点时积极地击败一个版本。
+
+## 压缩 JavaScript
+
+减少通过网络传输脚本所需的时间。
+
+> 压缩你的 JavaScript 并密切关注你的块大小以获得最佳性能。 过高的 JavaScript 包粒度可以帮助进行重复数据删除和缓存，但在 50-100 块范围内可能会受到较差的压缩和影响加载（由于浏览器进程、缓存检查等）。 最终，选择最适合你的压缩策略。
+
+JavaScript 是页面大小的第二大贡献者，也是互联网上仅次于图像的第二大请求网络资源。 我们使用减少 JavaScript 传输、加载和执行时间的模式来提高网站性能。 压缩有助于减少通过网络传输脚本所需的时间。
+
+你可以将压缩与其他技术（如minification、代码拆分、bundling、缓存和延迟加载）结合使用，以减少大量 JavaScript 对性能的影响。 然而，这些技术的目标有时会相互矛盾。 本节探讨 JavaScript 压缩技术，并讨论在决定代码拆分和压缩策略时应考虑的细微差别。
+
+
+
+1. Gzip 和 Brotli 是压缩 JavaScript 最常用的方法，并被现代浏览器广泛支持。
+2. Brotli 在相似的压缩级别下提供更好的压缩比。
+3. Next.js [默认提供 Gzip 压缩](https://nextjs.org/docs/api-reference/next.config.js/compression)。 但建议在 Nginx 等 HTTP 代理上启用它。
+4. 如果你使用 Webpack 来打包你的代码，你可以使用 [CompressionPlugin](https://github.com/webpack-contrib/compression-webpack-plugin) 进行 Gzip 压缩或使用 [BrotliWebpackPlugin](https://github.com/mynameiswhm/brotli-webpack-plugin) 进行 Brotli 压缩。
+5. 在切换到 Brotli 压缩而不是 Gzip 后，Oyo 的文件大小减少了 15-20%，Wix 的文件大小减少了 21-25%。
+6. compress(a + b) <= compress(a) + compress(b) - 单个大包比多个小包提供更好的压缩。 这会导致重复数据删除和缓存与浏览器性能和压缩不一致的粒度权衡。 粒度分块可以帮助处理这种权衡。
+
+### HTTP 压缩
+
+压缩可减少文档和文件的大小，因此它们占用的磁盘空间比原始文件少。较小的文档占用较低的带宽，并且可以通过网络快速传输。 HTTP 压缩使用这个简单的概念来压缩网站内容、减少页面权重、降低带宽需求并提高性能。
+
+HTTP 数据压缩可以以不同的方式分类。其中之一是有损与无损。
+
+有损压缩意味着压缩 - 解压缩循环会导致文档略有改变，同时保留其可用性。最终用户几乎察觉不到这种变化。有损压缩的最常见示例是图像的 JPEG 压缩。
+
+使用无损压缩，压缩和后续解压后恢复的数据将与原始数据精确匹配。 PNG图像是无损压缩的一个例子。无损压缩与文本传输相关，应该应用于基于文本的格式，例如 HTML、CSS 和 JavaScript。
+
+由于你想要浏览器上的所有有效 JS 代码，你应该对 JavaScript 代码使用无损压缩算法。在我们压缩 JS 之前，缩小有助于消除不必要的语法，并将其缩减为仅执行所需的代码。
+
+### Minification
+
+要减少有效负载大小，你可以在压缩之前缩小 JavaScript。缩小（[Minification](https://web.dev/reduce-network-payloads-using-text-compression/#minification)）通过删除空格和任何不必要的代码来补充压缩，以创建一个更小但完全有效的代码文件。在编写代码时，我们使用换行符、缩进、空格、命名变量和注释来提高代码的可读性和可维护性。但是，这些元素会影响整个 JavaScript 大小，并且对于在浏览器上执行不是必需的。缩小将 JavaScript 代码减少到成功执行所需的最低限度。
+
+缩小是 JS 和 CSS 优化的标准做法。 JavaScript 库开发人员通常会为生产部署提供文件的缩小版本，通常用 min.js 扩展名表示。 （例如，jquery.js 和 jquery.min.js）
+
+有多种工具可用于缩小 HTML、CSS 和 JS 资源。 Terser 是 ES6+ 的流行 JavaScript 压缩工具，Webpack v4 默认包含一个用于该库的插件，用于创建缩小的构建文件。你还可以将 TerserWebpackPlugin 与旧版本的 Webpack 一起使用，或者将 Terser 用作不带 module bundler的 CLI 工具。
+
+### 静态与动态压缩
+
+缩小（Minification ）有助于显着减小文件大小，但 JS 的压缩可以提供更显着的收益。你可以通过两种方式实现服务器端压缩。
+
+**静态压缩**：你可以使用静态压缩来预压缩资源并在构建过程中提前保存它们。在这种情况下，你可以使用更高的压缩级别来缩短代码的下载时间。高构建时间不会影响网站性能。最好对不经常更改的文件使用静态压缩。
+
+**动态压缩**：在这个过程中，压缩发生在浏览器请求资源时。动态压缩更容易实现，但你只能使用较低的压缩级别。更高的压缩级别将需要更多时间，并且你将失去从更小的内容大小中获得的优势。如果你对经常更改或由应用程序生成的内容使用动态压缩，将会有所帮助。
+
+你可以根据应用程序内容的类型使用静态或动态压缩。你可以使用流行的压缩算法启用静态和动态压缩，但建议的压缩级别在每种情况下都不同。让我们看一下压缩算法以更好地理解这一点。
+
+### 压缩算法
+
+[Gzip](https://datatracker.ietf.org/doc/html/rfc1952) 和 [Brotli](https://opensource.googleblog.com/2015/09/introducing-brotli-new-compression.html) 是当今用于压缩 HTTP 数据的两种[最常用的算法](https://almanac.httparchive.org/en/2020/compression#fig-5)。
+
+#### Gzip
+
+#### Brotli
+
+2015 年，谷歌推出了 Brotli 算法和 Brotli 压缩数据格式。 与 GZip 一样，Brotli 也是基于 LZ77 算法和 Huffman 编码的无损算法。 此外，它使用二阶上下文建模以相似的速度产生更密集的压缩。 上下文建模是一项功能，它允许同一块中的同一字母表有多个 Huffman 树。 Brotli 还支持更大的反向引用窗口大小，并具有静态字典。 这些功能有助于提高其作为压缩算法的效率。
+
+Brotli 受到当今所有主要服务器和浏览器的支持，并且变得越来越流行。 托管服务提供商和中间件（包括 Netlify、AWS 和 Vercel）也支持并轻松启用它。
+
+OYO 和 Wix 等拥有庞大用户群的网站在将 Gzip 替换为 Brotli 后，其性能得到了显着提升。
+
+#### 比较 Gzip 和 Brotli
+
+[下表](https://paulcalvano.com/2018-07-25-brotli-compression-how-much-will-it-reduce-your-content/)显示了在不同压缩级别下 Brotli 和 Gzip 压缩比和速度的基准比较。
+
+
+
+此外，以下是 Chrome 研究使用 Gzip 和 Brotli 压缩 JS 的一些见解
+
+- Gzip 9 具有最好的压缩率和良好的压缩速度，你应该考虑在其他级别的 Gzip 之前使用它。
+
+- 对于 Brotli，请考虑 6-11 级。 否则，我们可以使用 Gzip 更快地实现类似的压缩率。
+
+- 在所有大小范围内，Brotli 9-11 的性能都比 Gzip 好得多，但速度很慢。
+
+- 捆绑包越大，你获得的压缩率和速度就越好。
+
+- 对于所有包大小，算法之间的关系都是相似的（例如，对于每个包大小，Brotli 7 都优于 Gzip 9，而对于所有大小范围，Gzip 9 都比 Brotli 5 快）。
+
+  
+
+  现在让我们看看服务器和浏览器之间关于选择的压缩格式的通信。
+
+### 启用压缩
+
+你可以在构建过程中启用静态压缩。 如果你使用 Webpack 来打包你的代码，你可以使用 CompressionPlugin 进行 Gzip 压缩或使用 BrotliWebpackPlugin 进行 Brotli 压缩。 该插件可以包含在 Webpack 配置文件中，如下所示。
+
+```json
+module.exports = {
+ //...
+ plugins: [
+   //...
+   new CompressionPlugin()
+ ]
+}
+```
+
+Next.js 默认提供 Gzip 压缩，但建议在 Nginx 等 HTTP 代理上启用它。 Vercel 平台的代理级别支持 Gzip 和 Brotli。
+
+你可以在支持不同压缩算法的服务器（包括 Node.js）上启用动态无损压缩。 浏览器通过请求中的 Accept-Encoding HTTP 标头传达其支持的压缩算法。 例如，
+
+接受编码：gzip，br
+
+```
+Accept-Encoding: gzip, br
+```
+
+这表明浏览器支持 Gzip 和 Brotli。 你可以按照特定服务器类型的说明在服务器上启用不同类型的压缩。 例如，你可以在[此处](https://httpd.apache.org/docs/2.4/mod/mod_brotli.html#enable)找到在 Apache 服务器上启用 Brotli 的说明。 
+
+[Express](https://expressjs.com/) 是一个流行的 Node 网络框架，并提供了一个压缩中间件库。 使用它来压缩任何被请求的资产。
+
+与其他压缩算法相比，建议使用 Brotli，因为它生成的文件更小。 你可以启用 Gzip 作为不支持 Brotli 的浏览器的后备。 如果配置成功，服务器将返回 Content-Encoding HTTP 响应头，指示响应中使用的压缩算法。 例如。，
+
+```
+Content-Encoding: br
+```
+
+### Auditing compression
+
+你可以在 Chrome -> DevTools -> network -> Headers 中检查服务器是否压缩了下载的脚本或文本。 DevTools 显示响应中使用的内容编码，如下所示。
+
+### JavaScript 压缩和加载粒度
+
+要完全掌握 JavaScript 压缩的效果，还必须考虑 JavaScript 优化的其他方面，例如[route-based splitting](https://www.patterns.dev/posts/route-based/)、[code-splitting](https://webpack.js.org/guides/code-splitting/)和[bundling](https://www.patterns.dev/posts/bundle-splitting/)。
+
+具有大量 JavaScript 代码的现代 Web 应用程序通常使用不同的代码拆分和捆绑（bundling ）技术来有效地加载代码。 应用程序使用逻辑边界来拆分代码，例如单页应用程序的路由级别拆分或在交互或视口可见性上增量服务 JavaScript。 你可以配置捆绑器（bundlers ）以识别这些边界。
+
+在我们继续讨论它如何影响压缩之前，让我们先介绍一些与代码拆分和捆绑（bundling ）相关的基本定义。
+
+### Bundling 术语
+
+。。。
+
+JavaScript 的输出大小是指由 JavaScript 捆绑器或编译器优化后的块大小或原始大小。大型 JS 应用程序可以解构为可独立加载的 JavaScript 文件块。加载粒度是指输出块的数量——块的数量越多，每个块的大小越小，粒度越高。
+
+有些块比其他块更重要，因为它们被更频繁地加载或者是更有影响力的代码路径的一部分（例如，加载“结帐”小部件）。知道哪些块最重要需要应用知识，尽管可以安全地假设“基本”块始终是必不可少的。
+
+页面所需的块的每个字节都需要由用户设备下载和解析/执行。这是直接影响应用程序性能的代码。由于块是最终将被下载的代码，因此压缩块可以提高下载速度。
+
+在此背景下，让我们讨论加载粒度和压缩之间的相互作用。
+
+#### 粒度权衡
+
+在理想的世界中，粒度和分块策略应该旨在实现以下相互矛盾的目标。
+
+**提高下载速度**：如前几节所述，可以使用压缩来提高下载速度。 但是，与使用相同代码压缩多个小块相比，压缩一个大块将产生更好的结果或更小的文件大小。
+
+```
+compress(a + b) <= compress(a) + compress(b)
+```
+
+**提高缓存命中率和缓存效率**：更小的块会带来更好的缓存效率，尤其是对于增量加载 JS 的应用程序。
+
+- 更改被隔离到具有较小块的较少块。 如果有代码更改，只需要重新下载受影响的块，而这些对应的代码量很可能很小。 因此，可以在缓存中找到剩余的块，从而增加缓存命中的数量。
+
+- 对于较大的块，很可能会影响较大的代码，并且需要在代码更改后重新下载。
+
+因此，希望使用更小的块来利用缓存机制。
+
+**快速执行**——为了让代码快速执行，它应该满足以下条件。
+
+- 所有必需的依赖项都很容易获得 - 它们已一起下载或在缓存中可用。 这意味着你应该将所有相关代码捆绑在一起作为一个更大的块。
+- 只有页面/路由需要的代码应该执行。 这要求不下载或执行额外的代码。 包含公共依赖项的公共块可能具有大多数但不是所有页面所需的依赖项。 代码的重复数据删除需要更小的独立块。
+- 主线程上的长任务可能会阻塞很长时间。 因此，这些需要分解成更小的块。
+
+![](Learning JavaScript Design Patterns.assets/compressingjav--oj44b7q1hxl.png)
+
+如上面的三角形所示，尝试优化上述目标之一的加载粒度可能会使你远离其他目标。 这就是粒度权衡的问题
+
+重复数据删除和缓存与浏览器性能和压缩不符。
+
+由于这种权衡，目前大多数生产应用程序使用的最大块数约为 10。需要增加此限制以支持具有大量 JavaScript 的应用程序更好的缓存和重复数据删除。
+
+### SplitChunksPlugin and Granular chunking
+
+粒度权衡的潜在解决方案将满足以下要求。
+
+- 允许更大数量的块（40 到 100）和更小的块大小，以便在不影响性能的情况下更好地缓存和重复数据删除。
+- 由于 IPC、I/O 和许多脚本标签的处理成本，解决了多个较小块的性能开销。
+- 在多个较小块的情况下解决压缩损失。 
+
+满足这些要求的潜在解决方案仍在开发中。 但是，Webpack v4 的 [SplitChunksPlugin](https://webpack.js.org/plugins/split-chunks-plugin/) 和粒度分块策略可以在一定程度上帮助增加加载粒度。
+
+早期版本的 Webpack 使用 `CommonsChunkPlugin` 将公共依赖项或共享模块捆绑到单个块中。 这可能会导致不使用这些通用模块的页面的下载和执行时间不必要地增加。 为了更好地优化此类页面，Webpack 在 v4 中引入了 `SplitChunksPlugin`。 根据默认值或配置创建多个拆分块，以防止跨各种路由获取重复代码。
+
+Next.js 采用了 SplitChunksPlugin 并实现了以下 Granular Chunking 策略来生成解决粒度权衡的 Webpack 块。
+
+- 任何足够大的第三方模块（大于 160 KB）都会被分割成一个单独的块。
+
+- 为框架依赖项创建了一个单独的框架块。 （react、react-dom 等）
+
+- 根据需要创建尽可能多的共享块。 （最多 25 个）
+
+- 要生成的块的最小大小更改为 20 KB。
+
+  
+
+ Emitting 多个共享块而不是单个块可以最大限度地减少在不同页面上下载或执行的不必要（或重复）代码的数量。 为大型第三方库生成独立的块可以改善缓存，因为它们不太可能经常更改。 20 kB 的最小块大小可确保压缩损失相当低。 
+
+精细的分块策略帮助多个 Next JS 应用程序减少了网站使用的 JavaScript 总量。
+
+
+
+在 [Gatsby](https://github.com/gatsbyjs/gatsby/pull/22253) 中也实施了粒度分块策略，并观察到了类似的好处。
+
+### 结论
+
+仅靠压缩并不能解决所有 JavaScript 性能问题，但了解浏览器和打包程序在幕后的工作方式有助于创建更好的打包策略，以支持更好的压缩。 加载粒度问题需要在生态系统中的不同平台上解决。 细粒度的分块可能是朝这个方向迈出的一步，但我们还有很长的路要走。
