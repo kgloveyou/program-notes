@@ -54,3 +54,8 @@ public int predecessor(TreeNode root) {
 
 
 
+## 滚动数组
+
+[滚动数组（简单说明）](https://blog.csdn.net/m0_46427179/article/details/107419492)
+
+[动态规划之滚动数组](https://blog.csdn.net/qq_45888103/article/details/123452741)
