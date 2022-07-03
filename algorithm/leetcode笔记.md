@@ -59,3 +59,71 @@ public int predecessor(TreeNode root) {
 [滚动数组（简单说明）](https://blog.csdn.net/m0_46427179/article/details/107419492)
 
 [动态规划之滚动数组](https://blog.csdn.net/qq_45888103/article/details/123452741)
+
+[【动态规划秘籍】01背包、一维数组优化、完全背包，一网打尽！](https://www.bilibili.com/video/BV1jT4y1o71J/?vd_source=ada6f000d1772e939ebb2f8afea929b3) ，第42分钟（*）
+
+## 背包问题
+
+### 0-1背包问题
+
+https://www.bilibili.com/video/BV1jT4y1o71J/?vd_source=ada6f000d1772e939ebb2f8afea929b3
+
+一维数组**倒退**即可。
+
+![无标题](leetcode笔记.assets/无标题.png)
+
+### 完全背包
+
+![无标题2](leetcode笔记.assets/无标题2-1656765858960.png)![无标题3](leetcode笔记.assets/无标题3.png)
+
+
+
+## 动态规划秘籍
+
+### 001 彻底搞懂动态规划
+
+https://www.bilibili.com/video/BV1oL4y187Fq/?spm_id_from=333.788&vd_source=ada6f000d1772e939ebb2f8afea929b3
+
+![无标题](leetcode笔记.assets/无标题-1656768785095.png)![无标题](leetcode笔记.assets/无标题-1656768861867.png)
+
+### 002 线性动态规划详解
+
+https://www.bilibili.com/video/BV1EL411s7jo/?spm_id_from=333.788&vd_source=ada6f000d1772e939ebb2f8afea929b3
+
+爬楼梯
+
+1、递归（可能会超时）
+
+2、记忆化递归（备忘录memo递归）
+
+3、动态规划
+
+4、动态规划（空间优化）
+
+5、打表法（固定的可枚举的输入，一次运行多次使用）
+
+### 003 0-1背包问题
+
+### 004 多重背包问题详解
+
+https://www.bilibili.com/video/BV1UQ4y1X76y/?spm_id_from=333.788&vd_source=ada6f000d1772e939ebb2f8afea929b3
+
+01背包：每种物品只有1个；
+
+完全背包：每种物品有无穷多个；
+
+多重背包：每种物品有Ci个；
+
+分组背包：第i组有Ci个物品；
+
+多重背包问题，暴力拆分（可能超时）、二进制拆分、数组优化（只能求解存在性问题），一目了然！
+
+#### 二进制拆分
+
+#### 数组优化
+
+若不要求最优性，仅关注可行性（如面值是否能拼成），可使用数组优化。
+
+### 005 区间动态规划详解
+
+https://www.bilibili.com/video/BV1S44y1x7xj/?spm_id_from=333.788&vd_source=ada6f000d1772e939ebb2f8afea929b3
