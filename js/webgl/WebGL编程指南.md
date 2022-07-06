@@ -114,9 +114,9 @@ WebGL和OpenGL一样，矩阵元素是按列主序存储在数组中的。
 
 ### 复合变换
 
-![image-20220417203434871](https://gitee.com/kg_loveyou/cdn/raw/master/image-20220417203434871.png)
+<img src="WebGL编程指南.assets/image-20220417203434871.png" alt="image-20220417203434871" style="zoom:50%;" />
 
-**模型变换（model transformation）**，或者**建模变换（modeling transformation）**，响应地，模型变换的矩阵成为**模型矩阵（model matrix）**。
+**模型变换（model transformation）**，或者**建模变换（modeling transformation）**，相应地，模型变换的矩阵成为**模型矩阵（model matrix）**。
 
 ### 示例程序 (RotatedTranslatedTriangle.js)  
 
@@ -261,9 +261,7 @@ Parameter Qualifiers
 
 ## 全局变量和局部变量
 
-​		局部变量只能在函数内部使用，因此，由于需要在函数外部访问，下一节中将涉及的attribute, uniform, 和 varying 
-
-变量都必须声明为全局变量。
+​		局部变量只能在函数内部使用，因此，由于需要在函数外部访问，下一节中将涉及的attribute, uniform, 和 varying 变量都必须声明为全局变量。
 
 ## 存储限定字
 
