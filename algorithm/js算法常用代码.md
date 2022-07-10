@@ -223,3 +223,21 @@ new Map([
 ## 14、String slice() 方法
 
 第一个功能是 slice() 函数的基本功能。没有参数的数组复制原始数组。
+
+## 15、padStart()，padEnd()
+
+ES2017 引入了字符串补全长度的功能。如果某个字符串不够指定长度，会在头部或尾部补全。`padStart()`用于头部补全，`padEnd()`用于尾部补全。
+
+```js
+'x'.padStart(5, 'ab') // 'ababx'
+'x'.padStart(4, 'ab') // 'abax'
+
+'x'.padEnd(5, 'ab') // 'xabab'
+'x'.padEnd(4, 'ab') // 'xaba'
+```
+
+上面代码中，`padStart()`和`padEnd()`一共接受两个参数，第一个参数是字符串补全生效的最大长度，第二个参数是用来补全的字符串。
+
+https://es6.ruanyifeng.com/#docs/string-methods#%E5%AE%9E%E4%BE%8B%E6%96%B9%E6%B3%95%EF%BC%9ApadStart%EF%BC%8CpadEnd
+
+注意：并不会改变原字符串，需要手动覆盖；
