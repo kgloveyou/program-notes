@@ -22,3 +22,9 @@ sample artifacts(mistake/inaccuracy/)
 
 aliases:走样
 
+## 第7讲 着色1
+
+Visibility/occlusion（遮挡）
+
+z-buffering/depth-buffering
+
