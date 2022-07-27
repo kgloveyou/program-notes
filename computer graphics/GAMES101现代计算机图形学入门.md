@@ -28,3 +28,7 @@ Visibility/occlusion（遮挡）
 
 z-buffering/depth-buffering
 
+## 第8讲 着色（光照与基本着色模型）
+
+定义每个顶点的法线方向：相邻面的法线方向的（加权）平均值。
+
