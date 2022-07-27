@@ -32,3 +32,14 @@ z-buffering/depth-buffering
 
 定义每个顶点的法线方向：相邻面的法线方向的（加权）平均值。
 
+### Graphics Pipeline  
+
+这个流程是在GPU里面处理的。
+
+### Shader Programs  
+
+顶点着色器，片元/像素/片段着色器
+
+### Snail Shader Program  
+
+Shadertoy
