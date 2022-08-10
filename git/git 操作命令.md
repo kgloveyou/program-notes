@@ -238,6 +238,9 @@ git reflog  show 'v0.2.0' --date=local
 
 ```bash
 git diff 分支1 分支2
+
+# 等同于
+git diff master..branch
 ```
 
 　　
@@ -254,6 +257,25 @@ git diff 分支1 分支2 --stat
 
 ```bash
 git diff aistudio-v1.4.1 aistudio-v1.4.2 -- ui.Dockerfile
+```
+
+
+
+比较两个不同分支的提交日志
+
+```sh
+git log master..branch	#显示commit记录
+
+
+git shortlog master..branch #只显示不同用户的提交msg信息
+```
+
+
+
+比较当前分支与主分支（只列出变化文件，不显示内容）
+
+```sh
+$ git diff --name-status main
 ```
 
 
