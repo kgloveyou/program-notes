@@ -84,6 +84,8 @@ metalness
 
 注册一个Unreal账号，使用自带的Quixel Bridge里面的贴图。
 
+https://www.thingiverse.com/
+
 ## 17-纹理加载进度情况
 
 TextureLoader
@@ -276,3 +278,80 @@ cube.geometry.scale(1, 1, -1);
 ## 02-编写Threejs项目基础代码
 
 ## 03-模型加载与展厅灯光
+
+汽车模型是用blender制作的。（glb格式的）
+
+使用GLTF加载器（[GLTFLoader](https://threejs.org/docs/index.html?q=dra#examples/zh/loaders/GLTFLoader)），需要先用[DRACOLoader](https://threejs.org/docs/index.html?q=dra#examples/zh/loaders/DRACOLoader)进行解压。
+
+物理材质需要打光，不然是黑色的。
+
+## 04-选配材质与物理材质设置
+
+模型中针对每个部件都设置了name属性，可以通过该属性找到对应部件，从而对其单独设置渲染。
+
+## 酷炫球形机器人展示
+
+背景中的星星和月亮是通过加载一个hdr纹理图片实现。
+
+```js
+// 创建rgbe加载器
+let hdrLoader = new RGBELoader();
+hdrLoader.load("./assets/sky12.hdr", (texture) => {
+    texture.mapping = THREE.EquirectangularReflectionMapping;
+    scene.background = texture;
+    scene.environment = texture;
+});
+```
+
+添加机器人（模型是压缩过的，需要解压缩）
+
+```js
+// 添加机器人
+// 设置解压缩的加载器
+let dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath("./draco/gltf/");
+dracoLoader.setDecoderConfig({ type: "js" });
+let gltfLoader = new GLTFLoader();
+gltfLoader.setDRACOLoader(dracoLoader);
+gltfLoader.load("./assets/robot.glb", (gltf) => {
+    scene.add(gltf.scene);
+});
+```
+
+机器人底部的旋转光阵是一个mp4视频文件
+
+```js
+  // 添加光阵
+  let video = document.createElement("video");
+  video.src = "./assets/zp2.mp4";
+  video.loop = true;
+  video.muted = true;
+  video.play();
+  let videoTexture = new THREE.VideoTexture(video);
+  const videoGeoPlane = new THREE.PlaneBufferGeometry(8, 4.5);
+  const videoMaterial = new THREE.MeshBasicMaterial({
+    map: videoTexture,
+    transparent: true,
+    side: THREE.DoubleSide,
+    alphaMap: videoTexture,
+  });
+  const videoMesh = new THREE.Mesh(videoGeoPlane, videoMaterial);
+  videoMesh.position.set(0, 0.2, 0);
+  videoMesh.rotation.set(-Math.PI / 2, 0, 0);
+  scene.add(videoMesh);
+```
+
+倒影是通过添加反射平面实现
+
+```js
+// 添加镜面反射
+let reflectorGeometry = new THREE.PlaneBufferGeometry(100, 100);
+let reflectorPlane = new Reflector(reflectorGeometry, {
+    textureWidth: window.innerWidth,
+    textureHeight: window.innerHeight,
+    color: 0x332222,
+});
+reflectorPlane.rotation.x = -Math.PI / 2;
+scene.add(reflectorPlane);
+```
+
