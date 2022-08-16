@@ -93,4 +93,39 @@ Ripmap，对矩形区域有效，斜着的区域无效。
 
 ### 纹理应用
 
-Environment Map  
+#### Environment Map  （环境贴图）
+
+Environmental Lighting  （环境光照）
+
+Spherical Environment Map  
+
+鱼眼摄像机拍照，合成一张360或720度的图片。
+
+Spherical Map — Problem  
+
+Prone to distortion (top and bottom parts)!  
+
+**Cube Map**  
+
+把环境光记录在包围球体的立方体上。
+
+Much less distortion!  
+
+Need dir->face computation  
+
+#### Textures can affect shading!  
+
+**Bump Mapping  （凹凸贴图）**
+
+实际上没有改变形状，只是欺骗了人眼。
+
+**Displacement mapping  （位移贴图）**
+
+a more advanced approach  
+
+- Uses the same texture as in bumping mapping  
+- Actually moves the vertices  （实际上改变了三角形的顶点）
+
+**3D Procedural Noise + Solid Modeling**  
+
+**Provide Precomputed Shading**  
