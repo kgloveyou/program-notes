@@ -4,6 +4,8 @@
 
 配套资源，https://github.com/candycat1992/Unity_Shaders_Book
 
+目录，https://book.douban.com/subject/26821639/
+
 ### 2.3.4 屏幕映射
 
 ​		有一个需要注意的地方是，屏幕坐标系在OpenGL和DirectX之间的差异问题。OpenGL把屏幕的左下角当成最小的窗口坐标值，而DirectX则定义了屏幕的左上角为最小的窗口坐标值。
