@@ -355,3 +355,28 @@ reflectorPlane.rotation.x = -Math.PI / 2;
 scene.add(reflectorPlane);
 ```
 
+# Three.js快速上手与智慧城市实战教程
+
+https://www.bilibili.com/video/BV1ob4y1y7o4?spm_id_from=333.999.0.0&vd_source=ada6f000d1772e939ebb2f8afea929b3
+
+## 智慧城市代码结构和构建
+
+https://www.bilibili.com/video/BV1ob4y1y7o4?p=11
+
+## 智慧城市业务特效实现讲解
+
+https://www.bilibili.com/video/BV1ob4y1y7o4?p=12
+
+### .computeBoundingBox () : undefined
+
+Computes bounding box of the geometry, updating .boundingBox attribute.
+Bounding boxes aren't computed by default. They need to be explicitly computed, otherwise they are `null`.
+
+### .computeBoundingSphere () : undefined
+
+Computes bounding sphere of the geometry, updating .boundingSphere attribute.
+Bounding spheres aren't computed by default. They need to be explicitly computed, otherwise they are `null`.
+
+### EdgesGeometry
+
+This can be used as a helper object to view the edges of a geometry.
