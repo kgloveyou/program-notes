@@ -4,6 +4,12 @@ https://www.bilibili.com/video/BV1Gg411X7FY/?vd_source=ada6f000d1772e939ebb2f8af
 
 屏幕绘制工具，Epic pen
 
+## 02-使用parcel搭建three.js开发环境
+
+https://www.parceljs.cn/
+
+
+
 ## 10-Gsap动画库基本使用与原理
 
 ## 11-Gsap控制动画属性与方法
@@ -213,6 +219,8 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 ```
 
 ## 3D地月环绕实战案例
+
+本地代码路径：`E:\编程\JavaScript\WebGL\Three.js\老陈打码\Threejs入门智慧城市实战教程资料【含地月】\05-月球绕地球转`
 
 文字用CSS 2D渲染器（CSS2DRenderer）实现。
 
