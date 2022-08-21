@@ -42,6 +42,12 @@ http://www.songho.ca/opengl/gl_transform.html
 
 ## 1.5　添加材质、光源和阴影效果
 
+​		基本材质（`THREE.MeshBasicMaterial`）不会对光源有任何反应，基本材质只会使用指定的颜色来渲染物体。
+
+​		Three.js中的材质THREE.MeshLambertMaterial、THREE.MeshPhysicalMaterial和THREE.MeshStandardMaterial（以及被弃用的 THREE.MeshPhongMaterial）在渲染时会对光源产生反应。
+
+​		并不是所有光源都能够产生阴影，但是通过 THREE.SpotLight 定义的光源能够产生阴影的。
+
 ## 1.6　让你的场景动起来
 
 ### 1.6.1　引入requestAnimationFrame()方法
