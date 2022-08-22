@@ -90,6 +90,10 @@ animate();
 
 ## 2.3　选择合适的摄像机
 
+正交投影摄像机、透视投影摄像机
+
+**备注**：还支持VR摄像机，例如 `THREE.StereoCamera`。（Dual PerspectiveCameras used for effects such as [3D Anaglyph](https://en.wikipedia.org/wiki/Anaglyph_3D) or [Parallax Barrier](https://en.wikipedia.org/wiki/parallax_barrier).）
+
 ### 2.3.1　正交投影摄像机和透视投影摄像机
 
 Orthographic camera versus perspective camera  
@@ -119,6 +123,66 @@ near — Camera frustum near plane.
 far — Camera frustum far plane.
 
 这四个参数定义了一个 *"视椎 (frustum)"*。 *视椎 (frustum)* 是指一个像被削去顶部的金字塔形状。换句话说，可以把 "视椎 (frustum)" 想象成其他三维形状如球体、立方体、棱柱体、截椎体。
+
+
+
+fov分为水平视场角（HFOV）和垂直视场角（VFOV）。
+
+[VR的FOV是什么](https://blog.csdn.net/lushuo9156/article/details/54928601)
+
+VR头显的视场角通常指水平视场角
+
+[Field of View(FOV)视野 水平角度与垂直角度切换计算](https://www.bilibili.com/read/cv16924939)
+
+在Unity中就是指相机在透视模式(Perspective)下视野的角度,也就是上图 ∠θ,默认是垂直方向的角度,但是有的时候计算需要水平方向的角度,那么如何根据垂直方向的视角求出水平方向的视角呢? 作者：白白_可乐 https://www.bilibili.com/read/cv16924939 出处：bilibili
+
+[浅析相机FOV](https://blog.csdn.net/huangkangying/article/details/108393392)
+
+FOV又分为HFOV(水平）, VFOV( 垂直）， DFOV(对角）。
+
+
+
+As you can see in this figure, there is a separate horizontal and vertical field of view.**Three.js only allows you to set the vertical one**, and the horizontal field of view is determined based on the aspect ratio you define on a camera. When you look at this figure, you can also directly see how this recipe works. By changing the field of view, we shrink the near and far planes and limit what is being rendered, and this way, we can zoom in.  (Three.js Cookbook.2015.pdf)
+
+
+
+切换相机代码：
+
+```js
+var trackballControls  
+var controls = new function () {
+    this.perspective = "Perspective";
+    this.switchCamera = function () {
+        if (camera instanceof THREE.PerspectiveCamera) {
+            camera = new THREE.OrthographicCamera(window.innerWidth / -16, window.innerWidth / 16, window.innerHeight / 16, window.innerHeight / -16, -200, 500);
+            camera.position.x = 120;
+            camera.position.y = 60;
+            camera.position.z = 180;
+            camera.lookAt(scene.position);
+
+            trackballControls = initTrackballControls(camera, renderer);
+            this.perspective = "Orthographic";
+        } else {
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.x = 120;
+            camera.position.y = 60;
+            camera.position.z = 180;
+
+
+
+            camera.lookAt(scene.position);
+            trackballControls = initTrackballControls(camera, renderer);
+            this.perspective = "Perspective";
+        }
+    };
+};
+
+var gui = new dat.GUI();
+gui.add(controls, 'switchCamera');
+gui.add(controls, 'perspective').listen();
+```
+
+
 
 ### 2.3.2　将摄像机聚焦在指定点上
 
