@@ -190,11 +190,15 @@ gui.add(controls, 'perspective').listen();
 
 # 第3章	学习使用Three.js中的光源
 
+没有光源，渲染的场景将不可见（除非你使用基础材质或线框材质）。
+
 ## 3.1　Threejs中不同种类的光源
 
 ## 3.2 基础光源
 
 ### THREE.AmbientLight
+
+`THREE.AmbientLight`不会产生阴影。
 
 ### THREE.SpotLight  
 
@@ -205,6 +209,17 @@ penumbra
 https://baike.baidu.com/item/%E5%8D%8A%E5%BD%B1/14681287?fr=aladdin
 
 ![](https://bkimg.cdn.bcebos.com/pic/caef76094b36acafb9c6717c71d98d1001e99c08?x-bce-process=image/resize,m_lfit,w_268,limit_1/format,f_jpg)
+
+[SpotLightHelper](https://threejs.org/docs/index.html?q=CameraHelper#api/en/helpers/SpotLightHelper)
+
+This displays a cone shaped helper object for a SpotLight.
+
+[CameraHelper](https://threejs.org/docs/index.html?q=CameraHelper#api/en/helpers/CameraHelper)
+
+This helps with visualizing what a camera contains in its frustum.
+It visualizes the frustum of a camera using a LineSegments.
+
+
 
 ### THREE.PointLight  
 
