@@ -14,6 +14,7 @@ import { ConvexGeometry } from 'three/examples/jsm/geometries/ConvexGeometry'
 import { ParametricGeometry } from 'three/examples/jsm/geometries/ParametricGeometry'
 import { ParametricGeometries } from 'three/examples/jsm/geometries/ParametricGeometries'
 import { createMultiMaterialObject } from 'three/examples/jsm/utils/SceneUtils.js'
+import { Lensflare, LensflareElement } from 'three/examples/jsm/objects/Lensflare';
 ```
 
 移除的模块
@@ -33,6 +34,10 @@ The [Face3 constructor has been removed](https://github.com/mrdoob/three.js/pull
 r65 → r66
 
 - Renamed `CubeGeometry` to `BoxGeometry`.
+
+r97 → r98
+
+- `CanvasRenderer` has been removed.
 
 # 第3方模块引入
 

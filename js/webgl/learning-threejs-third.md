@@ -251,6 +251,14 @@ It visualizes the frustum of a camera using a LineSegments.
 
 ### 3.3.3 镜头光晕（Lens flare ）
 
+r143
+
+```js
+import { Lensflare, LensflareElement } from 'three/examples/jsm/objects/Lensflare';
+```
+
+
+
 ## 3.4　总结
 
 # 第4章　使用Three.js的材质
@@ -261,11 +269,13 @@ It visualizes the frustum of a camera using a LineSegments.
 
 ### 4.1.2 混合属性（Blending properties  ）
 
-最后一组属性主要在内部使用，用来控制使用 WebGL 渲染场景的细节。
+融合决定了我们渲染的颜色如何与它们后面的颜色交互。
+
+最后一组属性（`blendEquation`）主要在内部使用，用来控制使用 WebGL 渲染场景的细节。
 
 ### 4.1.3 高级属性
 
-我们不会深入讨论这些属性的细节。 它们与 WebGL 内部如何工作有关。
+我们不会深入讨论这些属性的细节。 它们与 WebGL 内部如何工作有关。如果想更多地了解这些属性，那么OpenGL规范是一个很好的起点。
 
 ## 4.2 从简单的网格材质开始
 
@@ -274,6 +284,8 @@ It visualizes the frustum of a camera using a LineSegments.
 - `MeshNormalMaterial.`  
 
 ### 4.2.1　THREE.MeshBasicMaterial
+
+这种材质不考虑场景中光照的影响。（？）
 
 ### 4.2.2　THREE.MeshDepthMaterial
 
