@@ -333,7 +333,7 @@ import { Lensflare, LensflareElement } from 'three/examples/jsm/objects/Lensflar
 
 ### 4.3.3　THREE.MeshStandardMaterial
 
-该材质使用更加正确的物理计算来决定物体表面如何与场景中的光源互动。
+该材质使用更加正确的物理计算来决定物体表面如何与场景中的光源互动。这种材质不但能够更好地表现塑料质感和金属质感的表面，而且向开发者提供了两个新的属性：`metalness` 和 `roughness`。
 
 ### 4.3.4　THREE.MeshPhysicalMaterial
 
