@@ -15,6 +15,7 @@ import { ParametricGeometry } from 'three/examples/jsm/geometries/ParametricGeom
 import { ParametricGeometries } from 'three/examples/jsm/geometries/ParametricGeometries'
 import { createMultiMaterialObject } from 'three/examples/jsm/utils/SceneUtils.js'
 import { Lensflare, LensflareElement } from 'three/examples/jsm/objects/Lensflare';
+import { createMultiMaterialObject } from 'three/examples/jsm/utils/SceneUtils';
 ```
 
 移除的模块

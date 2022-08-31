@@ -295,6 +295,30 @@ import { Lensflare, LensflareElement } from 'three/examples/jsm/objects/Lensflar
 
 ### 4.2.4　THREE.MeshNormalMaterial
 
+给球体每个面添加法线箭头
+
+```js
+  for (var f = 0, fl = sphere.geometry.faces.length; f < fl; f++) {
+    var face = sphere.geometry.faces[f];
+    var centroid = new THREE.Vector3(0, 0, 0);
+    centroid.add(sphere.geometry.vertices[face.a]);
+    centroid.add(sphere.geometry.vertices[face.b]);
+    centroid.add(sphere.geometry.vertices[face.c]);
+    centroid.divideScalar(3);
+
+    var arrow = new THREE.ArrowHelper(
+      face.normal,
+      centroid,
+      2,
+      0x3333FF,
+      0.5,
+      0.5);
+    sphere.add(arrow);
+  }
+```
+
+
+
 ### 4.2.5　在单几何体上使用多种材质
 
 ## 4.3　高级材质
