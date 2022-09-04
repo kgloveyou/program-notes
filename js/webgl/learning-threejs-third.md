@@ -1,3 +1,5 @@
+r95
+
 # 第1章　使用Threejs创建你的第一个三维场景
 
 **网格（Mesh）**
@@ -381,9 +383,17 @@ bufferGeometry.fromGeometry(normalGeometry);
 
 二维矩形
 
+在新版api中，基类已经是`BufferGeometry`
+
+https://threejs.org/docs/index.html?q=PlaneGeometry#api/en/geometries/PlaneGeometry
+
 #### THREE.CircleGeometry  
 
 二维圆（或部分圆）
+
+#### THREE.RingGeometry 
+
+
 
 #### THREE.ShapeGeometry  
 
@@ -393,19 +403,23 @@ bufferGeometry.fromGeometry(normalGeometry);
 
 #### THREE.BoxGeometry
 
-长方体
+基类：BufferGeometry，立方缓冲几何体
 
 #### THREE.SphereGeometry  
 
 https://threejs.org/docs/index.html?q=SphereGeometry#api/zh/geometries/SphereGeometry
 
+基类：BufferGeometry，球缓冲几何体
+
 #### THREE.CylinderGeometry  
 
+#### THREE.ConeGeometry  
 
+圆锥缓冲几何体
 
 ####   THREE.TorusGeometry  
 
-圆环
+圆环缓冲几何体
 
 #### THREE.TorusKnotGeometry  
 
@@ -452,6 +466,8 @@ https://threejs.org/docs/index.html?q=SphereGeometry#api/zh/geometries/SphereGeo
 创建一个沿着三维曲线延伸的管道。
 
 ### 6.3.3　从SVG拉伸
+
+使用`d3-threeD`库解析`svg`字符串
 
 ## 6.4　THREE.ParametricGeometry
 

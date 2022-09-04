@@ -43,6 +43,10 @@ r97 → r98
 
 - `CanvasRenderer` has been removed.
 
+# Migration Guide
+
+https://github.com/mrdoob/three.js/wiki/Migration-Guide
+
 # 第3方模块引入
 
 ```sh
