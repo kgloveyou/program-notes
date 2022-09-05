@@ -501,7 +501,7 @@ THREE.Points
 
 ## 7.1　理解粒子
 
-精灵（Sprite）：精灵是一个总是面朝着摄像机的平面，通常含有使用一个半透明的纹理。
+精灵（[Sprite](https://threejs.org/docs/index.html#api/zh/objects/Sprite)）：精灵是一个总是面朝着摄像机的平面，通常含有使用一个半透明的纹理。
 
 当你想使用大量的`THREE.Sprite`  对象时，你会很快遇到性能问题，因为每个对象需要分别由Three.js进行管理。Three.js提供了另外一种方式来处理大量的粒子，这需要使用`THREE.Points`。  
 
@@ -510,6 +510,8 @@ THREE.Points
 ## 7.3　使用HTML5画布样式化粒子
 
 ### 7.3.1　在THREE.CanvasRenderer中使用HTML5画布
+
+使用canvs绘图方式绘制图形。
 
 ### 7.3.2　在WebGLRenderer中使用HTML5画布
 
