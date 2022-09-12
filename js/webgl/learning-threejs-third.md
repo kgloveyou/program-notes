@@ -564,6 +564,29 @@ scene.add(group);
 
 **1、保存和加载THREE.Mesh**
 
+保存
+
+```js
+var result = knot.toJSON();
+localStorage.setItem("json", JSON.stringify(result));
+console.log(localStorage.getItem("json"));
+```
+
+加载
+
+```js
+var json = localStorage.getItem("json");
+
+if (json) {
+    var loadedGeometry = JSON.parse(json);
+    var loader = new THREE.ObjectLoader();
+
+    loadedMesh = loader.parse(loadedGeometry);
+    loadedMesh.position.x -= 40;
+    scene.add(loadedMesh);
+}
+```
+
 **2、保存和加载场景**
 
 
