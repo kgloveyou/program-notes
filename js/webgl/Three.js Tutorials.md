@@ -65,3 +65,49 @@ https://sbcode.net/threejs/geometries/
 https://sbcode.net/threejs/geometry-to-buffergeometry/
 
 > BufferGeometry is a more efficient way of representing meshes since it stores the data as typed arrays.
+
+## Materials
+
+https://sbcode.net/threejs/materials/
+
+## MeshBasicMaterial
+
+## MeshNormalMaterial
+
+## MeshLambertMaterial
+
+在本讲座中，我们使用 Three.js MeshLambertMaterial 进行实验。
+
+朗伯反射率是定义理想无光泽或漫反射表面的属性。
+
+例子可以是木头或石头。 通常物体不发光，但仍受光照影响。
+
+## MeshPhongMaterial
+
+在本次讲座中，我们使用 Three.js MeshPhongMaterial 进行实验。
+
+它使用 Blinn-Phong 反射模型，
+
+它可用于模拟闪亮的物体，例如抛光的木头。
+
+它比 MeshLambertMaterial、MeshNormalMaterial 和 MeshBasicMaterial 的计算成本更高，因此如果需要考虑性能，那么您可以选择仅在必要时使用它。
+
+## MeshStandardMaterial
+
+在本讲座中，我们使用 Three.js MeshStandardMaterial 进行实验。
+
+它使用基于物理的渲染 (PBR) 模型。
+
+它创建的外观比 MeshLambertMaterial 或 MeshPhongMaterial 更逼真。 它的计算成本也更高。
+
+## MeshPhysicalMaterial
+
+在本次讲座中，我们使用 Three.js MeshPhysicalMaterial 进行实验。
+
+它是 MeshStandardMaterial 的扩展，提供更多反射率选项。
+
+## MeshMatcapMaterial
+
+在本讲座中，我们使用 Three.js MeshMatcapMaterial 进行实验。
+
+MatCap（材质捕获）着色器使用球体图像作为视图空间环境贴图。 图像包含预烘焙的颜色和阴影。
