@@ -691,6 +691,7 @@ function render() {
 ```js
     function onDocumentMouseDown(event) {
 
+        // 将鼠标位置归一化为设备坐标。x 和 y 方向的取值范围是 (-1 to +1)
         var vector = new THREE.Vector3((event.clientX / window.innerWidth) * 2 - 1, -(event.clientY / window.innerHeight) * 2 + 1, 0.5);
         vector = vector.unproject(camera);
 
@@ -713,6 +714,14 @@ camera — 在投影中使用的摄像机。
 
 将此向量(坐标)从相机的标准化设备坐标 (NDC) 空间投影到世界空间。
 
+**Raycaster**
+
+https://threejs.org/docs/#api/zh/core/Raycaster
+
+这个类用于进行[raycasting](https://en.wikipedia.org/wiki/Ray_casting)（光线投射）。 光线投射用于进行鼠标拾取（在三维空间中计算出鼠标移过了什么物体）。
+
+该链接有示例可以参考。
+
 ### 9.1.3　使用Tween.js实现动画
 
 ## 9.2　使用摄像机
@@ -722,6 +731,29 @@ camera — 在投影中使用的摄像机。
 轨迹球控制器（TrackballControls）
 
 https://threejs.org/docs/index.html?q=TrackballControls#examples/zh/controls/TrackballControls
+
+常用的放大、缩小、旋转和平移功能。
+
+[chroma.js](https://github.com/gka/chroma.js)
+
+Chroma.js is a tiny small-ish zero-dependency JavaScript library (13.5kB) for all kinds of color conversions and color scales.
+
+Chroma.js 是一个小型的零依赖 JavaScript 库 (13.5kB)，用于各种颜色转换和色阶。
+
+```js
+  var loader = new THREE.OBJLoader();
+  loader.load("../../assets/models/city/city.obj", function (object) {
+
+    var scale = chroma.scale(['red', 'green', 'blue']);
+    setRandomColors(object, scale);
+    mesh = object ;
+    scene.add(mesh);
+  });
+```
+
+`chroma.scale([<color1>,<color2>, ... , <color n>])` 函数，将在指定的颜色之间创建色阶。
+
+`setRandomColors` 定义在 utils.js中的函数。
 
 ### 9.2.2　飞行控制器
 
