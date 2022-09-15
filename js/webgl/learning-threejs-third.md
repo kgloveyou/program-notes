@@ -757,9 +757,17 @@ Chroma.js 是一个小型的零依赖 JavaScript 库 (13.5kB)，用于各种颜�
 
 ### 9.2.2　飞行控制器
 
+`FlyControls`  
+
 代码运行结果与书中效果不一致：没有那些控制，点击鼠标直接放大到不可见。
 
+参考，https://threejs.org/examples/#misc_controls_fly
+
+
+
 ### 9.2.3　第一视角控制器
+
+`FirstPersonControls`
 
 像第一视角射击游戏一样。
 
