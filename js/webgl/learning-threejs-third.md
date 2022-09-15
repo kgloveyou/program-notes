@@ -796,7 +796,7 @@ Animation with a mixer and morphtargets
 
 **使用多个THREE.AnimationClip对象**
 
-
+手动创建包含两个`THREE.AnimationAction`  对象的动画。
 
 ### 9.3.2　用骨骼和蒙皮创建动画
 
