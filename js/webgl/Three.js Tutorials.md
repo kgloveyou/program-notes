@@ -111,3 +111,46 @@ https://sbcode.net/threejs/materials/
 在本讲座中，我们使用 Three.js MeshMatcapMaterial 进行实验。
 
 MatCap（材质捕获）着色器使用球体图像作为视图空间环境贴图。 图像包含预烘焙的颜色和阴影。
+
+## MeshToonMaterial
+
+Toon shading 或 Cel shading 是一种非真实感渲染技术，旨在通过使用较少的阴影颜色而不是平滑的渐变效果来使 3D 计算机图形看起来更卡通化。
+
+## SpecularMap（高光贴图）
+
+SpecularMap 是一个纹理图像，它影响 MeshLambertMaterial 和 MeshPhongMaterial 材质上的镜面高光。
+
+要调整镜面高光的强度，请在 MeshPhongMaterial 上使用镜面反射和光泽度属性。
+
+同样在 MeshPhongMaterial 上，要调整环境贴图强度，请使用材质反射率属性。
+
+# RoughnessMap and MetalnessMap（粗糙度贴图和金属度贴图）
+
+roughnessMap 和 metalnessMap 是 MeshStandardMaterial 和 MeshPhysicalMaterial 材质的 specularMap 等效项。
+
+## BumpMap（凹凸贴图）
+
+## NormalMap（法线贴图）
+
+比凹凸贴图更令人印象深刻的是法线贴图。
+法线贴图使用图像的 rgb 值来影响光照。
+
+它还模拟与灯光相关的感知深度，但使用不同的算法来指示在上/下和左/右方向上改变照明的程度。
+
+使用 `normalScale` 属性来改变感知深度。 `normalScale` 需要一个 `THREE.Vector2`。 通常， `normalScale` 的 `x,y` 值将介于 `0` 和 `1.0` 之间。 在我的示例中，我的值高达 `10`，以使其更加极端。
+
+下面是用作法线贴图的图像。
+
+## DisplacementMap
+
+位移贴图是可用于改变网格几何形状的图像。 每个像素的值用于改变网格顶点的位置。
+
+使用位移贴图时，请确保您使用的网格几何体（例如平面）具有许多顶点。 位移贴图正在修改顶点。 拥有的顶点越多，位移的细节就越详细。
+
+## DisplacementMap with NormalMap
+
+添加法线贴图可以得到更好的结果。
+
+与上一页中的位移贴图相比，此示例使用的是 [MeshPhongMaterial](https://sbcode.net/threejs/meshphongmaterial/)。
+
+出现了DEM的效果（*）
