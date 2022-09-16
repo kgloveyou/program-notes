@@ -147,6 +147,12 @@ roughnessMap 和 metalnessMap 是 MeshStandardMaterial 和 MeshPhysicalMaterial 
 
 使用位移贴图时，请确保您使用的网格几何体（例如平面）具有许多顶点。 位移贴图正在修改顶点。 拥有的顶点越多，位移的细节就越详细。
 
+出现了DEM的效果（*）
+
+
+
+[置换贴图也常作为高度图来生成地形，并结合凹凸贴图实现丰富的地形效果。](https://zhuanlan.zhihu.com/p/260973533?utm_medium=social&utm_oi=726478653495468032)
+
 ## DisplacementMap with NormalMap
 
 添加法线贴图可以得到更好的结果。
