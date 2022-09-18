@@ -1,5 +1,7 @@
 r95
 
+在线demo:https://scqilin.github.io/learning-threejs-third/#chapter-10_19-uv-mapping
+
 # 第1章　使用Threejs创建你的第一个三维场景
 
 **网格（Mesh）**
@@ -1065,15 +1067,49 @@ refraction，折射
 
 ### 10.2.1　自定义UV映射
 
-### 10.2.2	重复纹理
+https://scqilin.github.io/learning-threejs-third/#chapter-10_19-uv-mapping
+
+我们将从更深入地了解 UV 映射开始。 前面我们解释过，使用 UV 映射，您可以指定纹理的哪一部分显示在特定的面上。
+
+自定义 UV 映射通常通过 Blender 等程序完成，尤其是当模型变得更复杂时。 这里要记住的最重要的事情是 UV 映射在二维 `u` 和 `v` 中运行，从 `0` 到 `1`。
+
+### 10.2.2	重复纹理（Repeat wrapping）
+
+
 
 ### 10.2.3	在画布上绘制图案并作为纹理
 
+#### 1、将画布作为纹理
+
+#### 2、将画布用作凹凸贴图
+
+凹凸贴图只是简单的黑白图片。
+
 ### 10.2.4	将视频输出作为纹理
+
+```html
+<video 
+       id="video" 
+       style="display: none; position: absolute; left: 15px; top: 75px;"
+       src="../../../assets/movies/Big_Buck_Bunny_small.ogv" 
+       controls="true" 
+       autoplay="true">
+</video>
+```
+
+
+
+```js
+var video = document.getElementById( 'video' );
+var texture = new THREE.VideoTexture(video);
+texture.minFilter = THREE.LinearFilter;
+texture.magFilter = THREE.LinearFilter;
+texture.format = THREE.RGBFormat;
+```
 
 `live-server`黑屏，`http-server`正常显示。
 
-`http-server`无法运行，可以安装`anywhere`。
+如果`http-server`无法运行，可以安装`anywhere`。
 
 ```sh
 npm install -g anywhere
