@@ -1027,13 +1027,35 @@ var cubeMaterialWithMetalMap = cubeMaterial.clone();
 
 ### 10.1.10　高光贴图（Specular map）
 
-​		使用高光贴图，你可以定义模型的哪些部分应该是闪亮的，哪些部分应该是粗糙的（类似于我们之前看到的金属光泽度贴图和粗糙度贴图）。
+​		本节使用的高光贴图只能与 `THREE.MeshPhongMaterial` 一起使用。使用高光贴图，你可以定义模型的哪些部分应该是闪亮的，哪些部分应该是粗糙的（类似于我们之前看到的金属光泽度贴图和粗糙度贴图）。
+
+​	在贴图中，黑色表示完全没有高光效果，而白色部分则表示有完全的高光效果。
+
+```js
+  var earthMaterial = new THREE.MeshPhongMaterial({
+      map: textureLoader.load("../../assets/textures/earth/Earth.png"),
+      normalMap: textureLoader.load("../../assets/textures/earth/EarthNormal.png"),
+      specularMap: textureLoader.load("../../assets/textures/earth/EarthSpec.png"),
+      normalScale: new THREE.Vector2(6,6)
+  });
+```
+
+
 
 ### 10.1.11　使用环境贴图创建伪镜面反射效果
 
 ​		计算环境反射非常耗费 CPU，通常需要光线追踪方法。 如果你想在 Three.js 中使用反射，你仍然可以这样做，但你必须伪造它。你可以通过创建对象所在环境的纹理并将其应用于指定对象来实现。
 
 refraction，折射
+
+​		使用`全景图`创建`天空盒`。
+
+​		如果你已经有了制作材质的原材料，那么创建 CubeMap 对象就会非常简单。你需要的就是6张用来构建整个场景的图片。如果你有从网站下载的全景图片，将其用作 CubeMap 的最简单方法是使用在线工具之一将纹理拆分为单独的文件。 允许您执行此操作的两个站点如下：
+
+- https://jaxry.github.io/panorama-to-cubemap/
+- https://www.360toolkit.co/convert-spherical-equirectangular-to-cubemap.html  
+
+​		除了在使用它们之前对其进行转换之外，Three.js 还支持将球面 equirectangular 图像用作 CubeMap，但您必须采取几个额外的步骤才能使用它们。
 
 
 
