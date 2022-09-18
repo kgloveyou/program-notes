@@ -840,31 +840,190 @@ textureLoader.load("'../../assets/textures/general/metal-rust.jpg",
 onLoadFunction, onProgressFunction, onErrorFunction)
 ```
 
+​		由于纹理通常需要放大或缩小，所以纹理的像素不会一对一第映射到面的像素上。你可以通过设置 `magFilter` 属性来指定如何放大纹理，以及如何使用 `minFilter` 属性来缩小纹理。 这些属性可以设置为以下两个基本值：
+
+- THREE.NearestFilter
+
+- THREE.LinearFilter
+
+  ​		除了这些基本值，我们还可以使用 `MIP map`。 `MIP map`是一组纹理图像，每个图像的大小是前一个图像的一半。 这些是在你加载纹理时创建的，并允许更平滑的过滤。 所以，当你有一个方形纹理（作为 2 的幂）时，你可以使用一些额外的方法来更好地过滤。 可以使用以下值设置属性：
+
+- THREE.NearestMipMapNearestFilter
+
+- THREE.NearestMipMapLinearFilter
 
 
-### 10.1.2　使用凹凸贴图创建褶皱
 
-Using a bump map to create wrinkles  
+如果你没有明确指定 `magFilter` 和 `minFilter` 属性，Three.js 使用 `THREE.LinearFilter` 作为 `magFilter` 属性的默认值，并使用 `THREE.LinearMipMapLinearFilter` 作为 `minFilter` 属性的默认值。
+
+
+
+
+```js
+  var polyhedron = new THREE.IcosahedronGeometry(8, 0);
+  var polyhedronMesh = addGeometry(scene, polyhedron, 'polyhedron', textureLoader.load('../../assets/textures/general/metal-rust.jpg'), gui, controls);
+  polyhedronMesh.position.x = 20;
+
+  var sphere = new THREE.SphereGeometry(5, 20, 20)
+  var sphereMesh = addGeometry(scene, sphere, 'sphere', textureLoader.load('../../assets/textures/general/floor-wood.jpg'), gui, controls);
+
+  var cube = new THREE.BoxGeometry(10, 10, 10)
+  var cubeMesh = addGeometry(scene, cube, 'cube', textureLoader.load('../../assets/textures/general/brick-wall.jpg'), gui, controls);
+  cubeMesh.position.x = -20;
+```
+
+其中，
+
+```js
+function addGeometry(scene, geom, name, texture, gui, controls) {
+  var mat = new THREE.MeshStandardMaterial(
+    {
+      map: texture,
+      metalness: 0.2,
+      roughness: 0.07
+  });
+  var mesh = new THREE.Mesh(geom, mat);
+  mesh.castShadow = true;
+  
+  scene.add(mesh);
+  addBasicMaterialSettings(gui, controls, mat, name + '-THREE.Material');
+  addSpecificMaterialSettings(gui, controls, mat, name + '-THREE.MeshStandardMaterial');
+
+  return mesh;
+};
+```
+
+
+
+### 10.1.2　使用凹凸贴图创建褶皱（Using a bump map to create wrinkles  ）
+
+凹凸贴图用于为材质添加更多深度。
+
+```js
+  var cubeMaterial = new THREE.MeshStandardMaterial({
+      map: textureLoader.load("../../assets/textures/stone/stone.jpg"),
+      bumpMap: textureLoader.load("../../assets/textures/stone/stone-bump.jpg")
+      metalness: 0.2,
+      roughness: 0.07
+  });
+```
+
+此外，通过前面示例中的菜单可用的 `bumpScale` 属性，我们可以设置凹凸的高度（或深度，如果设置为负值）。
+
+这里的凹凸贴图是一张灰度图像，但你也可以使用彩色图像。 像素的强度定义了凹凸的高度。 凹凸贴图仅包含像素的相对高度。 它没有说明倾斜的方向。 因此，使用凹凸贴图可以达到的细节水平和深度感知是有限的。 有关更多详细信息，你可以使用法线贴图。
 
 ### 10.1.3　使用法向贴图创建更加细致的凹凸和褶皱
 
+在法线贴图中，不存储高度（位移），而是存储每张图片的法线方向。 在不涉及太多细节的情况下，使用法线贴图，你可以创建仅使用少量顶点和面的非常详细的模型。
+
+```js
+var cubeMaterial = new THREE.MeshStandardMaterial({
+    map: textureLoader.load("../../assets/textures/general/plaster.jpg"),
+    normalMap: textureLoader.load("../../assets/textures/general/plaster-normal.jpg"),
+    metalness: 0.2,
+    roughness: 0.07
+});
+```
+
+然而，法线贴图的问题在于它们不是很容易创建。 你需要使用专门的工具，例如 Blender 或 Photoshop。这些程序可以使用高分辨率渲染或纹理作为输入，并可以从中创建法线贴图。
+
+使用法线或凹凸贴图，你不会改变模型的形状； 所有顶点都位于完全相同的位置。 这些贴图只是使用场景中的灯光来创建虚假的深度和细节。 Three.js 提供了第三种方法，你可以使用该方法使用贴图向模型添加细节，这确实会改变顶点的位置。 这是通过位移/置换贴图完成的。
+
 ### 10.1.4　使用移位贴图来改变顶点位置
 
-### 10.1.5　用环境光遮挡贴图实现细节阴影
+​		Three.js 还提供了一个纹理，你可以使用它来更改模型顶点的位置。 虽然凹凸贴图和法线贴图给人一种深度错觉，但使用位移贴图，我们确实根据纹理信息改变了模型的形状。
+
+```js
+  var sphereMaterial = new THREE.MeshStandardMaterial({
+      map: textureLoader.load("../../assets/textures/w_c.jpg"),
+      displacementMap: textureLoader.load("../../assets/textures/w_d.png"),
+      metalness: 0.02,
+      roughness: 0.07,
+      color: 0xffffff
+  });
+```
+
+
+
+### 10.1.5　用环境光遮挡贴图实现细节阴影（Adding subtle shadows with an ambient occlusion map）
 
 ​		在渲染循环里重复的渲染阴影是一个负担沉重的操作。如果场景中的光源或物体持续运动，则我们别无选择，只能用这种方式。但是在更多的情形里，场景中总是有静止不动的光源和物体，这意味着投射在物体上的阴影也不会变化，因为如果能计算一次阴影数据并在渲染循环里重复利用，那将是一个好主意。Three.js提供了两种不同的专用贴图：环境光遮挡贴图和光照贴图。
 
+​		一旦有了环境光遮挡贴图，就可以将其分配给材质的 aoMap 属性，Three.js 会在应用和计算场景中的 THREE.AmbientLight 对象应应用到该特定对象的程度时考虑此信息 模型的一部分。 以下代码片段显示了如何设置 aoMap 属性：
+
+```js
+var material = new THREE.MeshStandardMaterial({
+    aoMap: textureLoader.load("../../assets/models/baymax/ambient.png"),
+    aoMapIntensity: 2,
+    color: 0xffffff,
+    metalness: 0,
+    roughness: 1
+});
+```
+
+
+
 ### 10.1.6　用光照贴图产生假阴影
+
+Creating fake shadows using a lightmap  
+
+```js
+plane.geometry.faceVertexUvs.push(plane.geometry.faceVertexUvs[0]);
+plane.material = new THREE.MeshBasicMaterial({
+    map: textureLoader.load("../../assets/textures/general/floor-wood.jpg"),
+    lightMap: textureLoader.load("../../assets/textures/lightmap/lightmap.png"),
+});
+```
+
+如果你查看前面的示例，你可以看到来自光照贴图的信息用于创建看起来非常漂亮的阴影，这似乎是由模型投射的。 重要的是要记住烘焙阴影、光照和环境光遮蔽只能用于静态场景，或者场景中的静态对象。一旦对象或光源发生变化或开始移动，你就必须实时计算阴影。
 
 ### 10.1.7　金属光泽度贴图和粗糙度贴图
 
+​		在讨论 Three.js 中可用的材质时，我们提到一个很好的默认材质是 `THREE.MeshStandardMaterial`。您可以使用它来创建闪亮的类似金属的材料，还可以应用粗糙度，使其看起来更像木头或塑料。通过使用材料的 `metalness`   和 `roughness`  属性，我们可以配置材料来表示我们想要的材料。除了这两个属性之外，您还可以使用纹理来配置这些属性。因此，如果我们有一个粗糙的对象，并且我们想指定该对象的某个部分是闪亮的，我们可以设置 `THREE.MeshStandardMaterial` 的 `metalnessMap` 属性，如果我们想指示应该看到网格的某些部分作为划痕或更粗糙，我们可以设置 `roughnessMap` 属性。当您使用这些贴图时，模型特定部分的纹理值将与粗糙度属性或金属度属性相乘，从而确定应如何渲染该特定像素。
+
+```js
+var cubeMaterialWithMetalMap = cubeMaterial.clone();
+  cubeMaterialWithMetalMap.metalnessMap = textureLoader.load("../../assets/textures/engraved/roughness-map.jpg")
+
+  var cubeMaterialWithRoughnessMap = cubeMaterial.clone();
+  cubeMaterialWithRoughnessMap.roughnessMap = textureLoader.load("../../assets/textures/engraved/roughness-map.jpg")
+```
+
+
+
 ### 10.1.8　Alpha贴图
 
-​		Alpha贴图用于控制物体表面的透明度。
+​		Alpha贴图用于控制物体表面的透明度。如果贴图的值为黑色，则模型的那部分将完全透明，如果为白色，则将完全不透明。
+
+```js
+  var sphereMaterial = new THREE.MeshStandardMaterial({
+      alphaMap: textureLoader.load("../../assets/textures/alpha/partial-transparency.png"),
+      metalness: 0.02,
+      roughness: 0.07,
+      color: 0xffffff,
+      alphaTest: 0.5
+  });
+```
+
+
 
 ### 10.1.9　自发光贴图（Emissive map）
 
 ​		自发光特性只能单独影响物体本身，却不能是该物体变成光源。
+
+```js
+  var cubeMaterial = new THREE.MeshStandardMaterial({
+      emissive: 0xffffff,
+      emissiveMap: textureLoader.load("../../assets/textures/emissive/lava.png"),
+      normalMap: textureLoader.load("../../assets/textures/emissive/lava-normals.png"),
+      metalnessMap: textureLoader.load("../../assets/textures/emissive/lava-smoothness.png"),
+      metalness: 1,
+      roughness: 0.4,
+      normalScale: new THREE.Vector2(4,4)
+  });
+```
+
+
 
 ### 10.1.10　高光贴图（Specular map）
 
