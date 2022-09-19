@@ -34,7 +34,7 @@ https://sbcode.net/threejs/object-hierarchy/
 
 获取 Object3D 变换，例如位置、旋转/四元数和比例，将返回局部变换空间中的值。 如果 Object3D 是场景的直接后代，那么世界空间值将是相同的。
 
-如果您的 Object3D 是另一个已经是场景子级的 Object3D 的子级，那么世界变换值也将考虑其父级、祖父母、曾祖父母等的变换。
+如果你的 Object3D 是另一个已经是场景子级的 Object3D 的子级，那么世界变换值也将考虑其父级、祖父母、曾祖父母等的变换。
 
 
 
@@ -90,7 +90,7 @@ https://sbcode.net/threejs/materials/
 
 它可用于模拟闪亮的物体，例如抛光的木头。
 
-它比 MeshLambertMaterial、MeshNormalMaterial 和 MeshBasicMaterial 的计算成本更高，因此如果需要考虑性能，那么您可以选择仅在必要时使用它。
+它比 MeshLambertMaterial、MeshNormalMaterial 和 MeshBasicMaterial 的计算成本更高，因此如果需要考虑性能，那么你可以选择仅在必要时使用它。
 
 ## MeshStandardMaterial
 
@@ -145,7 +145,7 @@ roughnessMap 和 metalnessMap 是 MeshStandardMaterial 和 MeshPhysicalMaterial 
 
 位移贴图是可用于改变网格几何形状的图像。 每个像素的值用于改变网格顶点的位置。
 
-使用位移贴图时，请确保您使用的网格几何体（例如平面）具有许多顶点。 位移贴图正在修改顶点。 拥有的顶点越多，位移的细节就越详细。
+使用位移贴图时，请确保你使用的网格几何体（例如平面）具有许多顶点。 位移贴图正在修改顶点。 拥有的顶点越多，位移的细节就越详细。
 
 出现了DEM的效果（*）
 
@@ -160,3 +160,313 @@ roughnessMap 和 metalnessMap 是 MeshStandardMaterial 和 MeshPhysicalMaterial 
 与上一页中的位移贴图相比，此示例使用的是 [MeshPhongMaterial](https://sbcode.net/threejs/meshphongmaterial/)。
 
 出现了DEM的效果（*）
+
+https://sbcode.net/extra_html/displacement_and_normal_maps.html
+
+## Material Repeat and Center
+
+可以通过更改其 UV 坐标来更改材质纹理位于几何体上的位置。 它也可以被拉伸、重复、旋转和偏移。
+
+在本视频中，我演示了通过使用`repeat`和 `center` 材质选项更改纹理 UV 坐标来放大我们的 3D 世界平面。
+
+https://sbcode.net/extra_html/materialrepeatcenter.html
+
+开启了 `wireframe`，有 Delauny 三角网的效果。
+
+材质(Material) 的几个属性值：
+
+### .alphaTest : Float
+
+设置运行alphaTest时要使用的alpha值。如果不透明度低于此值，则不会渲染材质。默认值为**0**。
+
+
+
+AlphaTest —— Alpha 测试，是阻止片元被写到屏幕上的最后机会。
+
+在最终渲染出的颜色被计算出来之后，可以通过将颜色的透明度，和一个固定值进行比较。
+
+```
+如果该颜色 的透明度 alpha，满足条件，则通过测试，绘制此片元；否则丢弃此片元，不进行绘制。
+```
+
+
+
+### .depthTest : Boolean
+
+是否在渲染此材质时启用深度测试。默认为 **true**。
+
+[深度测试](https://learnopengl-cn.readthedocs.io/zh/latest/04%20Advanced%20OpenGL/01%20Depth%20testing/)
+
+### .depthWrite : Boolean
+
+渲染此材质是否对深度缓冲区有任何影响。默认为**true**。
+
+在绘制2D叠加时，将多个事物分层在一起而不创建z-index时，禁用深度写入会很有用。
+
+## Texture Mipmaps
+
+### 描述
+
+Mipmapping 是一种基于每个纹理应用的纹理渲染技术。
+
+当启用 mipmapping（默认）时，GPU 将使用不同大小的纹理版本来渲染表面，具体取决于它与相机的距离。
+
+### Magnification Filters
+
+定义当被纹理化的像素映射到小于或等于一个纹理元素 (texel) 的区域时要使用的纹理放大功能。
+
+```js
+texture.magFilter =
+```
+
+- THREE.NearestFilter
+- THREE.LinearFilter (Default)
+
+### Minification Filters
+
+定义当被纹理化的像素映射到大于一个纹理元素 (texel) 的区域时使用的纹理缩小函数。
+
+```
+texture.minFilter =
+```
+
+- THREE.NearestFilter
+- THREE.NearestMipmapNearestFilter
+- THREE.NearestMipmapLinearFilter
+- THREE.LinearFilter
+- THREE.LinearMipmapNearestFilter
+- THREE.LinearMipmapLinearFilter (Default)
+
+创建两个场景
+
+```ts
+function render() {
+    renderer.setScissorTest(true)
+
+    renderer.setScissor(0, 0, window.innerWidth / 2 - 2, window.innerHeight)
+    renderer.render(scene1, camera)
+
+    renderer.setScissor(
+        window.innerWidth / 2,
+        0,
+        window.innerWidth / 2 - 2,
+        window.innerHeight
+    )
+    renderer.render(scene2, camera)
+
+    renderer.setScissorTest(false)
+}
+```
+
+其中，
+
+- setScissor ( x : Integer, y : Integer, width : Integer, height : Integer ) : undefined
+
+将剪裁区域设为(x, y)到(x + width, y + height) Sets the scissor area from
+
+- setScissorTest ( boolean : Boolean ) : undefined
+
+启用或禁用剪裁检测. 若启用，则只有在所定义的裁剪区域内的像素才会受之后的渲染器影响。
+
+## Custom Mipmaps
+
+你可以根据与相机的距离以及是否需要缩小或放大纹理像素来创建自己的自定义 mipmap，以便在绘制纹理像素时使用。
+
+```js
+const mipmap = (size: number, color: string) => {
+    const imageCanvas = document.createElement('canvas') as HTMLCanvasElement
+    const context = imageCanvas.getContext('2d') as CanvasRenderingContext2D
+    imageCanvas.width = size
+    imageCanvas.height = size
+    context.fillStyle = '#888888'
+    context.fillRect(0, 0, size, size)
+    context.fillStyle = color
+    context.fillRect(0, 0, size / 2, size / 2)
+    context.fillRect(size / 2, size / 2, size / 2, size / 2)
+    return imageCanvas
+}
+
+const blankCanvas = document.createElement('canvas') as HTMLCanvasElement
+blankCanvas.width = 128
+blankCanvas.height = 128
+
+const texture1 = new THREE.CanvasTexture(blankCanvas)
+texture1.mipmaps[0] = mipmap(128, '#ff0000')
+texture1.mipmaps[1] = mipmap(64, '#00ff00')
+texture1.mipmaps[2] = mipmap(32, '#0000ff')
+texture1.mipmaps[3] = mipmap(16, '#880000')
+texture1.mipmaps[4] = mipmap(8, '#008800')
+texture1.mipmaps[5] = mipmap(4, '#000088')
+texture1.mipmaps[6] = mipmap(2, '#008888')
+texture1.mipmaps[7] = mipmap(1, '#880088')
+texture1.repeat.set(5, 5)
+texture1.wrapS = THREE.RepeatWrapping
+texture1.wrapT = THREE.RepeatWrapping
+
+const texture2 = texture1.clone()
+texture2.minFilter = THREE.NearestFilter
+texture2.magFilter = THREE.NearestFilter
+
+const material1 = new THREE.MeshBasicMaterial({ map: texture1 })
+const material2 = new THREE.MeshBasicMaterial({ map: texture2 })
+
+const plane1 = new THREE.Mesh(planeGeometry1, material1)
+const plane2 = new THREE.Mesh(planeGeometry2, material2)
+
+scene1.add(plane1)
+scene2.add(plane2)
+```
+
+## Anistropic Filtering
+
+各向异性过滤
+
+各向异性过滤允许我们提高 MIP 贴图的质量。
+
+```ts
+const gui = new GUI()
+const textureFolder = gui.addFolder('THREE.Texture')
+textureFolder
+    .add(texture2, 'minFilter', options.minFilters)
+    .onChange(() => updateMinFilter())
+textureFolder
+    .add(texture2, 'magFilter', options.magFilters)
+    .onChange(() => updateMagFilter())
+textureFolder
+    .add(texture2, 'anisotropy', 1, renderer.capabilities.getMaxAnisotropy())
+    .onChange(() => updateAnistropy())
+textureFolder.open()
+
+function updateAnistropy() {
+    // for Three r137 and earlier
+    // texture2.needsUpdate = true
+
+    // for Three r138 and later
+    material2.map = texture2.clone()
+}
+```
+
+## Lights
+
+### 描述
+
+Threejs中有各种各样的光源。
+
+它们都从 THREE.Light 基类扩展而来，而后者又从 Object3D 基类扩展而来。
+
+基类属性
+
+- 颜色
+
+- 强度
+
+- isLight（只读）
+
+  光源为你提供了更多选项来更改场景中网格的外观。 网格需要添加材料才能使光照调整生效。
+
+如果场景没有光源，大多数材质将不可见。 [MeshBasicMaterial](https://sbcode.net/threejs/meshbasicmaterial/)、[MeshNormalMaterial](https://sbcode.net/threejs/meshnormalmaterial/) 和 [MeshMatcapMaterial](https://sbcode.net/threejs/meshmatcapmaterial/) 是自发光的，因此它们不需要在场景中可见光照，但大多数其他材质都需要，例如 [MeshLambertMaterial](https://sbcode.net/threejs/meshlambertmaterial/)、[MeshPhongMaterial](https://sbcode.net/threejs/meshphongmaterial/)、[MeshStandardMaterial](https://sbcode.net/threejs/meshstandardmaterial/)、[MeshPhysicalMaterial](https://sbcode.net/threejs/meshphysicalmaterial/) 和 [MeshToonMaterial](https://sbcode.net/threejs/meshtoonmaterial/)。
+
+在接下来的示例中，我将演示不同的光照如何影响不同的材质。
+
+## Ambient Light
+
+### 描述
+
+- 平等地照亮场景中的所有对象，除了 MeshBasicMaterial、MeshNormalMaterial 和 MeshMatcapMaterial 等自发光对象。
+- 不投射阴影。
+- 光线在所有方向和距离上均等地传播。 因此，将灯光与 [0, 0, 0] 的默认位置不同的位置没有任何区别。
+- 材质不会根据几何法线显示阴影，也不会产生镜面反射效果，因此如果其他网格前面的网格具有相同的材质甚至是单一颜色贴图纹理，则它们将不可见。
+
+## Directional Light
+
+### 描述
+
+将平行光想象为 `OrthographicCamera`，而不是 `PerspectiveCamera`。 来自 `DirectionalLight` 的光线在方向上是平行的。
+
+## Hemisphere Light（半球光）
+
+Threejs 半球光非常像平行光，但也可以设置以反向投射光线。 我还演示了半球光辅助对象。
+
+## Point Light（点光源）
+
+从一个点向各个方向发出的光
+
+- distance - 光源的最大范围。 默认值为 0（无限制）。
+- 衰减 - 光沿着光的距离变暗的量。 默认值为 1。
+
+## Spot Light
+
+## Spot Light Shadow
+
+## Directional Light Shadow
+
+Directional Light Shadow 使用 OrthographicCamera 来计算阴影，而不是 PerspectiveCamera。 这是因为来自 DirectionalLight 的光线是平行的。
+
+## DisplacementMap with Shadow
+
+从 Three r132 开始，置换贴图现在支持自阴影。 确保您的网格（例如平面）同时投射和接收阴影。 如果您看到阴影伪影，您将需要管理 light.shadow.bias。
+
+此示例使用带有 [MeshStandardMaterial]() 的平行光阴影
+
+## Orbit Controls
+
+Orbit controls allow the camera to orbit around a target.
+
+## Trackball Controls
+
+TrackballControls 类似于 OrbitControls。 但是，它不保持恒定的相机向上矢量。 这意味着相机可以绕过它的极地极端（ polar extremes）。 它不会翻转以保持右侧向上。
+
+https://sbcode.net/extra_html/trackballcontrols.html
+
+## PointerLockControls
+
+PointerLockControls 实现了内置的浏览器指针锁定 API。 它提供基于鼠标随时间移动的输入方法（即增量），而不仅仅是鼠标光标在视口中的绝对位置。 它使您可以访问原始鼠标移动，将鼠标事件的目标锁定到单个元素，消除对鼠标在单个方向上移动距离的限制，并从视图中移除光标。 例如，它非常适合第一人称 3D 游戏。
+
+代码中，添加了W、A、S、D键监听，用来移动。
+
+```ts
+const onKeyDown = function (event: KeyboardEvent) {
+    switch (event.code) {
+        case 'KeyW':
+            controls.moveForward(0.25)
+            break
+        case 'KeyA':
+            controls.moveRight(-0.25)
+            break
+        case 'KeyS':
+            controls.moveForward(-0.25)
+            break
+        case 'KeyD':
+            controls.moveRight(0.25)
+            break
+    }
+}
+document.addEventListener('keydown', onKeyDown, false)
+```
+
+该类的实现是基于[Pointer Lock API](https://developer.mozilla.org/en-US/docs/Web/API/Pointer_Lock_API)的。 对于第一人称3D游戏来说， PointerLockControls 是一个非常完美的选择。
+
+## DragControls
+
+用于为场景中的对象提供拖放交互。
+
+https://sbcode.net/extra_html/dragcontrols.html
+
+```typescript
+const controls = new DragControls(cubes, camera, renderer.domElement)
+```
+
+## Transform Controls
+
+允许您更改场景中对象的变换。
+
+您将控件附加到对象，然后将控件添加到场景中，以便交互句柄可见。
+
+然后您可以在场景中重新缩放、旋转和定位对象。
+
+```typescript
+const controls = new TransformControls(camera, renderer.domElement)
+controls.attach(cube)
+scene.add(controls)
+```
+
