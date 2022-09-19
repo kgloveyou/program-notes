@@ -1131,17 +1131,43 @@ anywhere -p 8080
 
 ### 11.1.1	创建THREE.EffectComposer对象
 
+https://threejs.org/docs/#manual/zh/introduction/How-to-use-post-processing
+
 ## 11.2	后期处理通道
+
+可用的通道
+
+https://github.com/mrdoob/three.js/tree/dev/examples/jsm/postprocessing
 
 ### 11.2.1	简单后期处理通道
 
+#### 在同一个屏幕上显示多个渲染器的输出结果
+
+```js
+renderer.setViewport(0, 0, halfWidth, halfHeight);
+effectFilmComposer.render(delta);
+
+renderer.setViewport(0, halfHeight, halfWidth, halfHeight);
+bloomComposer.render(delta);
+
+renderer.setViewport(halfWidth, 0, halfWidth, halfHeight);
+dotScreenComposer.render(delta);
+
+renderer.setViewport(halfWidth, halfHeight, halfWidth, halfHeight);
+composer.render(delta);
+```
+
 ### 11.2.2 	使用掩膜的高级效果组合器
+
+在前面的示例中，我们将后处理过程应用于整个屏幕。 但是，Three.js 也能够将 `passes` 仅应用于特定区域。
 
 ### 11.2.3	高级渲染通道：景深效果
 
 ### 11.2.4 	高级渲染通道：环境光遮挡
 
 ## 11.3	 使用THREE.ShaderPass自定义效果
+
+使用 `THREE.ShaderPass`，我们可以通过传入自定义着色器将大量附加效果应用于我们的场景。
 
 ## 11.4	创建自定义后期处理着色器
 
