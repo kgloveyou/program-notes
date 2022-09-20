@@ -1167,13 +1167,41 @@ composer.render(delta);
 
 ## 11.3	 使用THREE.ShaderPass自定义效果
 
-使用 `THREE.ShaderPass`，我们可以通过传入自定义着色器将大量附加效果应用于我们的场景。
+​		使用 `THREE.ShaderPass`，我们可以通过传入自定义着色器将大量附加效果应用于我们的场景。
+
+### 11.3.1 简单着色器
+
+​		`THREE.KaleidoShader`  着色器，可以对场景添加类似万花筒的效果，该效果会围绕场景的中央呈径向发射。
+
+​		`THREE.MirrorShader`，该着色器可以为屏幕的一部分创建镜像效果。
+
+​		`THREE.PixelShader`，该着色器为画面创建像素化（马赛克）效果。
+
+### 11.3.2 模糊着色器
+
+​		`THREE.FocusShader`，这是一个简单的着色器，可生成清晰渲染的中心区域，并沿其边界模糊。
 
 ## 11.4	创建自定义后期处理着色器
 
+​		在本节中，您将学习如何创建可用于后处理的自定义着色器。 我们将创建两个不同的着色器。 第一个将当前图像转换为灰度图像，第二个将通过减少可用颜色的数量将图像转换为 8 位图像。
+
+> 另一个充满示例的资源是 Shadertoy，可从 https://www.shadertoy.com/ 获得。
+
+这个网站上有很多有用的着色器，比如：
+
+- [Seascape](https://www.shadertoy.com/view/Ms2SD1)，海水动画着色器。
+- [Where the River Goes](https://www.shadertoy.com/view/Xl2XRW)，河流动画着色器。
+- 
+
+ 
+
 ### 11.4.1	 自定义灰度图着色器
 
-​		顶点着色器（vertex shader）和片段着色器（fragment shader）。顶点着色器可用于改变单个顶点的位置，片段着色器可用于确定单个像素的颜色。
+​		**顶点着色器**（vertex shader）和**片段着色器**（fragment shader）。顶点着色器可用于改变单个顶点的位置，片段着色器可用于确定单个像素的颜色。
+
+​		对于后处理着色器，我们只需要实现一个片段着色器，然后使用 Three.js 提供的默认顶点着色器。
+
+​		GPU是可以支持多个着色器通道的。这意味着顶点着色器同时在多个顶点上并行运行，片段着色器也是如此。
 
 ​		当你编写着色器时，你使用**OpenGL Shading Language (GLSL)**   编写它们，
 
