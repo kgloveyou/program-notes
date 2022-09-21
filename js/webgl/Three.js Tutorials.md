@@ -715,3 +715,53 @@ pivot：枢，旋转。
 - 将 `refractionRatio` 属性添加到你的材质中
 
 https://sbcode.net/extra_html/cubecamera-refractions.html
+
+## Raycaster
+
+光线投射允许您从场景中的 3D 点创建矢量，并检测矢量相交的对象。
+
+raycasting 类几乎总是用于 3D 场景中的鼠标拾取对象。
+
+我们可以使用 `set` 或 `setFromCamera` 方法设置光线投射器的位置和方向，然后调用它的 `intersectObject` 或 `intersectObjects` 方法来告诉我们许多与光线相交的场景对象的信息，包括：
+
+- 交点与光线投射器位置的距离，
+- 3D场景中的交叉点位置，
+- 相交对象的面，
+- 面法线的方向，
+- 面上相交的 UV 坐标
+- 以及对相交对象本身的引用。
+
+## Raycaster Collision Detection
+
+虽然光线投射几乎总是用于 3D 场景中的鼠标拾取对象，但它也可用于简单的碰撞检测。
+
+在这个例子中，我检测轨道控件是否会穿透另一个物体并调整相机位置，使其保持在外面。
+
+本质上，我正在创建从相机目标到相机位置的射线。 如果两者之间有相交的对象，则将相机位置调整到相交点。 这可以防止相机进入墙壁后面，或进入盒子或地板，或作为正在测试相交的对象数组的一部分的任何对象。
+
+
+
+此外，在目标和自身发生碰撞的情况下，我可以修改对象之间的不透明度，而不是移动相机，而不是使用光线投射器找到新的点来定位相机。 旋转相机并注意相机目标和相机本身之间的任何对象是如何变得透明的。
+
+## Raycaster Mouse Picking
+
+这是使用 Raycaster 鼠标拾取场景中对象的基本示例。
+
+遍历场景并将所有单个对象添加到 [Raycaster](https://sbcode.net/threejs/raycaster/) 使用的 **pickableObjects** 数组中。 球体和平面被故意排除在外，因此它们不会被鼠标选中。
+
+平面也会收到阴影，而其他一切都只会投射阴影。
+
+这个例子表明，
+
+- 加载 GLB 场景，遍历子对象以单独添加和/或复制属性以供以后使用。
+- 使用 [Raycaster](https://sbcode.net/threejs/raycaster/) 检测鼠标是否在某些对象上并更改那里的材质。
+
+## Raycaster Measurements
+
+使用 Raycaster 辅助测量点之间的距离。
+
+这个例子表明，
+
+- 使用 Raycaster 以及鼠标事件开始并绘制从 A 点到 B 点的线。
+- 使用 CSS2DRenderer 和 CSS2DObject 创建测量标签。
+- 使用 Vector3.lerpVectors 在 2 个点之间定位标签。
