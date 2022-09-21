@@ -1219,6 +1219,8 @@ https://github.com/chandlerprall/Physijs
 
 ## 12.1  使用Physi.js创建基本的Three.js场景
 
+​		我们需要包含`ammo.js`文件的原因是，`Physijs`是围绕`ammo.js`的包装器，以使其易于使用。 `ammo.js`（您可以在https://github.com/kripken/ammo.js/上找到它）是实现物理引擎的库； `Physijs`只是提供了该物理库易于使用的接口。 由于`Physijs`只是一个包装器，因此我们还可以与`Physijs`一起使用其他物理引擎。 在`Physijs` 的代码仓库中，您还可以找到使用`Cannon.js`（不同物理引擎）的分支。
+
 ## 12.2  Physi.js材质属性
 
 ## 12.3  Physi.js支持的形体（shapes）
