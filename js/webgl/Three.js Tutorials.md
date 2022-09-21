@@ -404,7 +404,7 @@ Directional Light Shadow 使用 OrthographicCamera 来计算阴影，而不是 P
 
 ## DisplacementMap with Shadow
 
-从 Three r132 开始，置换贴图现在支持自阴影。 确保您的网格（例如平面）同时投射和接收阴影。 如果您看到阴影伪影，您将需要管理 light.shadow.bias。
+从 Three r132 开始，置换贴图现在支持自阴影。 确保你的网格（例如平面）同时投射和接收阴影。 如果你看到阴影伪影，你将需要管理 light.shadow.bias。
 
 此示例使用带有 [MeshStandardMaterial]() 的平行光阴影
 
@@ -420,7 +420,7 @@ https://sbcode.net/extra_html/trackballcontrols.html
 
 ## PointerLockControls
 
-PointerLockControls 实现了内置的浏览器指针锁定 API。 它提供基于鼠标随时间移动的输入方法（即增量），而不仅仅是鼠标光标在视口中的绝对位置。 它使您可以访问原始鼠标移动，将鼠标事件的目标锁定到单个元素，消除对鼠标在单个方向上移动距离的限制，并从视图中移除光标。 例如，它非常适合第一人称 3D 游戏。
+PointerLockControls 实现了内置的浏览器指针锁定 API。 它提供基于鼠标随时间移动的输入方法（即增量），而不仅仅是鼠标光标在视口中的绝对位置。 它使你可以访问原始鼠标移动，将鼠标事件的目标锁定到单个元素，消除对鼠标在单个方向上移动距离的限制，并从视图中移除光标。 例如，它非常适合第一人称 3D 游戏。
 
 代码中，添加了W、A、S、D键监听，用来移动。
 
@@ -458,11 +458,11 @@ const controls = new DragControls(cubes, camera, renderer.domElement)
 
 ## Transform Controls
 
-允许您更改场景中对象的变换。
+允许你更改场景中对象的变换。
 
-您将控件附加到对象，然后将控件添加到场景中，以便交互句柄可见。
+你将控件附加到对象，然后将控件添加到场景中，以便交互句柄可见。
 
-然后您可以在场景中重新缩放、旋转和定位对象。
+然后你可以在场景中重新缩放、旋转和定位对象。
 
 ```typescript
 const controls = new TransformControls(camera, renderer.domElement)
@@ -470,3 +470,248 @@ controls.attach(cube)
 scene.add(controls)
 ```
 
+## OBJ Model Loader
+
+```typescript
+// const material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: false })
+
+const objLoader = new OBJLoader()
+objLoader.load(
+    'models/cube.obj',
+    (object) => {
+        // (object.children[0] as THREE.Mesh).material = material
+        // object.traverse(function (child) {
+        //     if ((child as THREE.Mesh).isMesh) {
+        //         (child as THREE.Mesh).material = material
+        //     }
+        // })
+        scene.add(object)
+    },
+    (xhr) => {
+        console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+    },
+    (error) => {
+        console.log(error)
+    }
+)
+```
+
+## MTL Loader
+
+MTL 是 OBJ 文件使用的材质信息。 你可以设置颜色、高光（specular）、自发光、alpha、平滑度、图像贴图和坐标。
+
+由于默认是[MeshPhongMaterial](https://sbcode.net/threejs/meshphongmaterial/)，我们只能设置影响meshPhongMaterial的属性。
+
+如果你使用 Blender 创建你的 OBJ 和 MTL，那么你可以更改
+
+- Base Color
+- Specular
+- Emission
+- Alpha
+- Smooth/Flat Shaded
+
+
+
+```typescript
+const mtlLoader = new MTLLoader()
+mtlLoader.load(
+    'models/monkey.mtl',
+    (materials) => {
+        materials.preload()
+
+        const objLoader = new OBJLoader()
+        objLoader.setMaterials(materials)
+        objLoader.load(
+            'models/monkey.obj',
+            (object) => {
+                scene.add(object)
+            },
+            (xhr) => {
+                console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+            },
+            (error) => {
+                console.log('An error happened')
+            }
+        )
+    },
+    (xhr) => {
+        console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+    },
+    (error) => {
+        console.log('An error happened')
+    }
+)
+```
+
+## GLTF Model Loader
+
+用于将 [glTF](https://www.khronos.org/gltf/) 模型加载到 Threejs 场景中的加载器。
+
+glTF 是一种用于高效传输和加载 3D 场景和模型的规范。
+
+glTF 最小化了 3D 资产的大小，以及解压和使用这些资产所需的运行时处理。
+
+一个 glTF 文件可能包含一个或多个场景、网格、材质、纹理、皮肤、骨架、变形目标、动画、灯光和相机。
+
+资产可以 JSON (.gltf) 或二进制 (.glb) 格式提供。
+
+```typescript
+const loader = new GLTFLoader()
+loader.load(
+    'models/monkey.glb',
+    function (gltf) {
+        gltf.scene.traverse(function (child) {
+            if ((child as THREE.Mesh).isMesh) {
+                const m = child as THREE.Mesh
+                m.receiveShadow = true
+                m.castShadow = true
+            }
+            if ((child as THREE.Light).isLight) {
+                const l = child as THREE.Light
+                l.castShadow = true
+                l.shadow.bias = -0.003
+                l.shadow.mapSize.width = 2048
+                l.shadow.mapSize.height = 2048
+            }
+        })
+        scene.add(gltf.scene)
+    },
+    (xhr) => {
+        console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+    },
+    (error) => {
+        console.log(error)
+    }
+)
+```
+
+## DRACO Loader
+
+DRACO 加载器用于加载用 Draco 库压缩的几何图形。
+
+Draco 是一个开源库，用于压缩和解压缩 3D 网格和点云。
+
+glTF 文件也可以使用 DRACO 库进行压缩，也可以使用 glTF 加载器进行加载。 在这种情况下，我们可以将 glTF 加载器配置为使用 DRACOLoader 来解压文件。
+
+压缩后的几何图形可以小得多，但代价是客户端浏览器上的额外解码时间。
+
+https://github.com/google/draco
+
+## Textured GLTF
+
+在本视频中，我演示了向 glTF 模型添加纹理并修改其 UV 坐标。 默认情况下，当你从 blender 导出纹理时，纹理会嵌入到模型中。 与使用 OBJ 和 MTL 相比，这使得创建和使用纹理模型更容易。
+
+```js
+const loader = new GLTFLoader()
+loader.load(
+    'models/monkey_textured.glb',
+    function (gltf) {
+        gltf.scene.traverse(function (child) {
+            if ((child as THREE.Mesh).isMesh) {
+                const m = child as THREE.Mesh
+                m.receiveShadow = true
+                m.castShadow = true
+            }
+            if ((child as THREE.Light).isLight) {
+                const l = child as THREE.Light
+                l.castShadow = true
+                l.shadow.bias = -0.003
+                l.shadow.mapSize.width = 2048
+                l.shadow.mapSize.height = 2048
+            }
+        })
+        scene.add(gltf.scene)
+    },
+    (xhr) => {
+        console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
+    },
+    (error) => {
+        console.log(error)
+    }
+)
+```
+
+## PLY Model Loader
+
+## STL Model Loader
+
+STL 模型格式广泛用于快速原型制作、3D 打印和计算机辅助制造。
+
+STL 文件仅描述 3D 对象的表面几何形状，没有任何颜色、纹理或其他常见 3D 建模属性的表示。
+
+## FBX Model Loader
+
+FBX 格式用于提供数字内容创建应用程序和游戏引擎（如 Blender、Maya、Autodesk、Unity、Unreal 等）之间的互操作性。 它支持许多功能，例如 3D 模型、场景层次结构、材质、照明、动画、骨骼等等。
+
+## FBX Animations
+
+在本练习中，我们导入了一个不同的 FBX 模型，并且我们还为该模型导入了几个动画剪辑。 然后，我们创建按钮以在每个动画剪辑之间平滑过渡模型。
+
+## GLTF Animations
+
+在本课中，我们将创建与 FBX 动画课中创建的项目等效的 GLTF。
+
+我们使用 Blender 将主要的 FBX 模型及其相关动画文件转换为 GLB 文件。
+
+## GLTF Custom Animations
+
+我们不需要从其他网站下载动画，我们可以创建自己的。
+
+使用 Blender，你可以创建模型，然后通过在时间线编辑器上创建关键帧来调整其部件的位置、比例和旋转。
+
+使用 Blender 中时间线编辑器上的播放选项来测试你的动画作品，然后将你的模型导出为 GLB（首选）或 GLTF，并为导出选择动画选项。
+
+导出模型后，你可以将 GLB/GLTF 文件从文件系统拖到下面的示例场景中。 它将读取文件并为它找到的每个动画剪辑创建一个新的复选框。 你可以单独启用/禁用每个动画。
+
+## 带有 GLTF 动画的 DragControls
+
+使用动画导出的 GLTF 模型通常不适用于 DragControl，因此解决该问题的一种方法是创建一个辅助对象，例如立方体，并将 DragControl 绑定到该对象。 然后将模型组的位置调整到被拖动立方体的新位置。
+
+在此示例中，你可以使用 DragControls 拖动动画 GLTF 模型。
+
+https://sbcode.net/extra_html/dragcontrols-animated-gltf.html
+
+拳击游戏角色，可以拖动到场景的不同位置。
+
+### 资源
+
+对于这个例子，我已经下载了 Eve By J.Gonzales 模型，其中包含拳击动画。 在 [Mixamo](https://www.mixamo.com/) 中，我选择了 Eve 角色，然后选择了动画选项卡并选择了 Punching 动画。
+
+## TransformControls with GLTF Animations
+
+这是一个使用变换控件操作动画 GLTF 的示例。
+
+在本例中，你可以变换动画模型的位置、旋转和大小。
+
+https://sbcode.net/extra_html/transformcontrols-animated-gltf.html
+
+拳击游戏角色，可以平移、旋转和缩放角色。
+
+## Reflector（反射器）
+
+包含在 Threejs 示例子文件夹中的 Reflector 对象可用于创建镜像。
+
+下面的示例使用带有多个镜像的 [GLTF 动画扩展 DragControls](https://sbcode.net/threejs/gltf-animations-drag/)。
+
+反射器对象将仅在一个方向上镜像。 如果要创建无限远镜，可以在现有反射器前面放置另一个反射器，但在它前面放置一段距离并背对第一个反射器。 反射器只会反映它们在当前渲染过程中看到的内容。 所以一开始你不会得到逼真的无限镜效果。 由于反射器仅在一个方向反射，因此你可以将另一个反射器串联放置在现有反射器后面，你将在另一个反射器中获得三次反射，反射回串联放置的其他两个反射器。 在上面的示例中，我有 4 个反射器，它们都互相看着。 2个向前看，2个向后看。 并且都在不同的距离。 请注意，使用此技术创建无限镜将需要更多 CPU 用于添加到场景中的每个新反射器。
+
+## CubeCamera Reflections
+
+CubeCamera 对象可用于在体积对象（例如球体、立方体和其他对象）上创建更逼真的反射。
+
+https://sbcode.net/extra_html/cubecamera.html
+
+实现球体反射环境的倒影。
+
+pivot：枢，旋转。
+
+## CubeCamera Refractions
+
+`THREE.CubeCamera` 对象也可用于创建逼真的折射效果。
+
+使用 `THREE.CubeCamera` 进行折射时的额外注意事项是，
+
+- 将 `CubeRenderTargets texture.mapping` 设置为 `THREE.CubeRefractionMapping`
+- 将 `refractionRatio` 属性添加到你的材质中
+
+https://sbcode.net/extra_html/cubecamera-refractions.html
