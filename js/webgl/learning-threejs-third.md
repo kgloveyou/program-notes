@@ -981,7 +981,7 @@ plane.material = new THREE.MeshBasicMaterial({
 
 ### 10.1.7　金属光泽度贴图和粗糙度贴图
 
-​		在讨论 Three.js 中可用的材质时，我们提到一个很好的默认材质是 `THREE.MeshStandardMaterial`。您可以使用它来创建闪亮的类似金属的材料，还可以应用粗糙度，使其看起来更像木头或塑料。通过使用材料的 `metalness`   和 `roughness`  属性，我们可以配置材料来表示我们想要的材料。除了这两个属性之外，您还可以使用纹理来配置这些属性。因此，如果我们有一个粗糙的对象，并且我们想指定该对象的某个部分是闪亮的，我们可以设置 `THREE.MeshStandardMaterial` 的 `metalnessMap` 属性，如果我们想指示应该看到网格的某些部分作为划痕或更粗糙，我们可以设置 `roughnessMap` 属性。当您使用这些贴图时，模型特定部分的纹理值将与粗糙度属性或金属度属性相乘，从而确定应如何渲染该特定像素。
+​		在讨论 Three.js 中可用的材质时，我们提到一个很好的默认材质是 `THREE.MeshStandardMaterial`。你可以使用它来创建闪亮的类似金属的材料，还可以应用粗糙度，使其看起来更像木头或塑料。通过使用材料的 `metalness`   和 `roughness`  属性，我们可以配置材料来表示我们想要的材料。除了这两个属性之外，你还可以使用纹理来配置这些属性。因此，如果我们有一个粗糙的对象，并且我们想指定该对象的某个部分是闪亮的，我们可以设置 `THREE.MeshStandardMaterial` 的 `metalnessMap` 属性，如果我们想指示应该看到网格的某些部分作为划痕或更粗糙，我们可以设置 `roughnessMap` 属性。当你使用这些贴图时，模型特定部分的纹理值将与粗糙度属性或金属度属性相乘，从而确定应如何渲染该特定像素。
 
 ```js
 var cubeMaterialWithMetalMap = cubeMaterial.clone();
@@ -1052,12 +1052,12 @@ refraction，折射
 
 ​		使用`全景图`创建`天空盒`。
 
-​		如果你已经有了制作材质的原材料，那么创建 CubeMap 对象就会非常简单。你需要的就是6张用来构建整个场景的图片。如果你有从网站下载的全景图片，将其用作 CubeMap 的最简单方法是使用在线工具之一将纹理拆分为单独的文件。 允许您执行此操作的两个站点如下：
+​		如果你已经有了制作材质的原材料，那么创建 CubeMap 对象就会非常简单。你需要的就是6张用来构建整个场景的图片。如果你有从网站下载的全景图片，将其用作 CubeMap 的最简单方法是使用在线工具之一将纹理拆分为单独的文件。 允许你执行此操作的两个站点如下：
 
 - https://jaxry.github.io/panorama-to-cubemap/
 - https://www.360toolkit.co/convert-spherical-equirectangular-to-cubemap.html  
 
-​		除了在使用它们之前对其进行转换之外，Three.js 还支持将球面 equirectangular 图像用作 CubeMap，但您必须采取几个额外的步骤才能使用它们。
+​		除了在使用它们之前对其进行转换之外，Three.js 还支持将球面 equirectangular 图像用作 CubeMap，但你必须采取几个额外的步骤才能使用它们。
 
 
 
@@ -1069,7 +1069,7 @@ refraction，折射
 
 https://scqilin.github.io/learning-threejs-third/#chapter-10_19-uv-mapping
 
-我们将从更深入地了解 UV 映射开始。 前面我们解释过，使用 UV 映射，您可以指定纹理的哪一部分显示在特定的面上。
+我们将从更深入地了解 UV 映射开始。 前面我们解释过，使用 UV 映射，你可以指定纹理的哪一部分显示在特定的面上。
 
 自定义 UV 映射通常通过 Blender 等程序完成，尤其是当模型变得更复杂时。 这里要记住的最重要的事情是 UV 映射在二维 `u` 和 `v` 中运行，从 `0` 到 `1`。
 
@@ -1183,7 +1183,7 @@ composer.render(delta);
 
 ## 11.4	创建自定义后期处理着色器
 
-​		在本节中，您将学习如何创建可用于后处理的自定义着色器。 我们将创建两个不同的着色器。 第一个将当前图像转换为灰度图像，第二个将通过减少可用颜色的数量将图像转换为 8 位图像。
+​		在本节中，你将学习如何创建可用于后处理的自定义着色器。 我们将创建两个不同的着色器。 第一个将当前图像转换为灰度图像，第二个将通过减少可用颜色的数量将图像转换为 8 位图像。
 
 > 另一个充满示例的资源是 Shadertoy，可从 https://www.shadertoy.com/ 获得。
 
@@ -1219,7 +1219,7 @@ https://github.com/chandlerprall/Physijs
 
 ## 12.1  使用Physi.js创建基本的Three.js场景
 
-​		我们需要包含`ammo.js`文件的原因是，`Physijs`是围绕`ammo.js`的包装器，以使其易于使用。 `ammo.js`（您可以在https://github.com/kripken/ammo.js/上找到它）是实现物理引擎的库； `Physijs`只是提供了该物理库易于使用的接口。 由于`Physijs`只是一个包装器，因此我们还可以与`Physijs`一起使用其他物理引擎。 在`Physijs` 的代码仓库中，您还可以找到使用`Cannon.js`（不同物理引擎）的分支。
+​		我们需要包含`ammo.js`文件的原因是，`Physijs`是围绕`ammo.js`的包装器，以使其易于使用。 `ammo.js`（你可以在https://github.com/kripken/ammo.js/上找到它）是实现物理引擎的库； `Physijs`只是提供了该物理库易于使用的接口。 由于`Physijs`只是一个包装器，因此我们还可以与`Physijs`一起使用其他物理引擎。 在`Physijs` 的代码仓库中，你还可以找到使用`Cannon.js`（不同物理引擎）的分支。
 
 ## 12.2  Physi.js材质属性
 
@@ -1227,17 +1227,25 @@ https://github.com/chandlerprall/Physijs
 
 ## 12.4  使用约束限制对象的移动
 
+​		Physijs 还提供了高级的结构，使你能够限制物体的移动。 在 Physijs 中，这些对象称为约束。下表概述了 Physijs 中可用的约束：
+
 ### 12.4.1  使用PointConstraint限制两点间的移动
 
 ### 12.4.2  使用HingeConstraint创建类似门的约束
 
+​		顾名思义，`HingeConstraint` 允许你创建一个行为类似于铰链的对象。 它围绕特定的轴旋转，将运动限制在指定的角度。
+
 ### 12.4.3  使用SliderConstraint将移动限制在一个轴上
+
+​		下一个约束是 `SliderConstraint`。 使用此约束，您可以将对象的移动限制在其任一轴上。
 
 ### 12.4.4  使用ConeTwistConstraint创建类似球销的约束
 
+​		使用 `ConeTwistConstraint`，可以创建将运动限制在一组角度的约束。
+
 ### 12.4.5  使用DOFConstraint实现细节的控制
 
-​		`DOFConstraint`, also called the  degree of freedom constraint  
+​		`DOFConstraint`，也称为自由度约束（degree of freedom constraint），允许您精确控制对象的线性和角运动。
 
 
 
