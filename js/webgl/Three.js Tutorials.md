@@ -718,7 +718,7 @@ https://sbcode.net/extra_html/cubecamera-refractions.html
 
 ## Raycaster
 
-光线投射允许您从场景中的 3D 点创建矢量，并检测矢量相交的对象。
+光线投射允许你从场景中的 3D 点创建矢量，并检测矢量相交的对象。
 
 raycasting 类几乎总是用于 3D 场景中的鼠标拾取对象。
 
@@ -765,3 +765,17 @@ raycasting 类几乎总是用于 3D 场景中的鼠标拾取对象。
 - 使用 [Raycaster](https://sbcode.net/threejs/raycaster/) 以及鼠标事件开始并绘制从 A 点到 B 点的线。
 - 使用 CSS2DRenderer 和 CSS2DObject 创建测量标签。
 - 使用 [Vector3.lerpVectors](https://sbcode.net/threejs/vector3-lerp/) 在 2 个点之间定位标签。
+
+## Using tweens.js
+
+https://sbcode.net/extra_html/tween.html
+
+Tweenjs 是一个 JavaScript 补间引擎。
+
+补间（来自中间）A tween (from *in-between*) 是一个概念，它允许你以平滑的方式更改对象的属性值。 我们可以决定需要多长时间，是否应该有延迟，每次补间更新时要做什么，是否应该重复等等。
+
+## Using tween.js with the THREE.AnimationMixer
+
+在本课中，我将演示如何混合使用上一课 GLTF 动画、Raycaster、tween.js 和 SpotLight Shadow 中演示的概念
+
+我将导入一个 GLTF 模型，导入几个动画剪辑，添加 RayCaster 并将 GLTF 模型的位置补间到单击的鼠标坐标，以便模型动画到新位置。
