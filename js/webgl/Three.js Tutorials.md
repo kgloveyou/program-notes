@@ -762,6 +762,6 @@ raycasting 类几乎总是用于 3D 场景中的鼠标拾取对象。
 
 这个例子表明，
 
-- 使用 Raycaster 以及鼠标事件开始并绘制从 A 点到 B 点的线。
+- 使用 [Raycaster](https://sbcode.net/threejs/raycaster/) 以及鼠标事件开始并绘制从 A 点到 B 点的线。
 - 使用 CSS2DRenderer 和 CSS2DObject 创建测量标签。
-- 使用 Vector3.lerpVectors 在 2 个点之间定位标签。
+- 使用 [Vector3.lerpVectors](https://sbcode.net/threejs/vector3-lerp/) 在 2 个点之间定位标签。
