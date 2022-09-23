@@ -776,6 +776,188 @@ Tweenjs 是一个 JavaScript 补间引擎。
 
 ## Using tween.js with the THREE.AnimationMixer
 
+https://sbcode.net/extra_html/tween-animation-mixer.html
+
 在本课中，我将演示如何混合使用上一课 GLTF 动画、Raycaster、tween.js 和 SpotLight Shadow 中演示的概念
 
 我将导入一个 GLTF 模型，导入几个动画剪辑，添加 RayCaster 并将 GLTF 模型的位置补间到单击的鼠标坐标，以便模型动画到新位置。
+
+页面中代码有问题，正确代码参考 gitee 仓库。
+
+## Using tween.js with OrbitControls
+
+在这个例子中，我演示了混合使用之前课程 GLTF Loader、Raycaster、tween.js 和 Orbit Controls 中演示的概念。
+
+移动 Orbit 控件目标的概念在使用 tweens.js 视频课程中进行了讨论和演示。
+
+在此示例中，导入了 glTF 场景，当您双击地板或猴头时，Orbit Controls 将补间目标定位到新位置。 请参阅下面代码中的 onDoubleClick 函数。
+
+## Vector3
+
+关于vector3和一些常见用途案例。
+
+Vector3可用于描述位置，方向，动量或仅系列3个值的系列。 vector3的值为`x`，`y`和`z`。
+
+我将演示的第一个vector3方法是`normalize()`方法。 它将采用3个数字，并 scale 它们，以使其在0,0,0和其位置中包含的值之间的距离为x，y，z的长度为1。
+
+即，当归一化时，{x：1，y：1，z：0}的向量将变为{x：0.7071067811865475，y：0.7071067811865475，z：0}。 0.7071067811865475也恰好等于45度的正弦。
+
+如果您有一个带有许多段的立方体，则可以将该几何体中的所有点标准化，然后最终会得到一个球体。
+
+https://sbcode.net/extra_html/vector3-0.html
+
+https://sbcode.net/extra_html/vector3-1.html
+
+## Vector3 Lerp
+
+> lerp：线性插值（Linear Interpolation）
+
+有时你只需要一个简单的位置变换随时间发生。 tween 库运行良好，但如果您实际上并不需要它提供的所有功能，它可能会过度设计。
+
+如果您只想将对象从 A 移动到 B 并且没有其他内容，则可以使用 `Vector3 .lerp` 和 `.lerpVectors` 方法。
+
+```typescript
+(method) Vector3.lerp(v1: THREE.Vector3, alpha: number): THREE.Vector3
+
+(method) Vector3.lerpVectors(v1: THREE.Vector3, v2: THREE.Vector3, alpha: number): THREE.Vector3
+```
+
+例如，
+
+```typescript
+cube.position.lerp(new THREE.Vector3(1, 2, 3), 0.05)
+```
+
+**v1** :  Is the vector to lerp towards.
+
+**alpha** ：是从当前向量到 v1 的直线距离的百分比。
+
+**v2** ：If using *.lerpVectors*, then you can set an alternate start vector3 to lerp from rather that the current vector3.
+
+在动画循环期间调用 **.lerp** 似乎会模仿使用 TWEEN.Easing.Cubic.Out 的 Tween
+
+如果要根据 alpha 值沿任意线滑动对象，则调用 **.lerpVectors** 很有用。 除其他外。
+
+将 alpha 设置为较低的数字，例如 0.1，向量会显得更慢，随着它接近目标向量而减慢。
+
+将 alpha 设置为 1.0，补间将在一个渲染周期内立即发生。
+
+双击示例中的地板以查看较慢的 lerp。 然后用 alpha 进行实验以查看更快的 lerp，并沿着第一个立方体和起始位置之间的线滑动第二个立方体。
+
+## Physics with Cannon
+
+### 描述
+
+动画也可以使用物理库来实现。 我们可以使用一个名为 Cannon.js 的库。 但是，与其使用不再维护的原始 Cannon.js，我们可以安装一个名为 Cannon-es 的新分支。
+
+Cannon 物理库非常适合模拟刚体。 您不必将它与 Three.js 一起使用，但它最初是为与 Three.js 一起使用而构建的，因此在您的项目中开始使用它会很容易。
+
+我们将使用它来使对象以更真实的方式移动和交互，并提供碰撞检测的可能性。
+
+### 基本概念
+
+- 形状：用于物理计算的几何形状，例如球体，立方体或平面。
+- 刚体：刚体具有形状和计算中使用的许多其他特性，例如质量和惯性。
+- 约束：一个3D 物体具有6个自由度，3个描述位置，3个用于描述旋转矢量的自由度。 约束是对自由度之一的限制。
+- Contact constraint（接触约束）：一种模拟摩擦和恢复的约束。 这些就像应用了约束的对象的面。
+- 世界：相互作用的物体和约束的集合。。
+- Solver：通过物体和约束来计算物理属性并相应地调整它们的算法。
+
+### 碰撞检测
+
+碰撞检测算法确定哪些对象对可能发生碰撞。 碰撞检测是一个计算量很大的过程，因此可以使用各种方法来简化碰撞检测。
+
+- Narrowphase：直接的物体与物体的碰撞检测。 这是计算成本最高的。
+- Broadphase：是对 Narrowphase 的一种折衷方案，可以使用各种其他技术来提高碰撞检测性能。
+
+Cannon 提供了多种`Broadphase`检测选项。
+
+| Phase           | Description                                                  |
+| --------------- | ------------------------------------------------------------ |
+| NaiveBroadphase | **默认值**。 NaiveBroadphase 无限制地查看所有可能的对，因此它的复杂度为 N^2。 它类似于 Narrowphase 技术，不同之处在于它首先确定物体是否足够接近，然后再检查是否有物体接触。 NaiveBroadphase 是默认设置，适用于最常见的用例，但如果物理世界中有很多对象，则性能会降低。 |
+| SAPBroadphase   | Sweep and Prune 算法沿轴对物体进行排序，然后通过查看物体大小和下一个物体的位置来向下移动该列表以查找对。 为了获得最佳性能，请选择一个轴，使物体分布更多。 X 轴设置为 0，Y 轴设置为 1，Z 轴设置为 2。 默认**axisIndex**为0（X轴）。 ; 例如。，// TypeScript` `world.broadphase = new CANNON.SAPBroadphase(world)` `;(world.broadphase as CANNON.SAPBroadphase).axisIndex = 2 |
+| GridBroadphase  | 轴对齐的均匀网格 broadphase。 将空间划分为单元格网格。 物体被放置在它们重叠的单元格中，并且同一单元格中的物体被配对。 GridBroadphase 需要提前知道空间的大小。 创建对象时设置单元格数。 默认单元数为 X = 10、Y = 10、Z = 10。 |
+
+### 迭代
+
+Solver 算法决定向接触的物体添加什么力。 Solver 是迭代的，这意味着它在每个动画通道上逐步求解方程。 它将更接近循环期间每次迭代的解决方案。 Solver 迭代的数字太低会导致接触力越来越不准确，这可能表现为对象上的抖动或振动，而更高的数字会提高精度和稳定性，但也会影响性能。
+
+默认求解器迭代次数为 10。
+
+```typescript
+//JavaScript (Cannon.js version)
+world.solver.iterations = 10
+
+//TypeScript (Cannon-es version)
+;(world.solver as CANNON.GSSolver).iterations = 10
+```
+
+### 支持的 Cannon.js 形状碰撞
+
+
+
+### Setup
+
+Install Cannon-es
+
+```sh
+npm install cannon-es --save-dev
+```
+
+## Cannon Debug Renderer
+
+最初的 Cannon.js 还包含一个脚本来帮助调试物理世界所看到的内容。 我已经将该脚本重新编写为一个 TypeScript 文件，我们可以将其添加到我们的项目中，以便我们可以更好地可视化物理形状。
+
+## Trimesh、凸多面体和复合形状
+
+在本视频中，我将演示使用多种不同类型的 Cannon 形状（例如 Trimeshes、ConvexPolyhedrons 和 Compound 形状）的性能。
+
+Three.js 中的几何体可能包含许多顶点和面，因此如果在物理引擎中使用相同的几何形状，您将不会始终获得最佳性能。 您可能需要更有创意并优化可提供最佳折衷的形状。 这种自定义形状有时也称为碰撞边界或网格。
+
+在定位复合形状的各个部分时，您可以使用 3D 图形工具来帮助估计定位。 重要的是要知道，如果您使用 Blender，请注意默认情况下 Blender 使用不同的坐标系。 在 Blender 中，Z 为 UP，Y 轴用于 Near/Far，与 Threejs 相比也是负数。 因此，您需要交换 Y 和 Z 的坐标并否定新的 Z。
+
+要从默认 Threejs 相机的角度定位对象，俯视 Z 轴，上轴 [0,1,0]，请参见转换表。
+
+| Axis       | Threejs | Blender |
+| ---------- | ------- | ------- |
+| Up/Down    | Y / -Y  | Z / -Z  |
+| Left/Right | -X / X  | -X / X  |
+| Near/Far   | Z / -Z  | -Y / Y  |
+
+## ConvexObjectBreaker
+
+在此示例中，我使用 Threejs misc 文件夹中的 ConvexObjectBreaker 类来粉碎一些现有的网格。 我在网格上射一个球，如果发生碰撞，我将网格、碰撞坐标和法线传递给 ConvexObjectBreakers prepareBreakableObject 和 subdivideByImpact 方法。 这会将网格分割成许多较小的网格。 我可以删除原始网格并将新的较小网格添加到场景中。
+
+在此示例中，我还将它与 Cannon 结合使用。 每个网格碎片还具有从新网格计算并添加到物理世界的新 ConvexPolyhedron。
+
+请注意，ConvexPolyhedrons 是 cpu 密集型计算物理属性，因此当网格是具有很少顶点的简单图元时，这最有效。
+
+https://sbcode.net/extra_html/convexobjectbreaker.html
+
+更详细地说，对于我射出的每个球，我都会注册一个碰撞事件监听器。 当发生碰撞时，它将传入 CANNON.ICollisionEvent。 我需要的关于被碰撞的物体的信息，以及它的接触属性。
+
+使用 CANNON.Body，我检索了一些自定义用户数据，我可以使用这些数据将这个物体与一个网格链接起来，以及这个网格被分割成碎片的次数。
+
+使用 CANNON.ICollisionEvent，我将 bj.position 和 rj 相加，然后将其转换为局部网格位置，然后从被击中对象的角度给出碰撞位置。
+
+```typescript
+const poi = bodies[contactId].pointToLocalFrame((contact.bj.position as CANNON.Vec3).vadd(contact.rj))
+```
+
+
+
+现在计算出碰撞位置和法线，然后我可以将其传递给 ConvexObjectBreaker.subdivideByImpact 方法。 请注意，当您击中顶部或底部的对象时，分片是相对于被击中的位置的，而分片仍然是随机的。 这个方法返回一个新的网格数组，我可以用它来添加到场景中，并计算物理体。
+
+在创建一个可以细分的Mesh时，首先传入ConvexObjectBreaker.prepareBreakableObject方法。 然后可以使用 ConvexObjectBreaker.subdivideByImpact 对其进行细分。 请注意，从子分区创建的新网格不需要重新传递到 ConvexObjectBreaker.prepareBreakableObject 方法。
+
+## Constructive Solid Geometry
+
+![](Three.js Tutorials.assets/Csg_tree.png)
+
+## 使用 OBB 进行碰撞检测
+
+如果您不需要物理模拟，但仍需要某种碰撞检测，您可以选择使用 Oriented Bounding Box (OBB)。
+
+## Examples 
+
+### Glasses
