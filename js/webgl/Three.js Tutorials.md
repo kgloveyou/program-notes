@@ -751,7 +751,7 @@ raycasting 类几乎总是用于 3D 场景中的鼠标拾取对象。
 
 平面也会收到阴影，而其他一切都只会投射阴影。
 
-这个例子表明，
+这个例子展示，
 
 - 加载 GLB 场景，遍历子对象以单独添加和/或复制属性以供以后使用。
 - 使用 [Raycaster](https://sbcode.net/threejs/raycaster/) 检测鼠标是否在某些对象上并更改那里的材质。
@@ -760,7 +760,7 @@ raycasting 类几乎总是用于 3D 场景中的鼠标拾取对象。
 
 使用 Raycaster 辅助测量点之间的距离。
 
-这个例子表明，
+这个例子展示，
 
 - 使用 [Raycaster](https://sbcode.net/threejs/raycaster/) 以及鼠标事件开始并绘制从 A 点到 B 点的线。
 - 使用 CSS2DRenderer 和 CSS2DObject 创建测量标签。
@@ -790,7 +790,7 @@ https://sbcode.net/extra_html/tween-animation-mixer.html
 
 移动 Orbit 控件目标的概念在使用 tweens.js 视频课程中进行了讨论和演示。
 
-在此示例中，导入了 glTF 场景，当您双击地板或猴头时，Orbit Controls 将补间目标定位到新位置。 请参阅下面代码中的 onDoubleClick 函数。
+在此示例中，导入了 glTF 场景，当你双击地板或猴头时，Orbit Controls 将补间目标定位到新位置。 请参阅下面代码中的 onDoubleClick 函数。
 
 ## Vector3
 
@@ -802,7 +802,7 @@ Vector3可用于描述位置，方向，动量或仅系列3个值的系列。 ve
 
 即，当归一化时，{x：1，y：1，z：0}的向量将变为{x：0.7071067811865475，y：0.7071067811865475，z：0}。 0.7071067811865475也恰好等于45度的正弦。
 
-如果您有一个带有许多段的立方体，则可以将该几何体中的所有点标准化，然后最终会得到一个球体。
+如果你有一个带有许多段的立方体，则可以将该几何体中的所有点标准化，然后最终会得到一个球体。
 
 https://sbcode.net/extra_html/vector3-0.html
 
@@ -812,9 +812,9 @@ https://sbcode.net/extra_html/vector3-1.html
 
 > lerp：线性插值（Linear Interpolation）
 
-有时你只需要一个简单的位置变换随时间发生。 tween 库运行良好，但如果您实际上并不需要它提供的所有功能，它可能会过度设计。
+有时你只需要一个简单的位置变换随时间发生。 tween 库运行良好，但如果你实际上并不需要它提供的所有功能，它可能会过度设计。
 
-如果您只想将对象从 A 移动到 B 并且没有其他内容，则可以使用 `Vector3 .lerp` 和 `.lerpVectors` 方法。
+如果你只想将对象从 A 移动到 B 并且没有其他内容，则可以使用 `Vector3 .lerp` 和 `.lerpVectors` 方法。
 
 ```typescript
 (method) Vector3.lerp(v1: THREE.Vector3, alpha: number): THREE.Vector3
@@ -850,7 +850,7 @@ cube.position.lerp(new THREE.Vector3(1, 2, 3), 0.05)
 
 动画也可以使用物理库来实现。 我们可以使用一个名为 Cannon.js 的库。 但是，与其使用不再维护的原始 Cannon.js，我们可以安装一个名为 Cannon-es 的新分支。
 
-Cannon 物理库非常适合模拟刚体。 您不必将它与 Three.js 一起使用，但它最初是为与 Three.js 一起使用而构建的，因此在您的项目中开始使用它会很容易。
+Cannon 物理库非常适合模拟刚体。 你不必将它与 Three.js 一起使用，但它最初是为与 Three.js 一起使用而构建的，因此在你的项目中开始使用它会很容易。
 
 我们将使用它来使对象以更真实的方式移动和交互，并提供碰撞检测的可能性。
 
@@ -912,9 +912,9 @@ npm install cannon-es --save-dev
 
 在本视频中，我将演示使用多种不同类型的 Cannon 形状（例如 Trimeshes、ConvexPolyhedrons 和 Compound 形状）的性能。
 
-Three.js 中的几何体可能包含许多顶点和面，因此如果在物理引擎中使用相同的几何形状，您将不会始终获得最佳性能。 您可能需要更有创意并优化可提供最佳折衷的形状。 这种自定义形状有时也称为碰撞边界或网格。
+Three.js 中的几何体可能包含许多顶点和面，因此如果在物理引擎中使用相同的几何形状，你将不会始终获得最佳性能。 你可能需要更有创意并优化可提供最佳折衷的形状。 这种自定义形状有时也称为碰撞边界或网格。
 
-在定位复合形状的各个部分时，您可以使用 3D 图形工具来帮助估计定位。 重要的是要知道，如果您使用 Blender，请注意默认情况下 Blender 使用不同的坐标系。 在 Blender 中，Z 为 UP，Y 轴用于 Near/Far，与 Threejs 相比也是负数。 因此，您需要交换 Y 和 Z 的坐标并否定新的 Z。
+在定位复合形状的各个部分时，你可以使用 3D 图形工具来帮助估计定位。 重要的是要知道，如果你使用 Blender，请注意默认情况下 Blender 使用不同的坐标系。 在 Blender 中，Z 为 UP，Y 轴用于 Near/Far，与 Threejs 相比也是负数。 因此，你需要交换 Y 和 Z 的坐标并否定新的 Z。
 
 要从默认 Threejs 相机的角度定位对象，俯视 Z 轴，上轴 [0,1,0]，请参见转换表。
 
@@ -946,7 +946,7 @@ const poi = bodies[contactId].pointToLocalFrame((contact.bj.position as CANNON.V
 
 
 
-现在计算出碰撞位置和法线，然后我可以将其传递给 ConvexObjectBreaker.subdivideByImpact 方法。 请注意，当您击中顶部或底部的对象时，分片是相对于被击中的位置的，而分片仍然是随机的。 这个方法返回一个新的网格数组，我可以用它来添加到场景中，并计算物理体。
+现在计算出碰撞位置和法线，然后我可以将其传递给 ConvexObjectBreaker.subdivideByImpact 方法。 请注意，当你击中顶部或底部的对象时，分片是相对于被击中的位置的，而分片仍然是随机的。 这个方法返回一个新的网格数组，我可以用它来添加到场景中，并计算物理体。
 
 在创建一个可以细分的Mesh时，首先传入ConvexObjectBreaker.prepareBreakableObject方法。 然后可以使用 ConvexObjectBreaker.subdivideByImpact 对其进行细分。 请注意，从子分区创建的新网格不需要重新传递到 ConvexObjectBreaker.prepareBreakableObject 方法。
 
@@ -956,8 +956,375 @@ const poi = bodies[contactId].pointToLocalFrame((contact.bj.position as CANNON.V
 
 ## 使用 OBB 进行碰撞检测
 
-如果您不需要物理模拟，但仍需要某种碰撞检测，您可以选择使用 Oriented Bounding Box (OBB)。
+如果你不需要物理模拟，但仍需要某种碰撞检测，你可以选择使用 Oriented Bounding Box (OBB)。
 
 ## Examples 
 
 ### Glasses
+
+https://sbcode.net/extra_html/glasses.html
+
+这个例子展示了，
+
+- 使用 [Reflector](https://sbcode.net/threejs/reflector/)  镜像其上方的场景。
+- 使用 CSS2DRenderer 和 CSS2DObject 创建文字标注。
+- 在移动对象上展示文字标注。
+- 从 Blender 导出的 glTF 自定义属性中提取标注信息。
+- 使用 ConvexBufferGeometry 在可用作物理体的更复杂的网格周围创建凸包。
+- 使用 Cannon.js 作为物理引擎
+- 使用 MeshPhysicalMaterial 和 CubeCamera 在眼镜架上创建折射效果。
+- 使用 GLTFLoader 并有选择地将材质应用到加载的几何体。
+
+### RNG
+
+https://sbcode.net/extra_html/rng.html
+
+演示使用物理容器和复合形状。
+
+这个例子展示，
+
+- 使用 Cannon.js 作为物理引擎
+- 创建一个容器物理对象，其他对象在里面滚动。
+- 从加载的几何体创建 CANNON.Trimeshes 以用作物理体。
+- 演示 OBJLoader 并遍历加载的几何图形。
+
+### Bender
+
+演示 Threejs 中的弯曲 BufferGeometries。
+
+Bender GitHub 存储库：https://github.com/Sean-Bradley/Bender
+
+这个例子展示，
+
+- 弯曲一个 THREE.BoxGeometry
+- 弯曲 TextGeometry
+- 在运行时替换网格几何体
+- 在运行时替换 TextGeometry 的文本
+- 使用字体加载器
+
+### CSG with a GLTF
+
+在 glTF 上演示 CSG 操作。
+
+GSGMesh GitHub 存储库：https://github.com/Sean-Bradley/THREE-CSGMesh
+
+这个例子展示，
+
+- 遍历 gTLF 并仅提取所需的几何图形。
+- CSG 对 glTF 模型的几何图形进行减法、联合和相交操作。
+- 在应用操作之前沿轴平移 CSG 几何。
+- 使用 THREE.GridHelper。
+
+https://sbcode.net/extra_html/csg-gltf.html
+
+### Engraving（雕刻）
+
+实时圆形文字雕刻。
+
+这个例子展示，https://sbcode.net/extra_html/engraving.html
+
+- 使用 CSG Subtract 创建一个较大的 CylinderGeometry 并从中减去一个较小的 CylinderGeometry 来创建一个环。
+- 使用字体加载器。
+- 使用带有 dblclick 事件的 Raycaster 将控件目标聚焦到网格上单击的点。
+- 在运行时替换网格几何体
+- 围绕半径弯曲网格
+- 使用 CSG Subtract 从环几何图形中减去生成的文本几何图形以创建雕刻文本效果
+
+### Shiny Refraction（闪亮折射）
+
+这个例子展示，
+
+- 使用 EffectComposer 添加景深 (DOF) 效果。
+- 根据相机和球的距离动态改变自由度。
+- 使用 GUI 更改 MeshPhysicalMaterial 属性。
+
+### Cascaded Shadow Maps (CSM)
+
+https://sbcode.net/extra_html/csm.html
+
+级联阴影贴图是一个概念，其中在相机附近使用更高分辨率的阴影，在更远的地方使用更低的分辨率。
+
+The default CSM object creates 4 frustums with 4 directional lights with shadows and different shadow map sizes.
+
+当你想在一个非常大的区域投射阴影时，它是一个很好的解决方案，其中有很多物体。
+
+展示了很多树木，类似常见的三维GIS展示效果（*）。3种树苗是用不同的glb模型。
+
+### LOD (Level Of Detail)
+
+使用 LOD 根据与相机的距离显示/隐藏不同质量的网格。
+
+在这个例子中，我加载了 3 种不同类型的树，每一种都有高、中、低 3 个细节级别。
+
+当你放大和缩小一棵树时，你可以看到模型根据与相机的距离而变化。
+
+https://sbcode.net/extra_html/lod.html
+
+```typescript
+for (let i = 0; i < treeCount / treesTypes.length; i++) {
+    const lod = new THREE.LOD()
+    let mesh = treeHighDetail.clone()
+    mesh.scale.copy(scales[treeCounter])
+    lod.addLevel(mesh, 5)
+
+    mesh = treeMediumDetail.clone()
+    mesh.scale.copy(scales[treeCounter])
+    lod.addLevel(mesh, 10)
+
+    mesh = treeLowDetail.clone()
+    mesh.scale.copy(scales[treeCounter])
+    lod.addLevel(mesh, 30)
+
+    lod.position.copy(positions[treeCounter])
+    scene.add(lod)
+
+    treeCounter++
+}
+```
+
+### Car Physics
+
+这个例子展示了，https://sbcode.net/extra_html/physics-car.html
+
+- 使用 Cannon.js 作为物理引擎。
+
+- 使用 CANNON.HingeConstraint 模拟轮轴、发动机和悬架。
+
+- 使用 Vector3.lerpVectors 实现跟随相机。
+
+- 使用 Directional Light Shadow 和 Helper 的阴影。
+
+- 使用键盘事件来控制汽车。
+
+- 使用 Cannon.js 调试渲染器
+
+  
+
+  有关基于上述示例以及本课程中学到的其他内容的更复杂的版本，请访问 First Car Shooter (https://fcs.sbcode.net/)
+
+### Helicopter Physics
+
+这个例子表明，
+
+- 使用 Cannon.js 作为物理引擎。
+- 使用 CANNON.PointToPointConstraint 来模拟悬挂在旋翼桨叶上的直升机机身。
+- 使用 Vector3.lerpVectors 实现跟随相机。
+- 使用 Directional Light Shadow 和 Helper 的阴影。
+- 使用键盘事件来控制直升机。
+- 使用 Cannon.js 调试渲染器
+
+https://sbcode.net/extra_html/physics-heli.html
+
+直升机飞行效果，实现了前进后退，仰俯冲，左右倾斜
+
+### Finger Physics
+
+这个例子表明，
+
+- 使用 Cannon.js 作为物理引擎
+- 使用 CANNON.Heightfield
+- 使用 THREE.Raycaster 自动生成 CANNON.Heightfield 以在加载到场景中时查找对象的高度。
+
+### 点对点约束
+
+这个例子表明，
+
+- 使用 Cannon.js 作为物理引擎。
+- 使用 CANNON.PointToPointConstraint 来限制球的运动。
+- 使用 CANNON.Body 上的拖动控件。
+
+### 滚动动画
+
+滚动时，进度以百分比计算。 根据滚动在哪个百分比范围内，执行不同的动画脚本。
+
+你可以在选定的滚动百分比范围内设置属性、运行连续动画或在两个值之间运行线性插值。
+
+如果使用线性插值，并且它不打算在整个 100% 的滚动中运行，那么你还必须对其进行缩放，以便它以指定的滚动百分比开始和结束。 有关几种不同类型动画的示例，请参见代码。
+
+### FFT
+
+演示如何使用 HTML5 音频 API 从麦克风生成 FFT，然后使用它生成置换贴图，然后用于扭曲平面几何图形。
+
+这个例子表明，
+
+- 使用 HTML5 音频分析器从连接的麦克风获取字节频率数据。
+- 从 FFT 数据生成屏幕外画布并将其用作置换贴图。
+
+### Sharing Animation Clips
+
+你可以加载单个 THREE.AnimationClip 并在两个不同的模型中使用它。
+
+在此示例中，加载了两个不同的模型文件以及三个不同的动画剪辑。
+
+还创建了一个自定义动画剪辑，该剪辑首先从其他动画剪辑之一克隆，并且所有关键轨迹都被删除，除了少数几个。 请参阅 clonedRightArm 按钮。
+
+相同的动画剪辑可以应用于任一模型。 这是可能的，因为动画剪辑中的关键轨迹引用了已加载模型中已存在的命名骨骼。
+
+每个模型骨架中包含的骨骼共享相同的层次结构和命名。
+
+### Gerstner Water（*）
+
+使用 Gerstner/Trichoidal 算法置换经典 Three.js Ocean 着色器示例的几何体。
+
+这是未完成的工作，但它就在这里，以便无论如何都可以预览它。
+
+### 玻璃透射
+
+THREE.MeshPhysicalMaterial 可以很好地模拟玻璃。
+
+此示例演示使用自定义的 THREE.MeshPhysicalMaterial 覆盖在导出的 glTF 中设置的材质。
+
+https://sbcode.net/extra_html/glass-transmission.html
+
+### Convex Geometry to CANNON.Trimesh
+
+演示使用 ConvexGeometry 类创建可用于 Cannon 物理的简化对象形状。
+
+这个例子，
+
+- 加载模型，在这种情况下为 OBJ。
+- 从模型中获取几何图形，将其转换为 THREE.Vector3 数组，然后从中创建凸包网格。
+- 然后将 Convex Hull 转换为 CANNON.Trimesh 并添加到 CANNON.World。
+
+### Kick Boxing（跆拳道，踢箱子）
+
+将 CANNON.Body 附加到动画 gLTF 模型的一部分。
+
+为模型设置动画时，Cannon body会随之移动，并与场景中的其他 Cannon body发生碰撞。
+
+请注意，我还添加了一个与 Cannon body匹配的线框球体，以便你可以更轻松地看到它的位置。
+
+### Random Puncher
+
+随机播放动画片段，一次一个。
+
+### Globe
+
+在球体上使用置换贴图。
+
+有高低起伏山脉的地球。
+
+### 重心
+
+你可以通过消除世界重力并向你希望新模拟重力所在的点施加力来模拟指向 3D 点的重力。
+
+这个例子创建了许多球体，它们都被点 0,0,0 吸引。 在这个例子中，每个物体都被施加了一个与它自己的世界位置相对的力，相对于 0,0,0。
+
+请注意，在此示例中，世界重力设置为 0,-1,0，而不是完全取消它为 0,0,0。 这样一来，物体仍然会对表面摩擦做出反应，并且球体在它们翻滚或相互撞击时会出现旋转。 如果你确实将世界重力设置为 0,0,0，那么 Cannon 中的表面摩擦计算将等于 0，并且球体在碰撞时不会出现旋转。 在 Cannon 中，当物体发生碰撞时，如果任一物体的质量为 0 或世界重力为 0,0,0，则任何摩擦乘积都等于 0。
+
+### 透明阴影
+
+这是一个我尝试从透明纹理创建阴影的实验。 通过使用灰度图像作为 Alpha 贴图，我能够达到我想要实现的目标的一半。 然后，我可以根据材料的 alphaTest 属性以一定的灰度进行裁剪。 在示例中滑动 alphaTest 滑块。 警告，可能有更好的方法来做到这一点，我还没有尝试过。
+
+### 柔和的阴影
+
+通过编辑radius和blurSamples的阴影参数可以快速实现软阴影。 请参阅阴影类的 LightShadow 基类。
+
+根据渲染器使用的 shadowMap.type，你将获得不同质量的模糊。 你还可以编辑阴影使用的 mapSize。
+
+在下面的示例中，我在渲染器中使用了 VSMShadowMap filter和相对较小的 256x256 的 mapSize。 这是渲染质量和速度之间的良好折衷。
+
+### Follow Cam（类似一个跳箱子的游戏）
+
+在follow cam的这个自定义实现中，我有一个相机枢轴，我将它附加到我想要跟随的对象上。 可以通过向左、向右、向上和向下移动鼠标来旋转枢轴。
+
+另一个 THREE.Object3D 连接到枢轴，但在后面或前面的几个单位处。 可以使用滚轮更改距离。
+
+枢轴跟随我场景的主角。 场景相机 lerps 和 slerps 到附加到枢轴的 Object3D。
+
+### 补间材料属性
+
+动画材质属性是可能的。 在此示例中，如果你将鼠标悬停在多边形上，则颜色以及其他几个材质属性将被补间到新设置。 这发生在 100 毫秒的时间内。
+
+你也可以单击多边形，其大小会增加或减少，具体取决于上次单击之前它是如何离开的。
+
+If you consider Tweening over-engineering, then you also have the option of using Lerp to transition a property over time.
+
+## 部署到生产
+
+在接下来的几节课中，我将向你展示在 Internet 上托管 Threejs 项目的不同方式。
+
+下一课将涵盖，
+
+- 设置 Webpack 生产配置
+- 使用 GitHub 页面托管
+- 使用 GitLab 页面托管
+- 主机使用 Nginx 服务器
+- 设置和指向域名
+- 安装 SSL 证书
+- 使用 Node.js 和 Express 的服务器端功能
+- Socket.IO 与 Node.js、Express 和 Webpack
+- 将 Nginx 设置为反向代理
+- [The Ballgame](https://sbcode.net/threejs/ballgame-deployment/)（球赛）
+
+## 设置 Webpack 生产配置
+
+到目前为止，我们在每节课中都在使用 Webpack-Dev-Server。
+
+Webpack-Dev-Server 在运行时为我们动态生成一个 bundle.js，它也在 HMR 模式下运行。
+
+这个 bundle.js 生成速度很快，我们可以立即在浏览器中预览它，但与特定于生产环境的 bundle.js 版本相比，它非常大。
+
+我们将使用 Webpack 生成特定于生产环境的 bundle.js 版本
+
+生产版本不会包含 HMR 选项使用的额外代码，因为我们不会直接在生产环境中进行开发。
+
+现在，虽然 bundle.js 的生产版本要小得多，但它确实需要更长的时间来生成，因此在开发中使用它并没有那么有利，因为你需要在每次更改之间等待一些额外的时间才能预览 它。
+
+bundle.js 的生产版本也将作为一个新文件直接保存到文件系统中，因此我们可以稍后手动将其复制到我们自己的生产 Web 服务器。
+
+## 使用 GitHub Pages 托管
+
+### 描述
+
+前提是 Three.js 项目只需下载静态文件（例如 index.html、bundle.js 和可能的一些额外资源，例如图像、3D 模型、静态 JSON、CSS、其他 HTML）就可以在 Web 浏览器中完全在客户端运行 和 JavaScript 文件，然后我们可以使用 GitHub 页面免费托管 ./dist/client/ 文件夹的内容。
+
+GitHub Pages 就像一个静态 HTTP Web 服务器，但使用 GitHub 网址和 SSL 证书。
+
+### 使用 gh-pages 部署
+
+GitHub 提供了另一种部署方法，你可以在其中将名为 gh-pages 的额外库安装到项目中，允许你将选择的分发文件夹部署到存储库的 GitHub pages 部分。
+
+请注意，在开始之前，你的项目应该已经在其自己的存储库中提交到 GitHub。 我在这个例子中使用了我的官方样板，我将部署 `./dist/client` 文件夹以通过 GitHub 页面提供服务。
+
+在你的项目中，安装 gh-pages 依赖项。
+
+```bash
+npm install gh-pages --save-dev
+```
+
+向 `package.json` 添加一个名为 `deploy` 的新脚本命令
+
+```json
+{
+...
+  "scripts": {
+    "build": "webpack --config ./src/client/webpack.prod.js",
+    "start": "node ./dist/server/server.js",
+    "dev": "webpack serve --config ./src/client/webpack.dev.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "deploy": "gh-pages -d ./dist/client"
+  },
+...
+```
+
+现在使用 webpack 生产配置构建你的 bundle.js 的生产版本。
+
+```bash
+npm run build
+```
+
+现在使用 gh-pages 部署
+
+```bash
+npm run deploy
+```
+
+一两分钟后，你的 GitHub 页面站点将上线。 查看项目 GitHub 存储库中的 **Settings --> Pages** 部分以验证你的公共 GitHub 页面网址的 URL。
+
+我的网站托管在
+
+https://sean-bradley.github.io/Three.js-TypeScript-Boilerplate/
+
+## 使用 GitLab 页面托管
+
