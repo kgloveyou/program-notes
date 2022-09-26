@@ -1342,17 +1342,17 @@ bespoke（定制的）
 
 我将使用带有 Ubuntu 20.04 LTS 操作系统的 Linux 服务器，并将使用 Digital Ocean（免费 50 美元 - 30 天信用）作为云提供商进行设置。
 
-或者，我还有一张 Hetzner Cloud 优惠券，您将在其中获得 20 欧元的新注册免费积分。
+或者，我还有一张 Hetzner Cloud 优惠券，你将在其中获得 20 欧元的新注册免费积分。
 
-您还可以使用来自许多不同云提供商的其他互联网连接服务器，例如 GCP、Azure、AWS、Vultr 等等。
+你还可以使用来自许多不同云提供商的其他互联网连接服务器，例如 GCP、Azure、AWS、Vultr 等等。
 
 在 Digital Ocean 上，我将使用每月 5 美元的标准 Ubuntu 20.04 64 位 LTS。
 
 ### 安装 Nginx
 
-现在使用 SSH 客户端连接到您的全新服务器。 在 Windows 上，我们可以使用 Putty 作为 SSH 客户端。 SSH 表示“Secure Shell”。
+现在使用 SSH 客户端连接到你的全新服务器。 在 Windows 上，我们可以使用 Putty 作为 SSH 客户端。 SSH 表示“Secure Shell”。
 
-首先要做的是运行 **apt update** 以确保您的服务器具有所有可用的最新软件包的最新列表。
+首先要做的是运行 **apt update** 以确保你的服务器具有所有可用的最新软件包的最新列表。
 
 ## 指向一个域名
 
@@ -1362,17 +1362,17 @@ bespoke（定制的）
 
 在我的域名提供商中，我将为我的主域 sbcode.net 创建一个名为 my-project 的新 A 名称记录，它将指向新服务器的 IP 地址。
 
-请注意，您将使用您自己管理的域名，而不是 sbcode.net。
+请注意，你将使用你自己管理的域名，而不是 sbcode.net。
 
 给它一些时间来传播，然后访问
 
 http://my-project.your-domain.tld
 
-或者您只是将主域指向您的 IP 地址，然后您可以在没有子域的情况下访问您的网站，例如，
+或者你只是将主域指向你的 IP 地址，然后你可以在没有子域的情况下访问你的网站，例如，
 
 http://your-domain.tld
 
-如果您打算在您的服务器上使用同一个端口上的域名托管多个项目，例如，如本例所示的端口 80，那么请确保在您的网站的 Nginx 配置中设置 server_name 属性。
+如果你打算在你的服务器上使用同一个端口上的域名托管多个项目，例如，如本例所示的端口 80，那么请确保在你的网站的 Nginx 配置中设置 server_name 属性。
 
 例如。 我更新的 Nginx my-project.conf，
 
@@ -1393,9 +1393,9 @@ server {
 
 ### 购买域名
 
-如果您没有域名，并且您的同事不能借给您或为您创建子域，那么您可以从 Namecheap 获得便宜的域名
+如果你没有域名，并且你的同事不能借给你或为你创建子域，那么你可以从 Namecheap 获得便宜的域名
 
-Namecheap 还有一个高级 DNS 配置工具，允许您创建子域。 下图中的 @ 符号是正在管理的主域的别名。
+Namecheap 还有一个高级 DNS 配置工具，允许你创建子域。 下图中的 @ 符号是正在管理的主域的别名。
 
 ## 添加 SSL
 
@@ -1403,7 +1403,7 @@ Namecheap 还有一个高级 DNS 配置工具，允许您创建子域。 下图�
 
 ### 描述
 
-如果您想在您的应用程序中加入服务器端功能，您可以选择使用 Node.js 和 Express。
+如果你想在你的应用程序中加入服务器端功能，你可以选择使用 Node.js 和 Express。
 
 我的 Ballgame 和 SocketIO 的官方样板分支都需要服务器端功能才能工作。 他们都使用 Socket.io，并且 Ballgame 分支也使用 Cannon 演示了服务器端物理。
 
@@ -1411,9 +1411,9 @@ Namecheap 还有一个高级 DNS 配置工具，允许您创建子域。 下图�
 
 注意：
 
-请注意，我们只使用了 `npm start` 而不是 `npm run start`。 `run` 选项不是必需的。 `npm start` 是 `npm run start` 的别名。 如果您愿意，可以使用更长的版本。
+请注意，我们只使用了 `npm start` 而不是 `npm run start`。 `run` 选项不是必需的。 `npm start` 是 `npm run start` 的别名。 如果你愿意，可以使用更长的版本。
 
-您可能会看到偶尔使用的其他别名是，
+你可能会看到偶尔使用的其他别名是，
 
 `npm test`
 
@@ -1439,9 +1439,9 @@ Socket.IO 支持浏览器客户端和 Node.js 服务器之间的实时、双向�
 
 ### 描述
 
-虽然可以直接使用 Nodejs 和 Express 服务器将您的应用程序托管在生产服务器上，但将它们托管在反向代理之后也是有益的，例如 Nginx 配置。
+虽然可以直接使用 Nodejs 和 Express 服务器将你的应用程序托管在生产服务器上，但将它们托管在反向代理之后也是有益的，例如 Nginx 配置。
 
-使用 Nginx 进行反向代理还可以让我们轻松绑定域名、SSL 证书，并且以后有更多选项来修改压缩、负载平衡、传递请求标头等，以备您需要，并且独立于您的应用程序项目代码。
+使用 Nginx 进行反向代理还可以让我们轻松绑定域名、SSL 证书，并且以后有更多选项来修改压缩、负载平衡、传递请求标头等，以备你需要，并且独立于你的应用程序项目代码。
 
 We will set up the Socket.IO example from the previous lesson, [Socket.IO with Node.js, Express and Webpack](https://sbcode.net/threejs/socketio-setup/), on the same production server that we created in the lesson [Host using an Nginx Server](https://sbcode.net/threejs/nginx-host/)
 
@@ -1455,7 +1455,7 @@ We will set up the Socket.IO example from the previous lesson, [Socket.IO with N
 
 这个例子是本课程中学到的许多东西的集合，所有这些都最终形成了一个使用 Threejs、Socket.io 和服务器端 Cannon 物理的多人游戏。
 
-在生产环境中托管此示例可以通过匹配我们在前几节课中托管 Threejs/Socket.IO 示例时学到的内容来完成，因为它还需要使用 Nodejs 和 Express 启动服务器端并托管在 Nginx 反向代理后面 如果您还想更轻松地绑定域名和 SSL 证书。
+在生产环境中托管此示例可以通过匹配我们在前几节课中托管 Threejs/Socket.IO 示例时学到的内容来完成，因为它还需要使用 Nodejs 和 Express 启动服务器端并托管在 Nginx 反向代理后面 如果你还想更轻松地绑定域名和 SSL 证书。
 
 https://ballgame.sbcode.net
 
@@ -1493,7 +1493,7 @@ Threejs 官方示例网站 https://threejs.org/examples/ 上有很多很棒的 T
 网络摄像头分支演示，
 
 - 使用网络摄像头视频源作为 THREE.Mesh 的纹理，
-- 使用 THREE.ShaderMaterial 调整颜色以应用绿屏选项，允许您选择关键颜色、相似性和平滑度以在纹理中创建 Alpha 通道。
+- 使用 THREE.ShaderMaterial 调整颜色以应用绿屏选项，允许你选择关键颜色、相似性和平滑度以在纹理中创建 Alpha 通道。
 - 使用 Dat.GUI 实时修改 THREE.ShaderMaterial 属性。
 
 ### Constellations BSC5 分支
@@ -1529,4 +1529,26 @@ WebXR 分支演示了，
 - StatsVR、TeleportVR 和 GrabVR
 
 ### SSR Branch
+
+SSR 分支演示，
+
+- 使用 Threejs 和 headless-gl 的服务器端渲染 (SSR)。
+- 使用 Socket.IO 向所有客户端广播图像数据
+- 使用 OBJLoader.parse 方法从服务器本地文件系统加载 OBJ。
+
+Three.js 是一个设计为首先在客户端浏览器中运行的渲染器，因此使其在服务器端工作需要不同的思考方式。
+
+你的服务器需要能够呈现 WebGL，并且你可以使用 headless-gl 库来启用此功能。
+
+另请注意，大多数服务器没有能够硬件加速 WebGL 的 GPU，因此 3D 渲染是使用 CPU 完成的。这将对你的服务器提出很大的要求，尤其是在场景庞大且复杂的情况下。
+
+可以使用特定于模型格式的加载器解析方法将资源（例如模型）加载到 Three.js 中。
+
+由于代码在服务器端运行，因此不需要通过 http 连接加载资源，例如在浏览器中运行加载程序时发生的情况。
+
+你在上面的示例中看到的图像几乎在你现在看到它的同时呈现在服务器端。最新日期已作为文本写入图像，然后将其发送到你现在使用的客户端浏览器。
+
+在这个例子中，three.js 没有在客户端加载到浏览器中，而是将来自服务器画布的图像绘制到浏览器画布中。有 1 个服务器端画布共享给尽可能多的客户端画布，因为你的服务器可以支持将图像数据发送到。
+
+SSR 的一种可能用例是当你不想将几何数据发送到客户端时。在这个例子中，没有几何数据被发送到客户端，只有一个在服务器端生成的 2D PNG 格式的图像。
 
