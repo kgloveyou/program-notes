@@ -1434,3 +1434,99 @@ Socket.IO 支持浏览器客户端和 Node.js 服务器之间的实时、双向�
 然后，服务器会不断更新所有连接的客户端，其中包含每个其他连接的客户端的位置和旋转。
 
 场景将为每个连接显示一个新立方体，并在实时变化时显示其位置和旋转。 每个客户端将 `camera.lookAt()` 他们自己的立方体。
+
+## 将 Nginx 设置为反向代理
+
+### 描述
+
+虽然可以直接使用 Nodejs 和 Express 服务器将您的应用程序托管在生产服务器上，但将它们托管在反向代理之后也是有益的，例如 Nginx 配置。
+
+使用 Nginx 进行反向代理还可以让我们轻松绑定域名、SSL 证书，并且以后有更多选项来修改压缩、负载平衡、传递请求标头等，以备您需要，并且独立于您的应用程序项目代码。
+
+We will set up the Socket.IO example from the previous lesson, [Socket.IO with Node.js, Express and Webpack](https://sbcode.net/threejs/socketio-setup/), on the same production server that we created in the lesson [Host using an Nginx Server](https://sbcode.net/threejs/nginx-host/)
+
+### 构建生产版本
+
+### 将文件复制到生产服务器
+
+## The Ballgame
+
+### 描述
+
+这个例子是本课程中学到的许多东西的集合，所有这些都最终形成了一个使用 Threejs、Socket.io 和服务器端 Cannon 物理的多人游戏。
+
+在生产环境中托管此示例可以通过匹配我们在前几节课中托管 Threejs/Socket.IO 示例时学到的内容来完成，因为它还需要使用 Nodejs 和 Express 启动服务器端并托管在 Nginx 反向代理后面 如果您还想更轻松地绑定域名和 SSL 证书。
+
+https://ballgame.sbcode.net
+
+Ballgame 代码是我的官方样板的一个分支。
+
+## 将 JavaScript Threejs 示例转换为 TypeScript 项目
+
+Threejs 官方示例网站 https://threejs.org/examples/ 上有很多很棒的 Threejs 示例
+
+它们是用 JavaScript 编写的，你可能有一天想将 Threejs JavaScript 项目转换为 TypeScript 项目，所以在视频中我演示了我将如何去做。
+
+我将 Threejs 示例 [Ocean](https://threejs.org/examples/#webgl_shaders_ocean) 转换为与该示例等效的 TypeScript。（人工转换）
+
+总之，
+
+- 我将新项目基于我的样板的 [statsgui](https://github.com/Sean-Bradley/Three.js-TypeScript-Boilerplate/tree/statsgui) 分支，因为它已经包含 Stats 和 DAT.gui 面板。
+- 我使项目达到了 JavaScript 代码在 client.ts 文件中运行的程度，几乎没有改变。
+- 我确保脚本所需的所有资源都可用，例如示例 html 中引用的任何资源，或者也需要放在项目 dist 文件夹中的图像/模型/纹理。
+- 然后我将类型添加到所有变量中，直到不再有 TypeScript 警告。
+
+示例中的水波纹是用`waternormals.jpg`图片实现的。
+
+![](https://threejs.org/examples/textures/waternormals.jpg)
+
+## Threejs TypeScript 样板分支
+
+### SocketIO 分支
+
+#### 描述
+
+### Cannon.js 分支
+
+### Webcam 分支（网络摄像头）
+
+网络摄像头分支演示，
+
+- 使用网络摄像头视频源作为 THREE.Mesh 的纹理，
+- 使用 THREE.ShaderMaterial 调整颜色以应用绿屏选项，允许您选择关键颜色、相似性和平滑度以在纹理中创建 Alpha 通道。
+- 使用 Dat.GUI 实时修改 THREE.ShaderMaterial 属性。
+
+### Constellations BSC5 分支
+
+星座 BSC5 分支
+
+星座示例展示了，https://sbcode.net/extra_html/constellations.html
+
+- 使用 CSS2DRenderer 为星星和星座生成标签，
+- 使用 THREE.Points 和 THREE.BufferGeometry 创建星星网格，
+- 使用 THREE.ShaderMaterial 以不同的颜色和大小渲染星星，
+- 使用 THREE.Line 和 THREE.LineBasicMaterial 绘制星座线，
+- 使用 XMLHttpRequest 对象将星星和星座数据等资源加载到项目中。
+
+To load the Constellations example, checkout the **bsc5** branch.
+
+
+
+https://ballgame.sbcode.net
+
+### Annotations分支（*）
+
+房间模型场景，点击左侧菜单栏缩放至指定的对象范围。
+
+### Constructive Solid Geometry (CSG)
+
+### WebXR 分支
+
+WebXR 分支演示了，
+
+- 浏览器中的虚拟现实
+- WebXR 中的 Cannon 物理
+- StatsVR、TeleportVR 和 GrabVR
+
+### SSR Branch
+
