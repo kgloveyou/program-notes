@@ -1328,3 +1328,109 @@ https://sean-bradley.github.io/Three.js-TypeScript-Boilerplate/
 
 ## 使用 GitLab 页面托管
 
+GitLab Pages 就像一个静态 HTTP Web 服务器，但使用 GitLab 网址和 SSL 证书。
+
+bespoke（定制的）
+
+## 使用 Nginx 服务器托管
+
+### 描述
+
+在本视频中，我们将设置一个简单的 Nginx 配置来提供静态 Web 内容。
+
+我将在 Internet 上使用可公开访问的服务器，以便与公众和我的朋友分享我的示例 Three.js 项目。
+
+我将使用带有 Ubuntu 20.04 LTS 操作系统的 Linux 服务器，并将使用 Digital Ocean（免费 50 美元 - 30 天信用）作为云提供商进行设置。
+
+或者，我还有一张 Hetzner Cloud 优惠券，您将在其中获得 20 欧元的新注册免费积分。
+
+您还可以使用来自许多不同云提供商的其他互联网连接服务器，例如 GCP、Azure、AWS、Vultr 等等。
+
+在 Digital Ocean 上，我将使用每月 5 美元的标准 Ubuntu 20.04 64 位 LTS。
+
+### 安装 Nginx
+
+现在使用 SSH 客户端连接到您的全新服务器。 在 Windows 上，我们可以使用 Putty 作为 SSH 客户端。 SSH 表示“Secure Shell”。
+
+首先要做的是运行 **apt update** 以确保您的服务器具有所有可用的最新软件包的最新列表。
+
+## 指向一个域名
+
+### 描述
+
+我已经有一个域，并且可以向其中添加子域，因此我将为 my-project.sbcode.net 创建一个新的子域。
+
+在我的域名提供商中，我将为我的主域 sbcode.net 创建一个名为 my-project 的新 A 名称记录，它将指向新服务器的 IP 地址。
+
+请注意，您将使用您自己管理的域名，而不是 sbcode.net。
+
+给它一些时间来传播，然后访问
+
+http://my-project.your-domain.tld
+
+或者您只是将主域指向您的 IP 地址，然后您可以在没有子域的情况下访问您的网站，例如，
+
+http://your-domain.tld
+
+如果您打算在您的服务器上使用同一个端口上的域名托管多个项目，例如，如本例所示的端口 80，那么请确保在您的网站的 Nginx 配置中设置 server_name 属性。
+
+例如。 我更新的 Nginx my-project.conf，
+
+```conf
+server {
+        listen 80;
+        listen [::]:80;
+        server_name my-project.sbcode.net;
+
+        root /var/www/my-project;
+        index index.html;
+
+        location / {
+                try_files $uri $uri/ =404;
+        }
+}
+```
+
+### 购买域名
+
+如果您没有域名，并且您的同事不能借给您或为您创建子域，那么您可以从 Namecheap 获得便宜的域名
+
+Namecheap 还有一个高级 DNS 配置工具，允许您创建子域。 下图中的 @ 符号是正在管理的主域的别名。
+
+## 添加 SSL
+
+## 使用 Node.js 和 Express 的服务器端功能
+
+### 描述
+
+如果您想在您的应用程序中加入服务器端功能，您可以选择使用 Node.js 和 Express。
+
+我的 Ballgame 和 SocketIO 的官方样板分支都需要服务器端功能才能工作。 他们都使用 Socket.io，并且 Ballgame 分支也使用 Cannon 演示了服务器端物理。
+
+
+
+注意：
+
+请注意，我们只使用了 `npm start` 而不是 `npm run start`。 `run` 选项不是必需的。 `npm start` 是 `npm run start` 的别名。 如果您愿意，可以使用更长的版本。
+
+您可能会看到偶尔使用的其他别名是，
+
+`npm test`
+
+`npm restart`
+
+`npm stop`
+
+## Socket.IO 与 Node.js、Express 和 Webpack
+
+我们现在将设置一个使用 Socket.IO 的 Threejs 小示例。 Socket.IO 将使用我们在上一课中设置的 Node.js 和 Express 服务器提供服务。 我们的 Web 客户端仍将使用 Webpack 进行打包。
+
+Socket.IO 支持浏览器客户端和 Node.js 服务器之间的实时、双向和基于事件的通信。
+
+![](Three.js Tutorials.assets/client-server-comms.jpg)
+
+在此示例中，每个客户端将连接并不断向服务器广播其位置和旋转。
+
+然后，服务器会不断更新所有连接的客户端，其中包含每个其他连接的客户端的位置和旋转。
+
+场景将为每个连接显示一个新立方体，并在实时变化时显示其位置和旋转。 每个客户端将 `camera.lookAt()` 他们自己的立方体。
