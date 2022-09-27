@@ -1556,11 +1556,11 @@ SSR 的一种可能用例是当你不想将几何数据发送到客户端时。�
 
 StatsVR 是性能统计 HUD，专门用于使用 HMD 的 WebVR 和 THREE.js 项目，例如 Oculus Rift
 
-StatsVR 的目的是在开发和运行应用程序时监控您的计算机性能，这样您就无需取下耳机进行检查。
+StatsVR 的目的是在开发和运行应用程序时监控你的计算机性能，这样你就无需取下耳机进行检查。
 
 https://github.com/Sean-Bradley/StatsVR
 
-您可以下载项目并查看示例。
+你可以下载项目并查看示例。
 
 ```sh
 git clone https://github.com/Sean-Bradley/StatsVR.git
@@ -1571,7 +1571,7 @@ npm run dev
 
 访问 https://127.0.0.1:8080/
 
-请注意，上面的 URL 是 HTTPS。 在本地开发 WebVR 时，您将需要 SSL 证书。 此项目会自动创建一个自签名证书，您在浏览器中访问开发 URL 时需要接受该证书。
+请注意，上面的 URL 是 HTTPS。 在本地开发 WebVR 时，你将需要 SSL 证书。 此项目会自动创建一个自签名证书，你在浏览器中访问开发 URL 时需要接受该证书。
 
 ## TeleportVR
 
@@ -1581,7 +1581,7 @@ TeleportVR 的目的是提供一种在 Threejs VR 场景中导航的直观方法
 
 https://github.com/Sean-Bradley/TeleportVR
 
-您可以下载项目并查看示例。
+你可以下载项目并查看示例。
 
 
 git 克隆 https://github.com/Sean-Bradley/TeleportVR.git
@@ -1590,7 +1590,72 @@ npm 安装
 npm 运行开发
 访问 https://127.0.0.1:8080/
 
-请注意，上面的 URL 是 HTTPS。 在本地开发 WebVR 时，您将需要 SSL 证书。 此项目会自动创建一个自签名证书，您在浏览器中访问开发 URL 时需要接受该证书。
+请注意，上面的 URL 是 HTTPS。 在本地开发 WebVR 时，你将需要 SSL 证书。 此项目会自动创建一个自签名证书，你在浏览器中访问开发 URL 时需要接受该证书。
 
 ## GrabVR
 
+用于在 WebVR Three.js 项目中抓取对象的模块
+
+GrabVR 的目的是提供一个在 VR 环境中选择和移动对象的示例。
+
+https://github.com/Sean-Bradley/GrabVR
+
+你可以下载项目并查看示例。
+
+## ButtonVR
+
+用于 VR 的最小按钮。
+
+Triggered just by looking at it.
+
+它使用 3D 对象作为按钮。
+
+https://github.com/Sean-Bradley/ButtonVR
+
+你可以下载项目并查看示例。
+
+## 故障排除
+
+3D 图形是一门巨大的学科，它提供了一个机会，可以在使用 2D 解决的数百万和数十亿个问题之上解决无限数量的新问题。
+
+如果你正在开发一个项目并且遇到一些你无法解决的问题，我建议你在 Threejs 论坛上提问，网址为 https://discourse.threejs.org/
+
+我每天都读它，有时如果没有人比我更能回答问题。
+
+当提出问题时，提供屏幕抓取，尤其是使用 CodeSandbox、JSFiddle 或其他在线 JS 开发工具的问题的工作示例很有用。
+
+### 关于 TypeScript 或 Node.js 的问题
+
+通过打开下面的链接并分叉，使用 CodeSandbox 上本课程的样板。
+
+https://codesandbox.io/s/hungry-poincare-0g8v2?file=/src/client/client.ts
+
+这是 dat.gui、stats.js 和 OrbitControls 的样板。
+
+此外，如果 TypeScript 在开发时让你分心，那么我也有一个仅 JavaScript 版本的样板文件
+
+https://github.com/Sean-Bradley/Threejs-Boilerplate
+
+你还可以使用此链接在 CodeSandBox 上启动仅 JavaScript 的简化版本。
+
+https://codesandbox.io/s/github/Sean-Bradley/Threejs-Boilerplate/tree/master/
+
+### 关于 JavaScript 或 Threejs 特性的问题
+
+通过创建一个更明确地显示你的问题的示例而不是上传需要 Node.js 服务器或 TypeScript 编译器的整个项目，更具体地演示你使用 JavaScript 或 Threejs 遇到的特定问题可能更容易。
+
+为此，我推荐从这个 JSFiddle 模板开始。
+
+它是我的样板输出的纯 JavaScript 版本，带有 stats.js、dat.gui 和 OrbitControls。 你可以分叉它并为你的问题创建一个示例。
+
+### 概括
+
+使用这些 CodeSandbox 和 JSFiddle 模板，你将有希望以更简单的方式来展示你的特定问题。
+
+请注意，CodeSandbox 对单个文件有文件大小限制，因此请将你的纹理和模型分别保持在 2MB 以下。
+
+另请注意，如果 JavaScript 是你的首选选项，那么本课程中的所有示例在文档页面上都有 JavaScript 版本。 在工作示例视图中按 <> 按钮以查看源代码。
+
+谢谢
+
+肖恩
