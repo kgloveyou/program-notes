@@ -1538,7 +1538,7 @@ SSR 分支演示，
 
 Three.js 是一个设计为首先在客户端浏览器中运行的渲染器，因此使其在服务器端工作需要不同的思考方式。
 
-你的服务器需要能够呈现 WebGL，并且你可以使用 headless-gl 库来启用此功能。
+你的服务器需要能够呈现 WebGL，并且你可以使用 [headless-gl](https://www.npmjs.com/package/gl) 库来启用此功能。
 
 另请注意，大多数服务器没有能够硬件加速 WebGL 的 GPU，因此 3D 渲染是使用 CPU 完成的。这将对你的服务器提出很大的要求，尤其是在场景庞大且复杂的情况下。
 
@@ -1551,4 +1551,46 @@ Three.js 是一个设计为首先在客户端浏览器中运行的渲染器，�
 在这个例子中，three.js 没有在客户端加载到浏览器中，而是将来自服务器画布的图像绘制到浏览器画布中。有 1 个服务器端画布共享给尽可能多的客户端画布，因为你的服务器可以支持将图像数据发送到。
 
 SSR 的一种可能用例是当你不想将几何数据发送到客户端时。在这个例子中，没有几何数据被发送到客户端，只有一个在服务器端生成的 2D PNG 格式的图像。
+
+## StatsVR
+
+StatsVR 是性能统计 HUD，专门用于使用 HMD 的 WebVR 和 THREE.js 项目，例如 Oculus Rift
+
+StatsVR 的目的是在开发和运行应用程序时监控您的计算机性能，这样您就无需取下耳机进行检查。
+
+https://github.com/Sean-Bradley/StatsVR
+
+您可以下载项目并查看示例。
+
+```sh
+git clone https://github.com/Sean-Bradley/StatsVR.git
+cd StatsVR
+npm install
+npm run dev
+```
+
+访问 https://127.0.0.1:8080/
+
+请注意，上面的 URL 是 HTTPS。 在本地开发 WebVR 时，您将需要 SSL 证书。 此项目会自动创建一个自签名证书，您在浏览器中访问开发 URL 时需要接受该证书。
+
+## TeleportVR
+
+用于 WebVR 和 THREE.js 项目的 Teleport 模块。
+
+TeleportVR 的目的是提供一种在 Threejs VR 场景中导航的直观方法，同时最大限度地减少恶心或晕车的可能性。
+
+https://github.com/Sean-Bradley/TeleportVR
+
+您可以下载项目并查看示例。
+
+
+git 克隆 https://github.com/Sean-Bradley/TeleportVR.git
+cd TeleportVR
+npm 安装
+npm 运行开发
+访问 https://127.0.0.1:8080/
+
+请注意，上面的 URL 是 HTTPS。 在本地开发 WebVR 时，您将需要 SSL 证书。 此项目会自动创建一个自签名证书，您在浏览器中访问开发 URL 时需要接受该证书。
+
+## GrabVR
 
