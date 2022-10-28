@@ -56,3 +56,6 @@ $ npm install --save dat.gui
 import * as dat from 'dat.gui';
 ```
 
+# PCDLoader
+
+[examples/jsm/loaders/PCDLoader.js](https://github.com/mrdoob/three.js/blob/master/examples/jsm/loaders/PCDLoader.js)
