@@ -22,3 +22,11 @@ TCP 提供从用户到服务器的有序数据传递（反之亦然），而 UDP
 | Use cases           | HTTPS, HTTP, SMTP, POP, FTP, etc            | Video streaming, DNS, VoIP, etc    |
 
 ### Domain Name System (DNS)  
+
+## 集群
+
+Highly available or fail-over  （高可用或故障转移）
+
+on standby  （随时待命）
+
+P33
