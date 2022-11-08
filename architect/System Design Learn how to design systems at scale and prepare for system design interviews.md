@@ -582,3 +582,319 @@ Pub/Sub 消息传递服务通常通过将同一消息的副本存储在多个服
 ● Google Pub/Sub  
 
 P118
+
+## 企业服务总线 (ESB)
+
+企业服务总线 (ESB) 是一种架构模式，通过该模式，集中式软件组件执行应用程序之间的集成。 它执行数据模型的转换、处理连接、执行消息路由、转换通信协议，并可能管理多个请求的组合。 ESB 可以将这些集成和转换作为服务接口提供给新应用程序重用。
+
+### 例子
+
+以下是一些广泛使用的企业服务总线 (ESB) 技术：
+
+● Azure Service Bus
+● IBM App Connect
+● Apache Camel
+● Fuse ESB  
+
+## Monoliths and Microservices  （单体和微服务）
+
+### Monoliths  （单体/巨石）
+
+单体应用程序是一个自包含且独立的应用程序。 它是作为一个单独的单元构建的，不仅负责特定任务，而且可以执行满足业务需求所需的每个步骤。
+
+### Modular monoliths（模块化单体）
+
+模块化单体是一种我们构建和部署单个应用程序（即单体部分）的方法，但我们构建它的方式是将代码分解为应用程序所需的每个功能的独立模块。这种方法减少了 模块的依赖关系，例如我们可以在不影响其他模块的情况下增强或更改模块。 如果做得好，从长远来看，这确实是有益的，因为它降低了随着系统增长而维护单体应用程序所带来的复杂性。
+
+### 微服务
+
+微服务架构由一组小型自治服务组成，其中每个服务都是自包含的，并且应该在有界上下文中实现单个业务功能。 有界上下文是业务逻辑的自然划分，它提供了领域模型存在的明确边界。
+
+每个服务都有一个单独的代码库，可以由一个小型开发团队管理。 服务可以独立部署，团队可以更新现有服务，而无需重建和重新部署整个应用程序。
+
+服务负责保存自己的数据或外部状态（每个服务的数据库）。 这与传统模型不同，在传统模型中，单独的数据层处理数据持久性。
+
+#### 特征
+
+#### 最佳实践
+
+#### 陷阱
+
+### 当心分布式单体
+
+分布式单体是一个类似于微服务架构但自身紧密耦合的系统，就像一个单体应用程序。 采用微服务架构有很多优势。 但是在制作一个时，我们很有可能最终得到一个分布式单体。
+
+### 微服务与面向服务的架构 (SOA)
+
+你可能已经看到互联网上提到的面向服务的架构 (SOA)，有时甚至可以与微服务互换，但它们彼此不同，两种方法之间的主要区别归结为*范围（scope）*。
+
+面向服务的架构 (SOA) 定义了一种通过服务接口使软件组件可重用的方法。 这些接口使用通用的通信标准，并专注于最大限度地提高应用程序服务的可重用性，而微服务则构建为各种最小的独立服务单元的集合，专注于团队自治和解耦。
+
+### 为什么不需要微服务
+
+这得看情况。 虽然每种方法都有自己的优点和缺点，但建议在构建新系统时从单体开始。 重要的是要理解，微服务不是灵丹妙药，相反，它们解决了组织问题。 微服务架构关乎你的组织优先事项和团队，就像它关乎技术一样。
+
+如果你的应用程序不需要分解为微服务，则不需要此功能。 没有绝对必要将所有应用程序分解为微服务。
+
+我们经常从 Netflix 等公司及其对微服务的使用中汲取灵感，但我们忽略了我们不是 Netflix 的事实。 他们在获得市场就绪的解决方案之前经历了很多迭代和模型，当他们确定并解决了他们试图解决的问题时，这种架构变得可以接受。
+
+这就是为什么如果你的业务确实需要微服务，那么深入了解这一点至关重要。 我想说的是微服务是复杂问题的解决方案，如果你的业务没有复杂问题，你就不需要它们。
+
+## 事件驱动架构 (EDA)
+
+事件驱动架构 (EDA) 是关于使用事件作为在系统内进行通信的一种方式。 通常，利用消息代理异步发布和使用事件。 发布者不知道谁在消费事件，消费者彼此不知道。 事件驱动架构只是实现系统内服务之间松散耦合的一种方式。
+
+### 组成
+
+事件驱动架构具有三个关键组件：
+● 事件生产者：向路由器发布事件。
+● 事件路由器：过滤事件并将其推送给消费者。
+● 事件消费者：使用事件来反映系统的变化。
+
+### 模式
+
+有几种方法可以实现事件驱动架构，我们使用哪种方法取决于用例，但这里有一些常见的例子：
+
+- [Sagas](https://karanpratapsingh.com/courses/system-design/distributed-transactions#sagas)
+- [Publish-Subscribe](https://karanpratapsingh.com/courses/system-design/publish-subscribe)
+- [Event Sourcing](https://karanpratapsingh.com/courses/system-design/event-sourcing)
+- [Command and Query Responsibility Segregation (CQRS)](https://karanpratapsingh.com/courses/system-design/command-and-query-responsibility-segregation)
+
+### 例子
+
+以下是一些广泛使用的用于实现事件驱动架构的技术：
+
+- [NATS](https://nats.io/)
+- [Apache Kafka](https://kafka.apache.org/)
+- [Amazon EventBridge](https://aws.amazon.com/eventbridge)
+- [Amazon SNS](https://aws.amazon.com/sns)
+- [Google PubSub](https://cloud.google.com/pubsub)
+
+## Event Sourcing
+
+## Event sourcing vs Event-Driven Architecture (EDA)
+
+事件溯源似乎经常与事件驱动架构 (EDA) 混淆。 事件驱动架构是关于使用事件在服务边界之间进行通信。 通常，利用消息代理在其他边界内异步发布和使用事件。
+
+然而，事件溯源是将事件用作状态，这是一种存储数据的不同方法。 我们将存储事件，而不是存储当前状态。 此外，事件溯源是实现事件驱动架构的几种模式之一。
+
+## 命令和查询职责分离 (CQRS)
+
+命令查询职责分离 (CQRS) 是一种架构模式，它将系统的操作划分为命令和查询。 它首先由 Greg Young 描述。
+
+在 CQRS 中，命令是指令，是执行特定任务的指令。 它是改变某些东西的意图，不返回值，只是成功或失败的指示。 而且，查询是对不改变系统状态或导致任何副作用的信息的请求。
+
+![](https://raw.githubusercontent.com/karanpratapsingh/portfolio/master/public/static/courses/system-design/chapter-III/command-and-query-responsibility-segregation/command-and-query-responsibility-segregation.png)
+
+CQRS 的核心原则是命令和查询的分离。 它们在系统中扮演着根本不同的角色，将它们分开意味着每个都可以根据需要进行优化，分布式系统可以真正从中受益。
+
+# API Gateway
+
+API Gateway 是一个 API 管理工具，位于客户端和后端服务集合之间。 它是系统的单一入口点，封装了内部系统架构并提供为每个客户端量身定制的 API。 它还具有其他职责，例如身份验证、监控、负载平衡、缓存、节流、日志记录等。
+
+![](https://raw.githubusercontent.com/karanpratapsingh/portfolio/master/public/static/courses/system-design/chapter-III/api-gateway/api-gateway.png)
+
+## 为什么我们需要 API 网关？
+
+微服务提供的 API 粒度通常与客户端所需的不同。 微服务通常提供细粒度的 API，这意味着客户端需要与多个服务交互。 因此，API 网关可以为所有客户端提供单个入口点，并提供一些附加功能和更好的管理。
+
+## 特点
+
+- 认证和授权
+- [服务发现](https://karanpratapsingh.com/courses/system-design/service-discovery)
+- [反向代理](https://karanpratapsingh.com/courses/system-design/proxy#reverse-proxy)
+- [缓存](https://karanpratapsingh.com/courses/system-design/caching)
+- 安全
+- 重试和[断路](https://karanpratapsingh.com/courses/system-design/circuit-breaker)
+- [负载均衡](https://karanpratapsingh.com/courses/system-design/load-balancing)
+- 日志、追踪
+- API 组合
+- [速率限制](https://karanpratapsingh.com/courses/system-design/rate-limiting)和节流
+- 版本控制
+- 路由
+- IP白名单或黑名单
+
+## 优点
+
+让我们看看使用 API Gateway 的一些优势：
+
+- 封装 API 的内部结构。
+- 提供 API 的集中视图。
+- 简化客户端代码。
+- 监控、分析、跟踪和其他此类功能。
+
+## 缺点
+
+以下是 API 网关的一些可能缺点：
+
+- 可能的单点故障。
+- 可能会影响性能。
+- 如果扩缩容不当，可能会成为瓶颈。
+- 配置可能具有挑战性。
+
+## Backend For Frontend (BFF) pattern
+
+在 Backend For Frontend  (BFF) 模式中，我们创建单独的后端服务以供特定前端应用程序或接口使用。 当我们想要避免为多个接口定制单个后端时，这种模式很有用。 这种模式首先由 Sam Newman 描述。
+
+此外，有时微服务返回到前端的数据输出的格式不准确，或者没有按照前端的需要进行过滤。 为了解决这个问题，前端应该有一些逻辑来重新格式化数据，因此，我们可以使用 BFF 将一些逻辑转移到中间层。
+
+![](https://raw.githubusercontent.com/karanpratapsingh/portfolio/master/public/static/courses/system-design/chapter-III/api-gateway/backend-for-frontend.png)
+
+BFF的主要功能是从适当的服务中获取所需的数据，格式化数据，并将其发送到前端。
+
+*[GraphQL](https://karanpratapsingh.com/courses/system-design/rest-graphql-grpc#graphql) performs really well as a backend for frontend (BFF).*
+
+### 什么时候使用这种模式？
+
+在以下情况下，我们应该考虑使用 (BFF) 模式：
+
+- 必须使用大量开发开销来维护共享或通用后端服务。
+- 我们希望针对特定客户的要求优化后端。
+- 对通用后端进行了定制以适应多个接口。
+
+## 例子
+
+以下是一些广泛使用的网关技术：
+
+- [Amazon API Gateway](https://aws.amazon.com/api-gateway)
+- [Apigee API Gateway](https://cloud.google.com/apigee)
+- [Azure API Gateway](https://azure.microsoft.com/en-in/services/api-management)
+- [Kong API Gateway](https://konghq.com/kong)
+
+# REST, GraphQL, gRPC
+
+良好的 API 设计始终是任何系统的关键部分。 但选择正确的 API 技术也很重要。 因此，在本教程中，我们将简要讨论不同的 API 技术，例如 REST、GraphQL 和 gRPC。
+
+## 什么是 API？
+
+## REST
+
+[REST API](https://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm)（也称为 RESTful API）是一种应用程序编程接口，它符合 REST 架构风格的约束，并允许与 RESTful Web 服务进行交互。 REST 代表 Representational State Transfer，它由 [Roy Fielding](https://roy.gbiv.com/) 在 2000 年首次引入。
+
+### 概念
+
+让我们讨论一下 RESTful API 的一些概念。
+
+**约束**
+
+**HTTP Verbs**
+
+HTTP 定义了一组请求方法来指示要对给定资源执行的所需操作。 尽管它们也可以是名词，但这些请求方法有时被称为 HTTP 动词。 它们中的每一个都实现了不同的语义，但是它们中的一组共享了一些共同的特征。
+
+以下是一些常用的 HTTP 动词：
+
+- **GET**: Request a representation of the specified resource.
+- **HEAD**: Response is identical to a `GET` request, but without the response body.
+- **POST**: Submits an entity to the specified resource, often causing a change in state or side effects on the server.
+- **PUT**: Replaces all current representations of the target resource with the request payload.
+- **DELETE**: Deletes the specified resource.
+- **PATCH**: Applies partial modifications to a resource.
+
+**HTTP 响应代码**
+
+[HTTP 响应状态代码](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes)指示特定 HTTP 请求是否已成功完成。
+
+该标准定义了五个等级：
+
+- 1xx - Informational responses.
+- 2xx - Successful responses.
+- 3xx - Redirection responses.
+- 4xx - Client error responses.
+- 5xx - Server error responses.
+
+例如，HTTP 200 表示请求成功。
+
+### 例子
+
+这是对用户资源进行操作的 REST API 的示例用法。
+
+| URI         | HTTP verb | Description         |
+| ----------- | --------- | ------------------- |
+| /users      | GET       | Get all users       |
+| /users/{id} | GET       | Get a user by id    |
+| /users      | POST      | Add a new user      |
+| /users/{id} | PATCH     | Update a user by id |
+| /users/{id} | DELETE    | Delete a user by id |
+
+*There is so much more to learn when it comes to REST APIs, I will highly recommend looking into [Hypermedia as the Engine of Application State (HATEOAS)](https://en.wikipedia.org/wiki/HATEOAS).*
+
+## GraphQL
+
+[GraphQL](https://graphql.org/) 是一种用于 API 的查询语言和服务器端运行时，它优先向客户端提供他们请求的数据，而不是更多。 它由 [Facebook](https://engineering.fb.com/) 开发，后来在 2015 年开源。
+
+GraphQL 旨在使 API 快速、灵活且对开发人员友好。 此外，GraphQL 使 API 维护人员可以灵活地添加或弃用字段，而不会影响现有查询。 开发人员可以使用他们喜欢的任何方法构建 API，而 GraphQL 规范将确保它们以可预测的方式对客户起作用。
+
+*在 GraphQL 中，基本单元是查询。*
+
+### Advantages
+
+让我们讨论一下 GraphQL 的一些优点：
+
+- 消除数据的过度获取。
+- 强定义的模式。
+- 代码生成支持。
+- 有效载荷优化。
+
+### Disadvantages
+
+让我们讨论一下 GraphQL 的一些缺点：
+
+- 将复杂性转移到服务器端。
+- 缓存变得困难。
+- 版本控制不明确。
+- N+1 问题。
+
+### Use cases
+
+GraphQL 在以下场景中被证明是必不可少的：
+
+- 减少应用程序带宽使用，因为我们可以在单个查询中查询多个资源。
+- 复杂系统的快速原型设计。
+- 当我们使用类似图形的数据模型时。
+
+## gRPC
+
+[gRPC](https://grpc.io/) 是一个现代开源的高性能[远程过程调用](https://en.wikipedia.org/wiki/Remote_procedure_call) (RPC) 框架，可以在任何环境中运行。 它可以通过对负载平衡、跟踪、健康检查、身份验证等的可插拔支持有效地连接数据中心内和跨数据中心的服务。
+
+### Concepts
+
+**Protocol buffers**
+
+Protocol buffers 提供了一种语言和平台中立的可扩展机制，用于以向前和向后兼容的方式序列化结构化数据。 它类似于 JSON，只是它更小更快，并且生成本地语言绑定。
+
+**Service definition**
+
+与许多 RPC 系统一样，gRPC 基于定义服务并指定可远程调用的方法及其参数和返回类型的思想。 gRPC 使用协议缓冲区作为[接口定义语言 (IDL)](https://en.wikipedia.org/wiki/Interface_description_language) 来描述服务接口和 payload 消息的结构。
+
+### Advantages
+
+让我们讨论一下 gRPC 的一些优点：
+
+- 轻巧高效。
+- 高性能。
+- 内置代码生成支持。
+- 双向流式传输。
+
+### Disadvantages
+
+让我们讨论一下 gRPC 的一些缺点：
+
+- 与 REST 和 GraphQL 相比相对较新。
+- 有限的浏览器支持。
+- 更陡峭的学习曲线。
+- 不是人类可读的。
+
+### Use cases
+
+以下是 gRPC 的一些很好的用例：
+
+- 通过双向流进行实时通信。
+- 微服务中的高效服务间通信。
+- 低延迟和高吞吐量的通信。
+- 多语言环境。
+
+## REST vs GraphQL vs gRPC
+
+### 哪种 API 技术更好？
+
+好吧，答案是否定的。 没有灵丹妙药，因为这些技术中的每一种都有其自身的优点和缺点。 用户只关心以一致的方式使用我们的 API，因此在设计 API 时请务必关注您的领域和需求。
