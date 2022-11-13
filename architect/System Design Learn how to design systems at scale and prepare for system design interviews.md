@@ -897,7 +897,7 @@ Protocol buffers 提供了一种语言和平台中立的可扩展机制，用于
 
 ### 哪种 API 技术更好？
 
-好吧，答案是否定的。 没有灵丹妙药，因为这些技术中的每一种都有其自身的优点和缺点。 用户只关心以一致的方式使用我们的 API，因此在设计 API 时请务必关注您的领域和需求。
+好吧，答案是否定的。 没有灵丹妙药，因为这些技术中的每一种都有其自身的优点和缺点。 用户只关心以一致的方式使用我们的 API，因此在设计 API 时请务必关注你的领域和需求。
 
 # Long polling, WebSockets, Server-Sent Events (SSE)
 
@@ -1204,7 +1204,7 @@ SLI 或服务水平指标（Service Level Indicator）是用于确定是否满�
 
 灾难恢复依赖于在不受灾难影响的外部位置复制数据和计算机处理。 当服务器因灾难而停机时，企业需要从备份数据的第二个位置恢复丢失的数据。 理想情况下，组织也可以将其计算机处理转移到该远程位置，以便继续运营。
 
-*在系统设计面试中通常不会积极讨论灾难恢复，但对这个主题有一些基本的了解很重要。 您可以从 [AWS Well-Architected Framework](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/plan-for-disaster-recovery-dr.html) 了解有关灾难恢复的更多信息。*
+*在系统设计面试中通常不会积极讨论灾难恢复，但对这个主题有一些基本的了解很重要。 你可以从 [AWS Well-Architected Framework](https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/plan-for-disaster-recovery-dr.html) 了解有关灾难恢复的更多信息。*
 
 # 虚拟机 (VMs) 和容器
 
@@ -1215,3 +1215,688 @@ SLI 或服务水平指标（Service Level Indicator）是用于确定是否满�
 OAuth 2.0 代表开放授权，是一种标准，旨在代表用户提供对资源的同意访问，而无需共享用户的凭据。 OAuth 2.0 是一种授权协议而不是身份验证协议，它主要被设计为授予对一组资源（例如远程 API 或用户数据）的访问权限的一种方式。
 
 ### 概念
+
+## OpenID 连接
+
+OAuth 2.0 仅用于授权，用于授予对数据和功能的访问权限，从一个应用程序到另一个应用程序。 OpenID Connect (OIDC) 是位于 OAuth 2.0 之上的一个薄层，它添加了有关登录者的登录信息和个人资料信息。
+
+当授权服务器支持 OIDC 时，它有时被称为身份提供者 (IdP)，因为它向客户端提供有关资源所有者的信息。 OpenID Connect 相对较新，与 OAuth 相比，最佳实践的采用率和行业实施率较低。
+
+### 概念
+
+OpenID Connect (OIDC) 协议定义了以下实体：
+
+- **依赖方**：当前应用程序。
+- **OpenID Provider**：这本质上是一种中间服务，向依赖方提供一次性代码。
+- **Token Endpoint**：接受一次性代码 (OTC) 并提供一小时有效访问代码的 Web 服务器。 OIDC 和 OAuth 2.0 之间的主要区别在于令牌是使用 JSON Web 令牌 (JWT) 提供的。
+- **UserInfo Endpoint**：依赖方与此端点通信，提供安全令牌并接收有关最终用户的信息
+
+
+
+​		OAuth 2.0 和 OIDC 都易于实现并且基于 JSON，大多数 Web 和移动应用程序都支持这一点。 但是，OpenID Connect (OIDC) 规范比基本 OAuth 规范更严格。
+
+# Single Sign-On (SSO)
+
+单点登录 (SSO) 是一种身份验证过程，其中仅使用一组登录凭据为用户提供对多个应用程序或网站的访问权限。 这避免了用户单独登录到不同应用程序的需要。
+
+用户凭证和其他识别信息由称为身份提供者 (IdP) 的集中式系统存储和管理。 身份提供者是一个可信系统，提供对其他网站和应用程序的访问。
+
+基于单点登录 (SSO) 的身份验证系统通常用于员工需要访问其组织的多个应用程序的企业环境中。
+
+## Components
+
+让我们讨论一下单点登录 (SSO) 的一些关键组件。
+
+### Identity Provider (IdP)
+
+用户身份信息由称为身份提供者 (IdP) 的集中式系统存储和管理。 身份提供者对用户进行身份验证并提供对服务提供者的访问。
+
+身份提供者可以通过验证用户名和密码或通过验证由单独的身份提供者提供的关于用户身份的断言来直接验证用户。 身份提供者处理用户身份的管理，以便将服务提供者从这一责任中解放出来。
+
+### Service Provider
+
+服务提供商向最终用户提供服务。 它们依靠身份提供者来断言用户的身份，并且通常有关用户的某些属性由身份提供者管理。 服务提供商还可以为用户维护一个本地帐户以及他们的服务所独有的属性。
+
+### Identity Broker
+
+身份代理充当中介，将多个服务提供者与各种不同的身份提供者连接起来。 使用身份代理，我们可以在任何应用程序上执行单点登录，而无需使用它所遵循的协议。
+
+## SAML
+
+Security Assertion Markup Language 是一种开放标准，允许客户端在不同系统之间共享有关身份、身份验证和权限的安全信息。 SAML 是使用可扩展标记语言 (XML) 标准实现的，用于共享数据。
+
+SAML 特别支持身份联合，使身份提供者 (IdP) 可以无缝、安全地将经过身份验证的身份及其属性传递给服务提供者。
+
+## SSO 是如何工作的？
+
+## SAML vs OAuth 2.0 and OpenID Connect (OIDC)
+
+SAML、OAuth 和 OIDC 之间存在许多差异。 SAML 使用 XML 传递消息，而 OAuth 和 OIDC 使用 JSON。 OAuth 提供更简单的体验，而 SAML 则面向企业安全。
+
+OAuth 和 OIDC 广泛使用 RESTful 通信，这就是移动和现代 Web 应用程序发现 OAuth 和 OIDC 为用户提供更好体验的原因。另一方面，SAML 在允许用户访问某些网页的浏览器中丢弃会话 cookie。这对于短期工作负载非常有用。
+
+OIDC 对开发人员友好且易于实施，从而拓宽了可能实施的用例。它可以通过所有常用编程语言的免费库快速从头开始实现。 SAML 的安装和维护可能很复杂，只有企业规模的公司才能处理好。
+
+OpenID Connect 本质上是 OAuth 框架之上的一层。因此，它可以提供一个内置的权限层，要求用户同意服务提供商可能访问的内容。尽管 SAML 也能够允许同意流，但它通过由开发人员执行的硬编码来实现这一点，而不是作为其协议的一部分。
+
+这两种身份验证协议都擅长它们的工作。与往常一样，很大程度上取决于我们的特定用例和目标受众。
+
+## 优点
+
+以下是使用单点登录的好处：
+
+- 易于使用，因为用户只需要记住一组凭据。
+- 无需经过漫长的授权过程即可轻松访问。
+- 加强安全性和合规性以保护敏感数据。
+- 通过降低 IT 支持成本和管理时间来简化管理。
+
+## 缺点
+
+以下是单点登录的一些缺点：
+
+- 单一密码漏洞，如果主 SSO 密码被泄露，所有受支持的应用程序都会被泄露。
+- 使用单点登录的身份验证过程比传统身份验证要慢，因为每个应用程序都必须请求 SSO 提供程序进行验证。
+
+## 例子
+
+这些是一些常用的身份提供者 (IdP)：
+
+- [Okta](https://www.okta.com/)
+- [Google](https://cloud.google.com/architecture/identity/single-sign-on)
+- [Auth0](https://auth0.com/)
+- [OneLogin](https://www.onelogin.com/)
+
+# SSL, TLS, mTLS
+
+让我们简要讨论一些重要的通信安全协议，例如 SSL、TLS 和 mTLS。 我想说，从“*大局*”系统设计的角度来看，这个话题不是很重要，但仍然很值得了解。
+
+## SSL
+
+SSL 代表安全套接字层（Secure Sockets Layer），它指的是一种用于加密和保护发生在 Internet 上的通信的协议。 它于 1995 年首次开发，但后来被弃用，取而代之的是 TLS（传输层安全）。
+
+### 如果不推荐使用，为什么将其称为 SSL 证书？
+
+大多数主要证书提供商仍将证书称为 SSL 证书，这就是命名约定保持不变的原因。
+
+### 为什么 SSL 如此重要？
+
+最初，网络上的数据以明文形式传输，任何人只要截获该消息就可以阅读。 创建 SSL 是为了纠正此问题并保护用户隐私。 通过加密在用户和 Web 服务器之间传输的任何数据，SSL 还可以防止攻击者篡改传输中的数据，从而阻止某些类型的网络攻击。
+
+## TLS
+
+传输层安全性（Transport Layer Security）或 TLS 是一种广泛采用的安全协议，旨在促进互联网通信的隐私和数据安全。 TLS 是从以前称为安全套接字层 (SSL) 的加密协议演变而来的。 TLS 的一个主要用例是加密 Web 应用程序和服务器之间的通信。
+
+TLS 协议完成三个主要组件：
+
+- **加密**：隐藏从第三方传输的数据。
+- **身份验证**：确保交换信息的各方是他们声称的身份。
+- **完整性**：验证数据没有被伪造或篡改。
+
+## mTLS
+
+Mutual TLS，或 mTLS，是一种相互身份验证的方法。 mTLS 通过验证他们都拥有正确的私钥来确保网络连接每一端的各方都是他们声称的身份。 它们各自的 TLS 证书中的信息提供了额外的验证。
+
+### 为什么要使用 mTLS？
+
+mTLS 有助于确保流量在客户端和服务器之间的双向安全和可信。 这为登录到组织网络或应用程序的用户提供了额外的安全层。 它还验证与不遵循登录过程的客户端设备的连接，例如物联网 (IoT) 设备。
+
+如今，mTLS 常被微服务或分布式系统以[零信任安全模型](https://en.wikipedia.org/wiki/Zero_trust_security_model)用于相互验证。
+
+**Chapter V**
+
+# 系统设计面试
+
+系统设计是一个非常广泛的主题，系统设计面试旨在评估你为抽象问题提供技术解决方案的能力，因此，它们不是为特定答案而设计的。 系统设计面试的独特之处在于候选人和面试官之间的双向性质。
+
+不同工程级别的期望也大不相同。 这是因为具有丰富实践经验的人会与业内新手完全不同。 因此，很难想出一个单一的策略来帮助我们在面试过程中保持井井有条。
+
+让我们看一下系统设计面试的一些常见策略：
+
+## 需求澄清（Requirements clarifications）
+
+系统设计面试问题本质上是模糊或抽象的。 询问有关问题的确切范围的问题，并在面试的早期澄清功能需求是必不可少的。 通常，需求分为三个部分：
+
+### 功能要求（Functional requirements）
+
+这些是最终用户作为系统应提供的基本功能而特别要求的要求。 所有这些功能都必须作为合同的一部分纳入系统。
+
+例如：
+
+- “我们需要为这个系统设计哪些功能？”
+- “在我们的设计中，如果有的话，我们需要考虑哪些边缘情况？”
+
+### 非功能性需求（Non-functional requirements）
+
+这些是系统根据项目合同必须满足的质量约束。 实施这些因素的优先级或程度因项目而异。 它们也被称为非行为要求。 例如，可移植性、可维护性、可靠性、可扩展性、安全性等。
+
+例如：
+
+- “每个请求都应该以最小的延迟处理”
+- “系统应该是高可用的”
+
+### 扩展要求（Extended requirements）
+
+这些基本上是“很高兴拥有”的要求，可能超出了系统的范围。
+
+例如：
+
+- “我们的系统应该记录指标和分析”
+- “服务健康和性能监控？”
+
+## 估计和约束（Estimation and Constraints）
+
+估计我们要设计的系统的规模。 提出以下问题很重要：
+
+- “这个系统需要处理的理想规模是多少？”
+- “我们系统的读写比是多少？”
+- “每秒多少个请求？”
+- “需要多少存储空间？”
+
+
+
+这些问题将帮助我们以后扩展我们的设计。
+
+## 数据模型设计
+
+一旦我们有了估计，我们就可以从定义数据库模式开始。 在面试的早期阶段这样做将有助于我们了解作为每个系统核心的数据流。 在这一步中，我们基本上定义了所有的实体和它们之间的关系。
+
+- “系统中有哪些不同的实体？”
+- “这些实体之间是什么关系？”
+- “我们需要多少张表？”
+- “NoSQL 在这里是更好的选择吗？”
+
+## API设计
+
+接下来，我们可以开始为系统设计 API。 这些 API 将帮助我们明确定义系统的期望。 我们不需要编写任何代码，只需一个简单的接口定义 API 要求，例如参数、函数、类、类型、实体等。
+
+例如：
+
+```
+createUser(name: string, email: string): User
+```
+
+建议保持接口尽可能简单，稍后在涉及扩展需求时返回。
+
+## 高级组件设计
+
+​		现在我们已经建立了我们的数据模型和 API 设计，是时候确定解决我们的问题所需的系统组件（如负载均衡器、API 网关等）并起草我们系统的第一个设计。
+
+- “设计单体架构还是微服务架构最好？”
+- “我们应该使用什么类型的数据库？”
+- 一旦我们有了一个基本的图表，我们就可以开始与面试官讨论系统将如何从客户的角度工作。
+
+## 详细设计
+
+​		现在是时候详细介绍我们设计的系统的主要组件了。一如既往地与面试官讨论哪个组件可能需要进一步改进。
+
+​		这是展示你在专业领域的经验的好机会。介绍不同的方法、优点和缺点。解释你的设计决策，并用例子来支持它们。这也是讨论系统可能支持的任何附加功能的好时机，尽管这是可选的。
+
+- “我们应该如何划分我们的数据？”
+- “负载分配呢？”
+- “我们应该使用缓存吗？”
+- “我们将如何处理突然的流量高峰？”
+
+​       此外，尽量不要对某些技术过于固执己见，诸如“我认为 NoSQL 数据库更好，SQL 数据库不可扩展”之类的陈述反映不佳。作为多年来面试过很多人的人，我的一点观点就是对你知道什么和你不知道什么保持谦虚。使用你现有的知识和示例来导航面试的这一部分。
+
+## 识别和解决瓶颈
+
+最后，是时候讨论瓶颈和缓解它们的方法了。 这里有一些重要的问题要问：
+
+- “我们有足够的数据库副本吗？”
+- “有单点故障吗？”
+- “需要数据库分片吗？”
+- “我们怎样才能让我们的系统更健壮？”
+- “如何提高我们缓存的可用性？”
+
+请务必阅读你正在面试的公司的工程博客。 这将帮助你了解他们正在使用什么技术栈以及哪些问题对他们很重要。
+
+# URL Shortener
+
+Let's design a URL shortener, similar to services like [Bitly](https://bitly.com/), [TinyURL](https://tinyurl.com/app).
+
+## 什么是 URL Shortener?
+
+URL 缩短服务为长 URL 创建别名或短 URL。 用户在访问这些短链接时会被重定向到原始 URL。
+
+例如，下面的长 URL 可以更改为较短的 URL。
+
+**Long URL**: https://karanpratapsingh.com/courses/system-design/url-shortener
+
+**Short URL**: https://bit.ly/3I71d3o
+
+## 为什么我们需要 URL 缩短器？
+
+当我们共享 URL 时，URL 缩短器通常会节省空间。 用户也不太可能错误输入较短的 URL。 此外，我们还可以优化跨设备的链接，这使我们能够跟踪单个链接。
+
+## 需求
+
+## API 设计
+
+### 为什么我们需要 API key？
+
+您一定已经注意到，我们使用 API key 来防止滥用我们的服务。 使用此 API key，我们可以将用户限制为每秒或每分钟一定数量的请求。 这对于开发人员 API 来说是相当标准的做法，应该涵盖我们的扩展需求。
+
+## 高级设计
+
+## 详细设计
+
+### 数据分区
+
+### 数据库清理
+
+### 缓存
+
+**使用哪种缓存驱逐策略？**
+
+正如我们之前所讨论的，我们可以使用 [Redis](https://redis.io/) 或 [Memcached](https://memcached.org/) 之类的解决方案并缓存 20% 的日常流量，但哪种缓存驱逐策略最适合我们的需求？
+
+[Least Recently Used (LRU)](https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_recently_used_(LRU))  对我们的系统来说可能是一个很好的策略。 在此策略中，我们首先丢弃最近最少使用的密钥。
+
+**如何处理缓存未命中？**
+
+每当缓存未命中时，我们的服务器可以直接访问数据库并使用新条目更新缓存。
+
+### 指标和分析（Metrics and Analytics）
+
+记录分析和指标是我们的扩展要求之一。 我们可以在我们数据库中的 URL 条目旁边存储和更新元数据，例如访问者的国家、平台、观看次数等。
+
+### Security
+
+为了安全起见，我们可以引入私有 URL 和授权。 可以使用单独的表来存储有权访问特定 URL 的用户 ID。 如果用户没有适当的权限，我们可以返回 HTTP 401（未授权）错误。
+
+我们还可以使用 [API 网关](https://karanpratapsingh.com/courses/system-design/api-gateway)，因为它们可以支持开箱即用的授权、速率限制和负载平衡等功能。
+
+## 识别和解决瓶颈
+
+![](https://raw.githubusercontent.com/karanpratapsingh/portfolio/master/public/static/courses/system-design/chapter-V/url-shortener/url-shortener-advanced-design.png)
+
+让我们识别并解决设计中的瓶颈，例如单点故障：
+
+- “如果 API 服务或密钥生成服务崩溃了怎么办？”
+- “我们将如何在组件之间分配流量？”
+- “我们如何才能减少数据库的负载？”
+- “如果KGS使用的密钥数据库出现故障怎么办？”
+- “如何提高我们缓存的可用性？”
+
+为了使我们的系统更具弹性，我们可以执行以下操作：
+
+- 运行我们的服务器和密钥生成服务的多个实例。
+- 在客户端、服务器、数据库和缓存服务器之间引入[负载平衡器](https://karanpratapsingh.com/courses/system-design/load-balancing)。
+- 为我们的数据库使用多个只读副本，因为它是一个读取繁重的系统。
+- 我们的关键数据库的备用副本，以防万一它失败。
+- 我们的分布式缓存的多个实例和副本。
+
+# WhatsApp
+
+让我们设计一个类似于 [WhatsApp](https://whatsapp.com/) 的即时消息服务，类似于 [Facebook Messenger](https://www.messenger.com/) 和[微信](https://www.wechat.com/)等服务。
+
+## 什么是WhatsApp？
+
+WhatsApp 是一个聊天应用程序，为用户提供即时通讯服务。 它是地球上最常用的移动应用程序之一，连接了 180 多个国家的超过 20 亿用户。 WhatsApp 也可以在网络上使用。
+
+## 需求
+
+我们的系统应满足以下要求：
+
+### 功能需求
+
+### 非功能性需求
+
+### 扩展性需求
+
+- 发送、已发送和已读消息的回执。
+- 显示用户的最后一次看到时间。
+- 推送通知。
+
+## 估计和约束
+
+## API 设计
+
+## 高级设计
+
+现在让我们对系统进行高级设计。
+
+### 架构
+
+我们将使用[微服务架构](https://karanpratapsingh.com/courses/system-design/monoliths-microservices#microservices)，因为它可以更容易地横向扩展和解耦我们的服务。 每个服务都拥有自己的数据模型。 让我们尝试将我们的系统划分为一些核心服务。
+
+**那么服务间通信和服务发现呢？**
+
+由于我们的架构是基于微服务的，服务也将相互通信。 通常，REST 或 HTTP 性能良好，但我们可以使用更轻量级和高效的 [gRPC](https://karanpratapsingh.com/courses/system-design/rest-graphql-grpc#grpc) 进一步提高性能。
+
+[服务发现](https://karanpratapsingh.com/courses/system-design/service-discovery)是我们必须考虑的另一件事。 我们还可以使用 service mesh 来实现各个服务之间的托管、可观察和安全通信。
+
+*注意：详细了解 [REST、GraphQL、gRPC](https://karanpratapsingh.com/courses/system-design/rest-graphql-grpc) 以及它们之间的比较。*
+
+### 实时消息
+
+我们如何有效地发送和接收消息？ 我们有两种不同的选择：
+
+**Pull model**
+
+客户端可以定期向服务器发送 HTTP 请求以检查是否有任何新消息。 这可以通过[长轮询](https://karanpratapsingh.com/courses/system-design/long-polling-websockets-server-sent-events#long-polling)之类的方法来实现。
+
+**Push model**
+
+客户端打开与服务器的长期连接，一旦有新数据可用，它将被推送到客户端。 为此，我们可以使用 [WebSockets](https://karanpratapsingh.com/courses/system-design/long-polling-websockets-server-sent-events#websockets) 或[Server-Sent Events (SSE)](https://karanpratapsingh.com/courses/system-design/long-polling-websockets-server-sent-events#server-sent-events-sse)。
+
+pull 模式方法不可扩展，因为它会在我们的服务器上产生不必要的请求开销，并且大多数时候响应将为空，从而浪费我们的资源。 为了最大限度地减少延迟，使用带有 [WebSockets](https://karanpratapsingh.com/courses/system-design/long-polling-websockets-server-sent-events#websockets) 的推送模式是一个更好的选择，因为这样我们就可以在数据可用时将数据推送到客户端，而不会有任何延迟，因为客户端的连接是打开的。 此外，WebSockets 提供全双工通信，这与仅单向的 [Server-Sent Events (SSE)](https://karanpratapsingh.com/courses/system-design/long-polling-websockets-server-sent-events#server-sent-events-sse) 不同。
+
+*注意：了解有关 [Long polling, WebSockets, Server-Sent Events (SSE)](https://karanpratapsingh.com/courses/system-design/long-polling-websockets-server-sent-events) 的更多信息。*
+
+### Last seen（最后一次露面）
+
+为了实现最后一次看到的功能，我们可以使用[心跳](https://en.wikipedia.org/wiki/Heartbeat_(computing))机制，客户端可以定期对服务器进行 ping 指示，以指示其活跃度。 由于这需要尽可能低的开销，我们可以将最后一个活动时间戳存储在缓存中，如下所示：
+
+| Key    | Value               |
+| ------ | ------------------- |
+| User A | 2022-07-01T14:32:50 |
+| User B | 2022-07-05T05:10:35 |
+| User C | 2022-07-10T04:33:25 |
+
+这将为我们提供用户上次活动的时间。 此功能将由 Presence 服务结合 [Redis](https://redis.io/) 或 [Memcached](https://memcached.org/) 作为我们的缓存来处理。
+
+实现这一点的另一种方法是跟踪用户的最新动作，一旦最后一个活动超过某个阈值，例如“用户在过去 30 秒内没有执行任何动作”，我们可以将用户显示为离线和最后 与最后记录的时间戳一起看到。 这将更像是一种惰性更新方法，并且在某些情况下可能会使我们受益于心跳。
+
+### 通知
+
+在聊天或群组中发送消息后，我们将首先检查收件人是否处于活动状态，我们可以通过考虑用户的活动连接和最后一次看到来获取此信息。
+
+如果接收者未处于活动状态，聊天服务将向[消息队列](https://karanpratapsingh.com/courses/system-design/message-queues)中添加一个带有附加元数据的事件，例如客户端的设备平台，这些元数据将用于稍后将通知路由到正确的平台。
+
+然后，通知服务将使用消息队列中的事件并将请求转发到基于客户端设备平台（Android、iOS、Web 等）的 [Firebase 云消息传递 (FCM)](https://firebase.google.com/docs/cloud-messaging) 或 [Apple 推送通知服务 (APNS)](https://developer.apple.com/documentation/usernotifications)。 我们还可以添加对电子邮件和 SMS 的支持。
+
+**为什么我们使用消息队列？**
+
+由于大多数消息队列都提供尽力而为的排序，这可确保消息通常以与发送消息相同的顺序传递，并且消息至少传递一次，这是我们服务功能的重要组成部分。
+
+虽然这看起来像是一个经典的[发布-订阅](https://karanpratapsingh.com/courses/system-design/publish-subscribe)用例，但实际上并不是因为移动设备和浏览器都有自己处理推送通知的方式。 通常，通知是通过 Firebase 云消息传递 (FCM) 或 Apple 推送通知服务 (APNS) 在外部处理的，这与我们通常在后端服务中看到的消息扇出（fan-out）不同。 我们可以使用 [Amazon SQS](https://aws.amazon.com/sqs) 或 [RabbitMQ](https://www.rabbitmq.com/) 之类的东西来支持此功能。
+
+### 已读回执（Read receipts）
+
+处理已读回执可能很棘手，对于这个用例，我们可以等待来自客户端的某种[确认 (ACK)](https://en.wikipedia.org/wiki/Acknowledgement_(data_networks)) 来确定消息是否已传递并更新相应的 `DeliveredAt` 字段。 同样，一旦用户打开聊天，我们会将消息标记为已查看，并更新相应的 `seenAt` 时间戳字段。
+
+### 设计
+
+现在我们已经确定了一些核心组件，让我们进行系统设计的初稿。
+
+![](https://raw.githubusercontent.com/karanpratapsingh/portfolio/master/public/static/courses/system-design/chapter-V/whatsapp/whatsapp-basic-design.png)
+
+## 详细设计
+
+是时候详细讨论我们的设计决策了。
+
+### 数据分区
+
+### 缓存
+
+在消息传递应用程序中，我们必须小心使用缓存，因为我们的用户期望最新数据，但许多用户将请求相同的消息，尤其是在群聊中。 因此，为了防止我们的资源使用高峰，我们可以缓存旧消息。
+
+一些群聊可以有数千条消息，通过网络发送消息效率非常低，为了提高效率，我们可以在系统 API 中添加分页。 此决定对网络带宽有限的用户很有帮助，因为除非请求，否则他们不必检索旧消息。
+
+**使用哪种缓存驱逐策略？**
+
+**如何处理缓存未命中？**
+
+每当缓存未命中时，我们的服务器可以直接访问数据库并使用新条目更新缓存。
+
+*有关详细信息，请参阅[缓存](https://karanpratapsingh.com/courses/system-design/caching)。*
+
+### Media access and storage
+
+众所周知，我们的大部分存储空间将用于存储媒体文件，例如图像、视频或其他文件。 我们的媒体服务将处理用户媒体文件的访问和存储。
+
+但是我们可以在哪里大规模存储文件？ 好吧，我们正在寻找[对象存储](https://karanpratapsingh.com/courses/system-design/storage#object-storage)。 对象存储将数据文件分解成称为对象的片段。 然后它将这些对象存储在单个存储库中，该存储库可以分布在多个网络系统中。 我们还可以使用分布式文件存储，例如 [HDFS](https://karanpratapsingh.com/courses/system-design/storage#hdfs) 或 [GlusterFS](https://www.gluster.org/)。
+
+*有趣的事实：一旦用户下载了媒体，WhatsApp 就会删除其服务器上的媒体。*
+
+对于这个用例，我们可以使用 [Amazon S3](https://aws.amazon.com/s3)、[Azure Blob Storage](https://azure.microsoft.com/en-in/services/storage/blobs) 或 [Google Cloud Storage](https://cloud.google.com/storage) 等对象存储。
+
+### Content Delivery Network (CDN)
+
+[内容分发网络 (CDN)](https://karanpratapsingh.com/courses/system-design/content-delivery-network) 提高了内容可用性和冗余度，同时降低了带宽成本。 通常，图像和视频等静态文件是从 CDN 提供的。 对于这个用例，我们可以使用 [Amazon CloudFront](https://aws.amazon.com/cloudfront) 或 [Cloudflare CDN](https://www.cloudflare.com/cdn) 等服务。
+
+### API 网关
+
+由于我们将使用 HTTP、WebSocket、TCP/IP 等多种协议，因此为每个协议分别部署多个 L4（传输层）或 L7（应用层）类型的负载均衡器会很昂贵。 相反，我们可以使用支持多种协议的 [API 网关](https://karanpratapsingh.com/courses/system-design/api-gateway)而不会出现任何问题。
+
+API Gateway 还可以提供其他功能，例如身份验证、授权、速率限制、节流和 API 版本控制，这将提高我们的服务质量。
+
+对于这个用例，我们可以使用 [Amazon API Gateway](https://aws.amazon.com/api-gateway) 或 [Azure API Gateway](https://azure.microsoft.com/en-in/services/api-management) 等服务。
+
+## 识别和解决瓶颈
+
+![](https://raw.githubusercontent.com/karanpratapsingh/portfolio/master/public/static/courses/system-design/chapter-V/whatsapp/whatsapp-advanced-design.png)
+
+为了使我们的系统更具弹性，我们可以执行以下操作：
+
+- 运行我们每个服务的多个实例。
+- 在客户端、服务器、数据库和缓存服务器之间引入[负载平衡器](https://karanpratapsingh.com/courses/system-design/load-balancing)。
+- 为我们的数据库使用多个只读副本。
+- 我们的分布式缓存使用多个实例和副本。
+- 我们可以拥有 API 网关的备用副本。
+- 恰好一旦分布式系统中的传递和消息排序遇到挑战，我们就可以使用专用的[消息代理](https://karanpratapsingh.com/courses/system-design/message-brokers)（例如 [Apache Kafka](https://kafka.apache.org/) 或 [NATS](https://nats.io/)）来使我们的通知系统更加健壮。
+- 我们可以在媒体服务中添加媒体处理和压缩功能，以压缩类似于WhatsApp的大文件，这样可以节省大量存储空间并降低成本。
+- 我们可以创建一个与聊天服务分开的群组服务，以进一步解耦我们的服务。
+
+# Twitter
+
+让我们设计一个类似于 [Twitter](https://twitter.com/) 的社交媒体服务，类似于 [Facebook](https://facebook.com/)、[Instagram](https://instagram.com/) 等服务。
+
+## 需求
+
+## 数据模型设计
+
+### 我们应该使用什么样的数据库？
+
+虽然我们的数据模型看起来非常像关系型数据库，但我们不一定需要将所有内容存储在单个数据库中，因为这会限制我们的可扩展性并很快成为瓶颈。
+
+我们将在不同服务之间拆分数据，每个服务都拥有特定表的所有权。 然后，我们可以将 PostgreSQL 等关系数据库或 Apache Cassandra 等分布式 NoSQL 数据库用于我们的用例。
+
+## API 设计
+
+## 高级设计
+
+### 架构
+
+我们将使用[微服务架构](https://karanpratapsingh.com/courses/system-design/monoliths-microservices#microservices)，因为它可以更容易地横向扩展和解耦我们的服务。 每个服务都拥有自己的数据模型。 让我们尝试将我们的系统划分为一些核心服务。
+
+### Newsfeed
+
+说到新闻源，它似乎很容易实现，但是有很多事情可以成就或破坏这个功能。 所以，让我们把我们的问题分成两部分：
+
+**生成**
+
+**发布**
+
+发布是根据每个特定用户推送提要数据的步骤。 这可能是一个非常繁重的操作，因为用户可能有数百万的朋友或追随者。 为了解决这个问题，我们有三种不同的方法：
+
+- Pull Model (or Fan-out on load)
+
+- Push Model (or Fan-out on write)
+
+- Hybrid Model
+
+  第三种方法是拉和推模型之间的混合模型。 它结合了上述两种模型的有益特性，并试图在两者之间提供一种平衡的方法。
+
+混合模型只允许关注者数量较少的用户使用推送模型。 对于名人等追随者数量较多的用户，使用拉取模型。
+
+### 排名算法
+
+### 转发推文（Retweets）
+
+### 搜索
+
+有时传统的 DBMS 性能不够好，我们需要能够快速、近乎实时地存储、搜索和分析大量数据并在几毫秒内给出结果的东西。 [Elasticsearch](https://www.elastic.co/) 可以帮助我们处理这个用例。
+
+[Elasticsearch](https://www.elastic.co/) 是一个分布式、免费和开放的搜索和分析引擎，适用于所有类型的数据，包括文本、数字、地理空间、结构化和非结构化数据。 它建立在 [Apache Lucene](https://lucene.apache.org/) 之上。
+
+**我们如何识别热门话题？**
+
+趋势功能将基于搜索功能。 我们可以缓存最近 N 秒内最常搜索的查询、主题标签和主题，并使用某种批处理作业机制每 M 秒更新一次。 我们的排名算法也可以应用于热门话题，赋予它们更多的权重并为用户个性化。
+
+### 通知
+
+推送通知是任何社交媒体平台不可或缺的一部分。 我们可以使用消息队列或消息代理（例如带有通知服务的 [Apache Kafka](https://kafka.apache.org/)）将请求发送到 [Firebase 云消息传递 (FCM)](https://firebase.google.com/docs/cloud-messaging) 或 [Apple 推送通知服务 (APNS)](https://developer.apple.com/documentation/usernotifications)，后者将处理向用户设备发送推送通知。
+
+*有关更多详细信息，请参阅我们详细讨论推送通知的 [WhatsApp](https://karanpratapsingh.com/courses/system-design/whatsapp#notifications) 系统设计。*
+
+## 详细设计
+
+### 数据分区
+
+### Mutual friends
+
+对于相互的朋友，我们可以为每个用户建立一个社交图谱。 图中的每个节点将代表一个用户，而有向边将代表 followers and followees。 之后，我们可以遍历一个用户的关注者，找到并推荐一个共同的朋友。 这将需要一个图形数据库，例如 Neo4j 和 ArangoDB。
+
+这是一个非常简单的算法，为了提高我们的建议准确性，我们需要将一个使用机器学习的推荐模型作为我们算法的一部分。
+
+### 指标和分析
+
+### 缓存
+
+### Media access and storage
+
+### Content Delivery Network (CDN)
+
+## 识别和解决瓶颈
+
+![](https://raw.githubusercontent.com/karanpratapsingh/portfolio/master/public/static/courses/system-design/chapter-V/twitter/twitter-advanced-design.png)
+
+# Netflix
+
+让我们设计一个类似于 [Netflix](https://netflix.com/) 的视频流服务，类似于 [Amazon Prime Video](https://www.primevideo.com/)、[Disney Plus](https://www.disneyplus.com/)、[Hulu](https://www.hulu.com/)、[Youtube](https://youtube.com/)、[Vimeo](https://vimeo.com/) 等服务。
+
+## 需求
+
+### 功能性需求
+
+### 非功能性需求
+
+### 扩展性需求
+
+- 某些内容应该被[地理封锁](https://en.wikipedia.org/wiki/Geo-blocking)。
+- 从用户停止的点恢复视频播放。
+- 记录视频的指标和分析。
+
+## 估计和约束
+
+## 数据模型设计
+
+## API 设计
+
+## 高级设计
+
+### 架构
+
+### 视频处理
+
+![](https://raw.githubusercontent.com/karanpratapsingh/portfolio/master/public/static/courses/system-design/chapter-V/netflix/video-processing-pipeline.png)
+
+## 详细设计
+
+### Geo-blocking
+
+Netflix 和 YouTube 等平台使用地理封锁来限制某些地理区域或国家的内容。 这主要是由于 Netflix 在与制作和发行公司达成协议时必须遵守的法律发行法。 对于 YouTube，这将在发布内容期间由用户控制。
+
+我们可以使用其个人资料中的 IP 或区域设置来确定用户的位置，然后使用支持地理限制功能的 Amazon CloudFront 等服务或使用 Amazon Route53 的地理定位路由策略来限制内容并将用户重新路由到错误页面 如果该内容在该特定地区或国家/地区不可用。
+
+### 建议
+
+## 识别和解决瓶颈
+
+# Uber
+
+让我们设计一个类似于 [Uber](https://uber.com/) 的叫车服务，类似于 [Lyft](https://www.lyft.com/)、[OLA Cabs](https://www.olacabs.com/) 等服务。
+
+## 需求
+
+## 数据模型设计
+
+## API 设计
+
+## 高级设计
+
+### 架构
+
+我们将使用微服务架构，因为它可以更容易地横向扩展和解耦我们的服务。 每个服务都拥有自己的数据模型。 让我们尝试将我们的系统划分为一些核心服务。
+
+**乘车服务**
+
+### 该服务如何运作？
+
+![](https://raw.githubusercontent.com/karanpratapsingh/portfolio/master/public/static/courses/system-design/chapter-V/uber/uber-working.png)
+
+1. 客户通过指定来源、目的地、出租车类型、付款方式等来请求乘车。
+2. 乘车服务注册此请求，查找附近的司机，并计算预计到达时间 (estimated time of arrival，ETA)。
+3. 然后将该请求广播给附近的司机，让他们接受或拒绝。
+4. 如果司机接受，客户会在等待取件时收到司机的实时位置以及预计到达时间 (ETA) 的通知。
+5. 客户被接走，司机可以开始旅行。
+6. 到达目的地后，司机会将行程标记为完成并收取费用。
+7. 付款完成后，客户可以根据自己的喜好对旅行进行评分和反馈。
+
+### 位置追踪
+
+我们如何有效地从客户端（客户和司机）向我们的后端发送和接收实时位置数据？ 我们有两种不同的选择：
+
+**Pull model**
+
+**Push model**
+
+### Ride Matching
+
+我们需要一种有效存储和查询附近司机的方法。 让我们探索可以融入我们设计的不同解决方案。
+
+**SQL**
+
+我们已经可以访问客户的纬度和经度，并且使用 PostgreSQL 和 MySQL 等数据库，我们可以执行查询以在半径 (R) 内给定纬度和经度 (X, Y) 的情况下查找附近的司机位置。
+
+```sql
+SELECT * FROM locations WHERE lat BETWEEN X-R AND X+R AND long BETWEEN Y-R AND Y+R
+```
+
+但是，这是不可扩展的，并且在大型数据集上执行此查询将非常慢。
+
+**Geohashing**
+
+[Geohashing](https://github.com/karanpratapsingh/system-design/blob/main/courses/sytem-design/geohashing-and-quadtrees#geohashing) 是一种[地理编码](https://en.wikipedia.org/wiki/Address_geocoding)方法，用于将纬度和经度等地理坐标编码为短的字母数字字符串。 它由 [Gustavo Niemeyer](https://twitter.com/gniemeyer)于 2008 年创建。
+
+Geohash 是使用 Base-32 字母编码的分层空间索引，geohash 中的第一个字符将初始位置标识为 32 个单元格之一。 该单元还将包含 32 个单元。 这意味着为了表示一个点，世界被递归地划分为越来越小的单元，每增加一个位，直到达到所需的精度。 精度因子也决定了单元格的大小。
+
+![](https://raw.githubusercontent.com/karanpratapsingh/portfolio/master/public/static/courses/system-design/chapter-IV/geohashing-and-quadtrees/geohashing.png)
+
+例如，坐标为 `37.7564、-122.4016` 的旧金山可以在 geohash 中表示为 `9q8yy9mf`。
+
+现在，使用客户的 geohash，我们可以通过简单地将其与司机的 geohash 进行比较来确定最近的可用司机。 为了获得更好的性能，我们会将司机的 geohash 索引并存储在内存中，以便更快地检索。
+
+**Quadtrees**
+
+[Quadtree](https://github.com/karanpratapsingh/system-design/blob/main/courses/sytem-design/geohashing-and-quadtrees#quadtrees) 似乎非常适合我们的用例，每次我们从司机收到新的位置更新时，我们都可以更新 Quadtree。 为了减少四叉树服务器的负载，我们可以使用 Redis 等内存数据存储来缓存最新更新。 并且通过应用 [Hilbert curve](https://en.wikipedia.org/wiki/Hilbert_curve)等地图算法，我们可以执行有效的范围查询，为客户找到附近的司机。
+
+**What about race conditions?**
+
+当大量客户同时要求乘车时，很容易出现竞争状况。 为了避免这种情况，我们可以将出行匹配逻辑包装在 [Mutex](https://en.wikipedia.org/wiki/Lock_(computer_science)) 中以避免任何竞争条件。 此外，每个动作都应该是事务性的。
+
+*有关更多详细信息，请参阅事务和分布式事务。*
+
+**如何找到附近最好的司机？**
+
+一旦我们从 Quadtree 服务器获得了附近司机的列表，我们就可以根据平均评分、相关性、过去的客户反馈等参数进行某种排名。这将使我们能够首先向最佳可用司机广播通知。
+
+**应对高需求**
+
+在需求量大的情况下，我们可以使用 Surge Pricing 的概念。 激增定价是一种动态定价方法，其中价格会因需求增加和供应有限而暂时上涨。 这个激增的价格可以添加到旅行的基本价格中。
+
+*For more details, learn how [surge pricing works](https://www.uber.com/us/en/drive/driver-app/how-surge-works) with Uber.*
+
+### 付款
+
+大规模处理支付具有挑战性，为了简化我们的系统，我们可以使用第三方支付处理器，如 Stripe 或 PayPal。 支付完成后，支付处理器会将用户重定向回我们的应用程序，我们可以设置一个 [webhook](https://en.wikipedia.org/wiki/Webhook) 来捕获所有与支付相关的数据。
+
+### 通知
+
+## 详细设计
+
+## 识别并解决瓶颈
+
+# Next Steps
