@@ -9,3 +9,44 @@ lenovo/apulis#2020
 ## Windows10 与 WSL（Ubuntu）的文件互访
 
 https://www.jianshu.com/p/d332e05adb6f
+=======
+# 常用命令
+
+## 切换到windows目录
+
+切换到c盘。
+
+```shell
+cd /mnt/c  
+```
+
+## 列出发行版
+
+```sh
+wsl --list
+
+wsl --list --running
+
+wsl --list –verbose
+```
+
+## 使用 wsl 命令运行 Linux 命令
+
+```sh
+wsl ls ~
+
+wsl cat /etc/issue
+```
+
+## 关闭指定的发行版
+
+```sh
+wsl --terminate Ubuntu-20.04
+```
+
+## 关闭 WSL 和所有正在运行的发行版
+
+```sh
+wsl --shutdown
+```
+
