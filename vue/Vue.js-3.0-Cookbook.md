@@ -14,3 +14,14 @@
 
 #### Render engine  
 
+## Using the reactivity and observable API outside the scope of Vue  
+
+`reactivity` 和 `watch` APIs.  
+
+## 使用 composition  API 创建组件
+
+此方法受到 React Hooks 的启发，并引入了创建特殊函数的技术来组合可以共享的应用程序，而无需在 Vue 应用程序内部使用，因为使用了公开的 Vue API。
+
+# 2、介绍 TypeScript 和 Vue 生态系统
+
+P42
