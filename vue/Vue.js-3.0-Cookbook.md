@@ -61,3 +61,41 @@
 
 ## 3、数据绑定、表单验证、事件和计算属性
 
+### 使用双向数据绑定创建输入表单
+
+### 向元素添加事件监听器
+
+### Removing the v-model from the input  
+
+```vue
+<template>
+  <div class='cardBox'>
+    <div class='container tasker'>
+      <strong>My task is:</strong>
+      <input 
+        type='text' 
+        :value='task' 
+        @input='task = $event.target.value' 
+        class='taskInput' 
+      />
+      <button v-on:click='addTask'>Add Task</button>
+    </div>
+  </div>
+</template>
+```
+
+### 创建动态待办事项列表
+
+### 创建计算属性并了解它们的工作原理
+
+使用计算属性可以更轻松地获取需要预处理甚至缓存的数据，而无需执行任何其他外部存储函数。
+
+
+
+当使用计算属性将值传递给模板时，该值现在被缓存。 这意味着我们只会在值更新时触发渲染过程。同时，我们确保模板不会使用变量进行渲染，这样就无法在模板上更改它，因为它是变量的缓存副本。
+
+使用此过程，我们可以获得最佳性能，因为我们不会浪费处理时间来重新渲染 DOM 树以进行对显示的数据没有影响的更改。 这是因为如果某些内容发生变化并且结果相同，则计算属性会缓存结果并且不会更新最终结果。
+
+### 使用自定义过滤器显示更清晰的数据和文本
+
+P114
