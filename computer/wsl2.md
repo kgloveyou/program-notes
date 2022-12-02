@@ -60,6 +60,10 @@ ssh-add ~/.ssh/id_rsa.
 
 安装失败，https://stuartleeks.com/posts/wsl-ssh-key-forward-to-windows/
 
+# Docker Desktop更改镜像存储位置
+
+https://blog.csdn.net/u010174083/article/details/124442678
+
 # 第4章：Windows到Linux的互操作性
 
 可以在windows 文件浏览器中直接列出运行中的distros目录。

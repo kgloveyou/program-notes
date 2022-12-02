@@ -32,3 +32,20 @@ https://medium.com/@alberto.schiabel/npm-tricks-part-1-get-list-of-globally-inst
 `-- yo@4.2.0
 ```
 
+## npm ci
+
+[What is the difference between "npm install" and "npm ci"?](https://stackoverflow.com/questions/52499617/what-is-the-difference-between-npm-install-and-npm-ci)
+
+**`npm ci`** (also known as **C**lean **I**nstall) is meant to be used in automated environments — such as test platforms, continuous integration, and deployment — or, any situation where you want to make sure you're doing a clean install of your dependencies.
+
+It installs dependencies directly from `package-lock.json` and uses `package.json` only to validate that there are no mismatched versions. **If any dependencies are missing or have incompatible versions, it will throw an error**.
+
+Use `npm install` to add new dependencies, and to update dependencies on a project. Usually, you would use it during development after pulling changes that update the list of dependencies but it may be a good idea to use `npm ci` in this case.
+
+Use `npm ci` if you need a deterministic, repeatable build. For example during continuous integration, automated jobs, etc. and when installing dependencies for the first time, instead of `npm install`.
+
+[Difference between npm i and npm ci in Node.js](https://www.geeksforgeeks.org/difference-between-npm-i-and-npm-ci-in-node-js/)
+
+**npm i:** The npm i (or npm install) is used to install all dependencies or devDependencies from a *package.json* file.
+
+**npm ci:** CI stands for clean install and npm ci is used to install all exact version dependencies or devDependencies from a package-lock.json file.
