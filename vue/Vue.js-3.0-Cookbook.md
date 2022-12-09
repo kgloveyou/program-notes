@@ -373,3 +373,43 @@ Mixins work as an object merge, but do make sure you don't replace an already-ex
 `import()` 函数是由 TC39 作为模块加载语法的提案引入的。 此函数的基本功能是加载异步声明的任何模块，避免在第一次加载时放置所有文件的需要。
 
 ## 5、通过 HTTP 请求从 Web 获取数据
+
+### 为 Fetch API 创建一个包装器作为 HTTP 客户端
+
+### 创建一个随机的猫图像或 GIF 组件
+
+#### 这个怎么运作...
+
+使用 `getHttp` 包装器，组件能够获取 URL 并将其检索为 `Blob` 类型。 通过此响应，我们可以使用 `URL.createObjectUrl` 导航器方法并将 `Blob` 作为参数传递，以获取可用作 `src` 属性的有效图像 URL。
+
+### 使用 MirageJS 创建你的假 JSON API 服务器
+
+### 使用 axios 作为新的 HTTP 客户端
+
+### 创建不同的 axios 实例
+
+使用 `axios` 时，您可以运行它的多个实例，而它们之间不会相互干扰。 例如，您有一个指向版本 1 上的用户 API 的实例和另一个指向版本 2 上的支付 API 的实例，两者共享相同的命名空间。
+
+在这里，我们将学习如何创建各种 `axios` 实例，这样您就可以使用任意数量的 API 命名空间，而不会出现问题或受到干扰。
+
+#### 更改 HTTP 函数
+
+##### 更改 HTTP Fetch 包装器
+
+我们需要创建一个名为 `createAxios` 的新工厂函数，以便在每次执行时生成一个新的 `axios` 实例：
+
+```js
+export function createAxios(options = {}) {
+  return axios.create({
+    ...options,
+  });
+}
+```
+
+#### 这个怎么运作...
+
+### 为 axios 创建请求和响应拦截器
+
+拦截器最常见的使用方式是 `JWT` 令牌验证和刷新接收特定错误或 API 错误操作的请求。
+
+238
