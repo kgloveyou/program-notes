@@ -249,3 +249,10 @@ https://www.yuque.com/asuncat/blog/wgnx0u
 
 https://juejin.cn/post/6875880022537109512
 
+# 前端重定向，index.html文件被浏览器缓存，导致整个应用都是旧的
+
+https://github.com/ant-design/ant-design-pro/issues/1365
+
+# [前端项目中 浏览器缓存的更新不及时问题及解决方法](https://www.cnblogs.com/SallyShan/p/13603221.html)
+
+# [React 项目生产版本迭代页面不刷新问题](https://www.cnblogs.com/zfygiser/p/10489289.html)
