@@ -54,6 +54,42 @@ https://turfjs.fenxianglu.cn/category/helper/polygon.html
 
 https://turfjs.fenxianglu.cn/category/helper/lineString.html
 
+
+
+修改属性
+
+annot-ui\src\containers\annotation-page\standard-workspace\objects-side-bar\object-item.tsx
+
+```typescript
+    private changeAttribute = (id: number, value: string): void => {
+        const { objectState, jobInstance } = this.props;
+        jobInstance.logger.log(LogType.changeAttribute, {
+            id,
+            value,
+            object_id: objectState.clientID,
+        });
+        console.log(id, value)
+        const attr: Record<number, string> = {};
+        attr[id] = value;
+        console.log(attr, )
+        objectState.attributes = attr;
+        console.log(objectState.attributes)
+        this.commit();
+    };
+```
+
+annot-ui\src\containers\annotation-page\standard-workspace\objects-side-bar\object-item.tsx
+
+```typescript
+    private commit(): void {
+        const { objectState, updateState } = this.props;
+
+        updateState(objectState);
+    }
+```
+
+
+
 ## 自动创建图片属性
 
 annot-ui\src\containers\annotation-page\standard-workspace\controls-side-bar\setup-tag-popover.tsx
@@ -82,3 +118,144 @@ annot-ui\src\containers\annotation-page\standard-workspace\controls-side-bar\set
 
 annot-ui\src\containers\annotation-page\top-bar\statistics-modal.tsx
 
+## 问题记录
+
+1、标注页面中labels的type为undefined.
+
+```typescript
+        annotation: {
+            job: { requestedId, instance: job, fetching, labels },
+```
+
+2、重启服务
+
+```shell
+/opt/kube/bin/helm upgrade --install -f /root/build/admagic-frontend/values.yaml --ca-file=/etc/kubernetes/ssl/ca.pem admagic-frontend internal/admagic-frontend
+```
+
+3、保存失败
+
+annot-core\src\annotations-saver.js
+
+原因：http://localhost:3005/admagic-bff/api/v1/image-annots/save-annot接口返回的内容不对。
+
+`createShapes`和`createTags`应该不为空。
+
+```json
+{
+  "code": 0,
+  "msg": "success",
+  "data": {
+    "createShapes": [],
+    "updateShapes": [],
+    "createTags": [],
+    "UpdateTags": [],
+    "id": 0,
+    "createdAt": -6795364578871,
+    "updatedAt": -6795364578871,
+    "deletedAt": null
+  }
+}
+```
+
+4、删除所有图片后，标注界面一直转圈
+
+annot-ui\src\actions\annotation-actions.ts
+
+```typescript
+stop_frame: getSubTaskTotalByStatus(frameType, s, sampled) - 1,
+```
+
+这里的stop_frame === -1.
+
+
+
+## 默认属性
+
+annot-ui\src\components\annotation-page\standard-workspace\objects-side-bar\object-item-details.tsx
+
+```tsx
+const { collapsed, attributes, values, changeAttribute, collapse } = props;
+```
+
+从values传入进来的。
+
+=======>
+
+annot-ui\src\components\annotation-page\standard-workspace\objects-side-bar\object-item.tsx
+
+```tsx
+                    <ItemDetails
+                        collapsed={collapsed}
+                        attributes={attributes}
+                        values={attrValues}
+                        collapse={collapse}
+                        changeAttribute={changeAttribute}
+                    />
+```
+
+从attrValues传入进来的。
+
+======>
+
+annot-ui\src\containers\annotation-page\standard-workspace\objects-side-bar\object-item.tsx
+
+```tsx
+attrValues={{ ...objectState.attributes }}
+```
+
+
+
+tapd中之前处理过这个bug
+
+https://www.tapd.cn/61814423/bugtrace/bugs/view/1161814423001003337
+
+相关代码
+
+annot-core/src/annotations-objects.js
+
+```js
+this.appendDefaultAttributes(this.label);
+```
+
+
+
+## GeoOS
+
+http://www.spatial-go.com/zh_CN/docs/overview.html
+
+## 像素坐标系下空间关系计算
+
+ [shapely](https://pypi.python.org/pypi/Shapely)
+
+[GDAL/OGR Cookbook](http://pcjericks.github.io/py-gdalogr-cookbook/geometry.html#calculate-intersection-between-two-geometries) 
+
+## 保存标注
+
+cvat-ui\src\actions\annotation-actions.ts
+
+```tsx
+export function saveAnnotationsAsync(sessionInstance: any, afterSave?: () => void): ThunkAction {
+```
+
+比较前后是否相同。
+
+annot-core\src\annotations-saver.js
+
+```js
+const exported = this.collection.export();
+```
+
+## 绘制点
+
+保存
+
+annot-ui\src\actions\annotation-actions.ts
+
+```typescript
+export function saveAnnotationsAsync(
+
+const states = await sessionInstance.annotations.get(frame, showAllInterpolationTracks, filters);
+```
+
+这里返回的states中没有点形状。
