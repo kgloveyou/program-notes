@@ -413,3 +413,9 @@ export function createAxios(options = {}) {
 拦截器最常见的使用方式是 `JWT` 令牌验证和刷新接收特定错误或 API 错误操作的请求。
 
 238
+
+### 使用 Axios 和 Vuesax 创建 CRUD 接口
+
+Vuesax（发音为/vjusacksː/，作为view sacks）是一个使用Vuejs创建的UI组件框架。
+
+252
