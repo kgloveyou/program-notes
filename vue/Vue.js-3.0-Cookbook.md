@@ -414,8 +414,61 @@ export function createAxios(options = {}) {
 
 238
 
-### 使用 Axios 和 Vuesax 创建 CRUD 接口
+### 5.6 使用 Axios 和 Vuesax 创建 CRUD 接口
 
 Vuesax（发音为/vjusacksː/，作为view sacks）是一个使用Vuejs创建的UI组件框架。
 
 252
+
+#### 创建通用用户表单组件
+
+```js
+    watch: {
+      tmpForm: {
+        handler(value) {
+          this.$emit('input', value);
+        },
+        deep: true,
+      },
+      value: {
+        handler(value) {
+          this.tmpForm = value;
+        },
+        deep: true,
+        immediate: true,
+      }
+    },
+```
+
+使用 `watchers` 时，声明 `deep` 属性会使 `watcher` 检查数组或对象的深层变化，而 `immediate` 属性会在组件创建后立即执行 watcher。
+
+#### 创建创建用户组件
+
+#### View 组件
+
+#### 更新用户组件
+
+####  这个是怎么运作...
+
+```js
+    provide () {
+      const base = {};
+
+      Object.defineProperty(base, 'userId', {
+        enumerable: true,
+        get: () => Number(this.userId),
+      });
+
+      return base;
+    },
+```
+
+使用 Vue 的 `provide/inject`   API，我们能够以可观察的方式将 userId 传递给每个组件，这意味着当变量更新时，组件接收更新的变量。 使用普通的 Vue API 无法实现这一点，因此我们不得不使用 `Object.defineProperty` 并将 provide 属性用作工厂函数来返回最终对象。
+
+#### 也可以看看
+
+You can find more information about the Vue provide/inject API at https://vuejs.org/v2/guide/components-edge-cases.html.
+
+# 6、使用 vue-router 管理路由
+
+271
