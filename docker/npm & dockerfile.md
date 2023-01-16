@@ -8,3 +8,8 @@
 
 https://geshan.com.np/blog/2020/10/docker-build-example-faster-docker-build/
 
+4、NodeJS 构建 Docker精简版镜像
+
+https://www.jianshu.com/p/883c599a7a47/
+
+5、[Docker npm install --production not working](https://stackoverflow.com/questions/71116358/docker-npm-install-production-not-working)
