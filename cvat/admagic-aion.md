@@ -259,3 +259,12 @@ const states = await sessionInstance.annotations.get(frame, showAllInterpolation
 ```
 
 这里返回的states中没有点形状。
+
+## 点击选中关联车位
+
+annot-ui\src\components\annotation-page\standard-workspace\canvas-wrapper.tsx
+
+```typescript
+private onCanvasShapeClicked = (e: any): void => {
+```
+

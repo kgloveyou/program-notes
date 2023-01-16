@@ -256,7 +256,7 @@ export function HelloColor(props) {
 | Call pattern                        | Code pattern                                                 | Execution pattern                                            |
 | ----------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | 没有第二个参数                      | `useEffect(() => { // perform effect });`                    | Run after every render.                                      |
-| 空数组作为第二个参数                | `useEffect(() => { // perform effect }, []);`                | Run once, when the compo nent mounts.                        |
+| 空数组作为第二个参数                | `useEffect(() => { // perform effect }, []);`                | Run once, when the component mounts.                         |
 | Dependency array as second argument | `useEffect(() => { // perform effect // that uses dep1 and dep2 }, [dep1, dep2]);` | Run whenever a value in the dependency array changes.        |
 | Return a function                   | `useEffect(() => { // perform effect return () => {/* clean-up */}; }, [dep1, dep2]);` | React will run the cleanup function when the component unmounts and before rerunning the effect. |
 
