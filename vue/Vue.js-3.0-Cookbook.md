@@ -471,4 +471,10 @@ You can find more information about the Vue provide/inject API at https://vuejs.
 
 # 6、使用 vue-router 管理路由
 
-271
+您可以添加路由守卫以检查特定路由是否可按访问级别导航或在输入路由之前获取数据以管理应用程序上的错误。
+
+## 6.2 Creating a programmatic navigation  
+
+## 6.3 创建动态路由路径
+
+285
