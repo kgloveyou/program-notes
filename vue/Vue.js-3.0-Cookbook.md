@@ -689,4 +689,203 @@ export default {
 
 **Progressive Web Application (PWA)/ Single Page Application (SPA)** and a **Server Side Rendering (SSR)**,  
 
-335
+
+
+## 7.3、创建和理解 Vuex mutations  
+
+### How it works...  
+
+Each `mutation` is a function that will be called as a `commit`, and will have an `identifier` in the Vuex store.   
+
+## 7.4、创建和理解 Vuex getters  
+
+从 Vuex 访问数据可以通过 state 本身完成，这可能非常危险，或者通过 getter。 getter 就像可以在不触及或扰乱 Vuex 存储状态的情况下进行预处理和交付的数据。
+
+7.4\src\store\user\getters.js
+
+```js
+function getUsersList(state) {
+  return state.data.usersList;
+}
+
+function getUsersData(state) {
+  return state.data.userData;
+}
+
+function getUserById(state) {
+  return (userId) => {
+    return state.data.usersList.find(u => u.id === userId);
+  }
+}
+
+function isLoading(state) {
+  return state.loading;
+}
+
+function hasError(state) {
+  return state.error;
+}
+
+export default {
+  getUsersList,
+  getUsersData,
+  getUserById,
+  isLoading,
+  hasError,
+};
+```
+
+### How it works...  
+
+在这个秘籍中，我们创建了两种类型的 getter：最基本的，具有简单的数据返回，以及高阶函数，需要作为函数调用以检索你想要的值。
+
+## 7.5、创建和理解 Vuex actions  
+
+Actions  负责编排应用程序与外界之间的这种通信过程。 控制何时需要在state  上改变数据并将其返回给操作的调用者。
+
+7.5\src\store\user\actions.js
+
+```js
+import {
+  getHttp,
+  patchHttp,
+  deleteHttp,
+} from '@/http/fetchApi';
+import MT from './types';
+
+async function fetchUsersList({ commit }) {
+  try {
+    commit(MT.LOADING);
+    const { data } = await getHttp(`api/users`);
+    commit(MT.SET_USER_LIST, data);
+  } catch (error) {
+    commit(MT.ERROR, error);
+  }
+}
+
+async function fetchUserData({ commit }, userId) {
+  try {
+    commit(MT.LOADING);
+    const { data } = await getHttp(`api/users/${userId}`);
+    commit(MT.SET_USER_DATA, data);
+  } catch (error) {
+    commit(MT.ERROR, error);
+  }
+}
+
+async function updateUser({ commit }, payload) {
+  try {
+    commit(MT.LOADING);
+    await patchHttp(`api/users/${payload.id}`, {
+      data: {
+        ...payload,
+      }
+    });
+    commit(MT.UPDATE_USER, payload);
+  } catch (error) {
+    commit(MT.ERROR, error);
+  }
+}
+
+async function removeUser({ commit }, userId) {
+  try {
+    commit(MT.LOADING);
+    await deleteHttp(`api/users/${userId}`);
+    commit(MT.REMOVE_USER, userId);
+  } catch (error) {
+    commit(MT.ERROR, error);
+  }
+}
+
+export default {
+  fetchUsersList,
+  fetchUserData,
+  updateUser,
+  removeUser,
+}
+```
+
+## 7.6、使用 Vuex 创建动态组件
+
+在 UserForm 组件中，将 v-model 指令更改为 :value 指令：
+
+```vue
+            <user-form
+              :value="userData"
+              disabled
+            />
+```
+
+**提示**：当使用只读值时，或者你需要删除 v-model 指令的语法糖时，你可以将输入值声明为 :value 指令，并将值更改事件声明为 @input 事件侦听器。
+
+
+
+添加一个名为 watch 的新 Vue 属性，并添加一个新属性 userData，这将是一个 JavaScript 对象。
+
+```vue
+    watch: {
+      userData: {
+        handler(newData) {
+          this.tmpUserData = newData;
+        },
+        immediate: true,
+        deep: true,
+      }
+    },
+```
+
+## 7.7、为开发添加 hot-module-reload
+
+**hot-module-reload (HMR)**  
+
+在这个秘籍中，我们将学习如何将 HMR 添加到 Vuex store，并且能够在无需刷新整个应用程序的情况下更改 Vuex store。
+
+7.7\src\store\index.js
+
+```js
+import Vue from 'vue';
+import Vuex from 'vuex';
+import UserStore from './user';
+
+Vue.use(Vuex);
+
+export const store = new Vuex.Store({
+  ...UserStore,
+});
+
+if (module.hot) {
+  const hmr = [
+    './user',
+    './user/getters',
+    './user/actions',
+    './user/mutations',
+  ];
+
+  const reloadCallback = () => {
+    const getters = require('./user/getters').default;
+    const actions = require('./user/actions').default;
+    const mutations =  require('./user/mutations').default;
+
+    store.hotUpdate({
+      getters,
+      actions,
+      mutations,
+    })
+  };
+
+  module.hot.accept(hmr, reloadCallback);
+}
+
+export default store;
+```
+
+**提示**：由于文件的 Babel 输出，你需要在使用 webpack require 函数动态导入的文件末尾添加 .default 。
+
+### How it works...  
+
+Vuex store 通过 webpack HMR 插件的 API 支持 HMR。
+当它可用时，我们会创建一个可以更新的可能文件列表，以便 webpack 可以知道这些文件的任何更新。 当这些文件中的任何一个更新时，都会执行你创建的特殊回调。 此回调使 Vuex 能够更新或完全更改更新文件的行为。
+
+## 7.8、Creating a Vuex module  
+
+365
