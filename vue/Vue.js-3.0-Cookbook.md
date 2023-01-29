@@ -388,9 +388,9 @@ Mixins work as an object merge, but do make sure you don't replace an already-ex
 
 ### 创建不同的 axios 实例
 
-使用 `axios` 时，您可以运行它的多个实例，而它们之间不会相互干扰。 例如，您有一个指向版本 1 上的用户 API 的实例和另一个指向版本 2 上的支付 API 的实例，两者共享相同的命名空间。
+使用 `axios` 时，你可以运行它的多个实例，而它们之间不会相互干扰。 例如，你有一个指向版本 1 上的用户 API 的实例和另一个指向版本 2 上的支付 API 的实例，两者共享相同的命名空间。
 
-在这里，我们将学习如何创建各种 `axios` 实例，这样您就可以使用任意数量的 API 命名空间，而不会出现问题或受到干扰。
+在这里，我们将学习如何创建各种 `axios` 实例，这样你就可以使用任意数量的 API 命名空间，而不会出现问题或受到干扰。
 
 #### 更改 HTTP 函数
 
@@ -471,10 +471,222 @@ You can find more information about the Vue provide/inject API at https://vuejs.
 
 # 6、使用 vue-router 管理路由
 
-您可以添加路由守卫以检查特定路由是否可按访问级别导航或在输入路由之前获取数据以管理应用程序上的错误。
+你可以添加路由守卫以检查特定路由是否可按访问级别导航或在输入路由之前获取数据以管理应用程序上的错误。
 
 ## 6.2 Creating a programmatic navigation  
 
 ## 6.3 创建动态路由路径
 
-285
+获取接口地址（src\http\baseFetch.js）
+
+```js
+const localApi = createAxios({
+  baseURL: `${document.location.protocol}//${document.location.host}`,
+});
+```
+
+## 6.4、创建路由别名
+
+```js
+const routes = [
+  {
+    path: '/user',
+    name: 'list',
+    alias: '/',
+    component: List,
+  },
+  {
+    path: '/user/:id',
+    name: 'view',
+    alias: '/view/:id',
+    component: View,
+  },
+  {
+    path: '/user/edit/:id',
+    name: 'edit',
+    alias: '/edit/:id',
+    component: Edit,
+  },
+  {
+    path: '/user/create',
+    name: 'create',
+    alias: '/create',
+    component: Create,
+  },
+];
+```
+
+## 6.5、创建路由重定向
+
+```js
+const routes = [
+  {
+    path: '/user',
+    name: 'list',
+    alias: '/',
+    component: List,
+  },
+  {
+    path: '/user/:id',
+    name: 'view',
+    alias: '/view/:id',
+    component: View,
+  },
+  {
+    path: '/user/edit/:id',
+    name: 'edit',
+    alias: '/edit/:id',
+    component: Edit,
+  },
+  {
+    path: '/user/create',
+    name: 'create',
+    alias: '/create',
+    component: Create,
+  },
+  {
+    path: '/create-new-user',
+    redirect: '/user/create',
+  },
+  {
+    path: '/users',
+    redirect: {
+      name: 'list',
+    },
+  },
+  {
+    path: '/my-user/:id?',
+    redirect(to) {
+      if (to.params.id) {
+        return '/user/:id';
+      }
+      return '/user';
+    },
+  },
+  {
+    path: '*',
+    redirect: '/',
+  },
+];
+```
+
+## 6.6、Creating a nested router view  
+
+在 vue-router 中，嵌套路由就像你的路由的命名空间，你可以在同一个路由中有多个级别的路由，使用一个基础视图作为主视图，并在里面渲染嵌套路由。
+
+### Creating the router-view on the layout  
+
+当使用带有子路由的 vue-router 时，我们需要创建主视图，它将调用 RouterView 的特殊组件。 该组件将在你正在渲染的布局或页面中渲染当前路由器。
+
+### How it works...  
+
+`vue-router` 提供了使用子路由作为当前视图或布局的内部组件的能力。 这使得使用特殊布局文件创建初始路由成为可能，并通过 RouterView 组件在该布局内渲染子组件。
+这种技术通常用于在应用程序中定义布局并为模块设置命名空间，其中父路由可以具有一组特定的顺序，这些顺序将可用于其每个子路由。
+
+## 6.7、创建 404 错误页
+
+## 6.8、创建和应用身份验证中间件
+
+```js
+window.btoa(JSON.stringify({
+    username: this.username
+})
+```
+
+### 创建中间件
+
+所有 vue-router 中间件也可以称为导航守卫，它们可以附加到应用程序的路由变化中。 这些更改有一些钩子，你可以将它们应用于你的中间件。 身份验证中间件发生在路由器更改之前，因此我们可以处理所有事情并将用户发送到正确的路由。
+
+## 6.9、异步延迟加载页面
+
+```js
+const routes = [
+  {
+    path: '/',
+    redirect: '/user'
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import('@/views/Login'),
+    meta: {
+      authenticated: false,
+    },
+  },
+  ...UserRoutes,
+  {
+    path: '*',
+    component: () => import('@/views/NotFound'),
+    meta: {
+      authenticated: false,
+    },
+  },
+];
+```
+
+
+
+因为 webpack `import()` 方法是异步的，所以这个过程可以与其他代码一起执行，而不会影响或阻塞 JavaScript VM 的主线程。
+
+# 7、使用 Vuex 管理应用程序状态
+
+## 7.1、创建一个简单的 Vuex store
+
+### Creating the store  
+
+```js
+import Vue from 'vue';
+import Vuex from 'vuex';
+
+Vue.use(Vuex);
+
+export default new Vuex.Store({
+  state: {
+    counter: 0,
+  },
+  mutations: {
+    increment: (state) => {
+      state.counter += 1;
+    },
+    decrement: (state) => {
+      state.counter -= 1;
+    },
+  },
+  actions: {
+    increment({ commit }) {
+      commit('increment');
+    },
+    decrement({ commit }) {
+      commit('decrement');
+    },
+  },
+});
+```
+
+
+
+### Creating the reactive component with Vuex  
+
+```js
+export default {
+  computed: {
+    counter() {
+      return this.$store.state.counter;
+    },
+  },
+  methods: {
+    increment() {
+      this.$store.dispatch('increment');
+    },
+    decrement() {
+      this.$store.dispatch('decrement');
+    },
+  },
+};
+```
+
+## 7.2、创建和理解 Vuex state
+
+**Progressive Web Application (PWA)/ Single Page Application (SPA)** and a **Server Side Rendering (SSR)**,  
+
+335
