@@ -888,4 +888,42 @@ Vuex store 通过 webpack HMR 插件的 API 支持 HMR。
 
 ## 7.8、Creating a Vuex module  
 
-365
+Vuex 有一种称为模块的方法，可以帮助我们将 store 分成不同的 store 分支。 这些分支或模块中的每一个都有一组不同的state  、mutation  、getter 和action  。 此模式有助于开发并降低向应用程序添加新功能的风险。
+
+### 创建新的身份验证模块
+
+### 将模块添加到 Vuex
+
+src\store\index.js
+
+```js
+import Vue from 'vue';
+import Vuex from 'vuex';
+import UserStore from './user';
+import Authentication from './authentication';
+
+Vue.use(Vuex)
+
+export default new Vuex.Store({
+  ...UserStore,
+  modules: {
+    Authentication,
+  }
+})
+```
+
+### How it works...  
+
+模块像独立的 Vuex stores 一样工作，但在同一个 Vuex 单一数据源中。 这有助于开发更大规模的应用程序，因为您可以维护和使用更复杂的结构，而无需检查同一文件中的问题。
+
+同时，可以使用模块和普通 Vuex store ，从遗留应用程序迁移，因此您不必从头开始重写所有内容即可使用模块结构。
+
+在我们的例子中，我们添加了一个名为 `authentication` 的新模块，其中只有一个 state 存在于 store 中，并继续使用旧的用户 Vuex store，以便将来我们可以将用户 store 重构到一个新模块中，并将其分离到一个 更具体的领域驱动架构。
+
+# 8. Animating Your Application with Transitions and CSS  
+
+使用 Animate.css 创建自定义过渡类
+
+使用自定义 hooks 创建事务
+
+370
