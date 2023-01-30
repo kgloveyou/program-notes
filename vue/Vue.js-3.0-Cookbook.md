@@ -926,4 +926,71 @@ export default new Vuex.Store({
 
 使用自定义 hooks 创建事务
 
-370
+## 创建你的第一个 CSS 动画
+
+要使用 Vue 中可用的动画，我们需要在将动画应用于单个元素时使用名为 `Transition` 的组件，或者在处理组件列表时使用名为 `TransitionGroup` 的组件。
+
+08.1\src\App.vue
+
+```vue
+<template>
+  <div id="app">
+    <transition name="image">
+      <img
+        v-if="display"
+        alt="Vue logo" src="./assets/logo.png">
+    </transition>
+    <button
+      @click="display = !display"
+    >
+      Toggle
+    </button>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'App',
+  data: () => ({
+    display: true,
+  }),
+};
+</script>
+
+<style>
+  #app {
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #2c3e50;
+    margin-top: 60px;
+  }
+
+  .image-enter-active {
+    animation: bounce-in .5s;
+  }
+  .image-leave-active {
+    animation: bounce-in .5s reverse;
+  }
+  @keyframes bounce-in {
+    0% {
+      transform: scale(0);
+    }
+    50% {
+      transform: scale(1.5);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+</style>
+```
+
+### How it works...  
+
+**提示**：`Transition` 组件为需要存在的 CSS 类使用预制命名空间。 这些是 `-enter-active`，当组件进入屏幕时，`-leave-active`，当组件离开屏幕时。
+
+## 使用 Animate.css 创建自定义过渡类
+
+375
