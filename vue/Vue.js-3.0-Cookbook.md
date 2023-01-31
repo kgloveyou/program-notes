@@ -1111,4 +1111,84 @@ Netlify 平台连接到你的 GitHub 帐户并作为应用程序安装，允许�
 
 # 11 Directives, Plugins, SSR, and More
 
-462
+## 11.1 自动加载 Vue 路由
+
+在这个秘籍中，我们将学习使用 webpack `require.context` 函数自动为我们注入文件的技巧。
+
+此函数将读取文件内容并将路由添加到默认情况下将导出到我们文件中的数组。 你可以通过添加更受控制的路由导入甚至基于环境的路由规则来改进此方法。
+
+### How to do it...  
+
+11.1\src\router\index.js
+
+```js
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+
+Vue.use(VueRouter);
+
+const routes = [];
+const requireRoutes = require.context(
+  './routes',
+  true,
+  /^(?!.*test).*\.js$/is,
+);
+
+requireRoutes.keys().forEach((fileName) => {
+  routes.push({
+    ...requireRoutes(fileName).default,
+  });
+});
+
+const router = new VueRouter({
+  routes,
+});
+
+export default router;
+```
+
+### How it works...  
+
+`require.context` 是一个 webpack 内置函数，它允许你传入要搜索的目录、指示是否也应检查子目录的标志以及匹配文件的正则表达式。
+
+### There's more...  
+
+## 11.2 自动加载 Vuex 模块
+
+### How to do it...  
+
+### How it works...  
+
+## 11.3 创建自定义指令
+
+### How to do it...  
+
+### How it works...  
+
+## 11.4 创建一个 Vue 插件
+
+在 Vue 中，插件是对 Vue 全局原型的补充，它通过使用指令、混合、过滤器、原型注入或全新功能等新功能扩展已初始化的应用程序。
+
+### How to do it...  
+
+插件的基本概念是一个需要有install函数的对象，当被Vue.use()方法调用时就会执行。 install 函数将接收两个参数：Vue 和将用于实例化插件的选项。
+
+### How it works...  
+
+### See also  
+
+你可以在 https://github.com/vuejs/awesome-vue 找到精选的 Vue 插件列表。
+
+## 11.5 使用 Quasar 在 Vue 中创建 SSR、SPA、PWA、Cordova 和 Electron 应用程序
+
+Quasar 是一个基于 Vue 和 Material Design 的框架，它利用了“一次编写，随处使用”的优势。
+
+## How to do it...  
+
+When using Quasar to create an application, you always need to choose a flavor to start, but the main code will be an SPA. Therefore, the other flavors will have their special treats and delicacies based on their needs, but you can personalize and make your build execute some code based on the build environment.  
+
+## 11.6 创建更智能的 Vue watchers  和 computed 属性
+
+### Watchers  
+
+498
