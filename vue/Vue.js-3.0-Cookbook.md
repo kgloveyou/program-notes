@@ -914,9 +914,9 @@ export default new Vuex.Store({
 
 ### How it works...  
 
-模块像独立的 Vuex stores 一样工作，但在同一个 Vuex 单一数据源中。 这有助于开发更大规模的应用程序，因为您可以维护和使用更复杂的结构，而无需检查同一文件中的问题。
+模块像独立的 Vuex stores 一样工作，但在同一个 Vuex 单一数据源中。 这有助于开发更大规模的应用程序，因为你可以维护和使用更复杂的结构，而无需检查同一文件中的问题。
 
-同时，可以使用模块和普通 Vuex store ，从遗留应用程序迁移，因此您不必从头开始重写所有内容即可使用模块结构。
+同时，可以使用模块和普通 Vuex store ，从遗留应用程序迁移，因此你不必从头开始重写所有内容即可使用模块结构。
 
 在我们的例子中，我们添加了一个名为 `authentication` 的新模块，其中只有一个 state 存在于 store 中，并继续使用旧的用户 Vuex store，以便将来我们可以将用户 store 重构到一个新模块中，并将其分离到一个 更具体的领域驱动架构。
 
@@ -991,6 +991,124 @@ export default {
 
 **提示**：`Transition` 组件为需要存在的 CSS 类使用预制命名空间。 这些是 `-enter-active`，当组件进入屏幕时，`-leave-active`，当组件离开屏幕时。
 
-## 使用 Animate.css 创建自定义过渡类
+## 8.2、使用 Animate.css 创建自定义过渡类
 
-375
+### How to do it...  
+
+```sh
+npm install animate.css@3.7.2  
+```
+
+08.2\src\main.js
+
+```js
+import Vue from 'vue';
+import App from './App.vue';
+import 'animate.css';
+
+Vue.config.productionTip = false;
+
+new Vue({
+  render: (h) => h(App),
+}).$mount('#app');
+```
+
+08.2\src\App.vue
+
+```vue
+<template>
+  <div id="app">
+    <transition
+      enter-active-class="animated bounceInLeft"
+      leave-active-class="animated bounceOutLeft"
+    >
+      <img
+        v-if="display"
+        alt="Vue logo" src="./assets/logo.png">
+    </transition>
+    <button
+      @click="display = !display"
+    >
+      Toggle
+    </button>
+  </div>
+</template>
+```
+
+### How it works...  
+
+### There's more...  
+
+Animate.css documentation at https://animate.style/.  
+
+## 8.3 Creating transitions with custom hooks 
+
+### How it works...  
+
+The `Transition` component has eight custom hooks. These hooks are triggered by the CSS animations and when they are triggered, they emit custom events, which can be used by the parent component. These custom events are `before-enter`, `enter`, `after-enter`,`enter-cancelled`, `before-leave`, `leave`, `after-leave`, and `leave-cancelled`.  
+
+## 8.4 在页面渲染时创建动画
+
+在这个秘籍中，我们将学习如何使用 `Transition` 组件，以便在渲染页面时触发动画。
+
+### How it works...  
+
+Transition 组件有一个名为 appear 的特殊属性，启用该属性后，元素在屏幕上渲染时会触发动画。
+
+## 8.5 Creating animations for lists and groups  
+
+有些动画需要在一组元素或列表中执行。这些动画需要包装在 `TransitionGroup` 元素中才能工作。
+
+### How it works...  
+
+## 8.6 Creating a custom transition component  
+
+08.6\src\components\CustomTransition.vue
+
+```vue
+<template functional>
+  <transition
+    :appear="props.appear"
+    enter-active-class="animated slideInLeft"
+    leave-active-class="animated slideOutRight"
+  >
+    <slot />
+  </transition>
+</template>
+```
+
+### How it works...  
+
+首先，我们使用函数式组件的方式创建了一个自定义组件，这里不需要声明单文件组件的<script>部分。
+
+## 8.7 在元素之间创建无缝过渡
+
+当两个组件之间有动画和过渡时，它们需要是无缝的，这样当组件被放置在屏幕上时，用户不会看到 DOM 摇晃和重新绘制。 为此，我们可以使用 `Transition` 组件和过渡模式属性来定义过渡将如何发生。
+
+### How it works...  
+
+Transition 组件有一个名为 mode 的特殊属性，可以在其中定义元素过渡动画的行为。此行为将创建一组规则来控制动画步骤在 Transition 组件内的发生方式。
+
+# 9 使用 UI 框架创建漂亮的应用程序
+
+## 9.3 使用 Ant-Design 创建页面、布局和用户表单
+
+### How it works...  
+
+# 10 将应用程序部署到云平台
+
+在本章中，我们将学习如何使用三种不同的托管平台——Netlify、Vercel  和 Firebase。
+
+## 使用 GitHub 准备在 Netlify 上自动部署
+
+### How it works...  
+
+Netlify 平台连接到你的 GitHub 帐户并作为应用程序安装，允许访问选定的存储库。 然后，在平台上，你可以选择要用于部署的存储库。 选择存储库后，我们需要使用构建指令和构建的目标文件夹配置 Netlify-CLI。 最后，CLI 运行，我们的应用程序在 Web 上启动并运行。
+
+## 使用 GitHub 准备在 Vercel 上自动部署
+
+我们在前面的秘籍中学习了如何使用 Vercel-CLI 通过本地终端将我们的应用程序部署到 Web，但是可以将存储库管理器与 Vercel 平台集成并通过任何推送或打开的拉取请求自动部署。这就是我们将在这个食谱中做的。
+
+# 11 Directives, Plugins, SSR, and More
+
+462
