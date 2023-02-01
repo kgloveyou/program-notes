@@ -1191,4 +1191,163 @@ When using Quasar to create an application, you always need to choose a flavor t
 
 ### Watchers  
 
-498
+#### 使用方法名称
+
+所有 watchers  都可以收到一个方法名称而不是函数名称，从而防止你编写重复的代码。 这将帮助你避免重写相同的代码，或检查值并将它们传递给函数：
+
+11.6\src\mixins\methodsNames.js
+
+```js
+export default {
+  watch: {
+    myField: 'myFunction',
+  },
+  data: () => ({
+    myField: '',
+  }),
+  methods: {
+    myFunction() {
+      console.log('Watcher Using Method Name');
+    },
+  },
+};
+```
+
+#### Immediate calls and deep listening  
+
+你可以通过立即传递一个属性来将观察者设置为在创建后立即执行，并通过调用 deep 属性使其执行而不管值的突变深度如何：
+
+11.6\src\mixins\deepImmediate.js
+
+```js
+export default {
+  watch: {
+    myDeepField: {
+      handler(newVal, oldVal) {
+        console.log('Using Immediate Call, and Deep Watch');
+        console.log('New Value', newVal);
+        console.log('Old Value', oldVal);
+      },
+      deep: true,
+      immediate: true,
+    },
+  },
+  beforeMount() {
+    this.myDeepField = {
+      foo: 'bar',
+      buz: {
+        biz: false,
+      },
+    };
+  },
+  mounted() {
+    this.myDeepField.buz.biz = true;
+  },
+  data: () => ({
+    myDeepField: '',
+  }),
+};
+```
+
+#### 多个 handlers  
+
+11.6\src\mixins\multipleHandlers.js
+
+```js
+export default {
+  watch: {
+    myMultiField: [
+      'myFunction',
+      {
+        handler(newVal, oldVal) {
+          console.log('Using Immediate Call, and Deep Watch');
+          console.log('New Value', newVal);
+          console.log('Old Value', oldVal);
+        },
+        immediate: true,
+      },
+    ],
+  },
+  beforeMount() {
+    this.myMultiField = 'Foo Bar';
+  },
+  data: () => ({
+    myMultiField: '',
+  }),
+  methods: {
+    myFunction() {
+      console.log('Watcher Using Method Name');
+    },
+  },
+};
+```
+
+### Computed  
+
+有时计算属性只是用作简单的基于缓存的值，但它们有更多的功能。 这里有两种方法展示了如何提取这种力量。
+
+#### No cached value  
+
+通过将缓存属性设置为 false，你可以使计算属性成为始终更新的值，而不是缓存值：
+
+11.6\src\mixins\noCache.js
+
+```js
+export default {
+  data: () => ({
+    noCacheField: '',
+  }),
+  computed: {
+    noCache: {
+      get() {
+        return this.noCacheField;
+      },
+      cache: false,
+    },
+  },
+};
+```
+
+#### Getter and setter  
+
+你可以将 setter 函数添加到你的计算属性并使其成为完全完整的数据属性，但不绑定到数据。
+
+不建议这样做，但有可能，并且在某些情况下，你可能需要这样做。例如，你必须以毫秒为单位保存日期，但需要以 ISO 格式显示它。 使用此方法，你可以让 dateIso 属性获取和设置值：
+
+11.6\src\mixins\gettersAndSetters.js
+
+```js
+export default {
+  data: () => ({
+    dateMs: '',
+  }),
+  computed: {
+    dateIso: {
+      get() {
+        return new Date(this.dateMs).toISOString();
+      },
+      set(v) {
+        this.dateMs = new Date(v).getTime();
+      },
+    },
+  },
+};
+```
+
+## 11.7 使用 Python Flask 作为 API 创建 Nuxt.js SSR
+
+Nuxt.js 是一个服务器端渲染框架，它在服务器上渲染所有内容并交付它加载。 通过这个过程，页面在渲染之前获得了 SEO 和快速 API 获取的强大功能。
+
+### 创建你的 Flask API
+
+### 创建你的 Nuxt.js server  
+
+使用了 Node.js hosting  
+
+### 创建 TodoList 组件
+
+### 创建 Todo 表单组件
+
+## 11.8 Vue 应用程序的注意事项
+
+517
