@@ -39,4 +39,33 @@ gui.add(props, 'torusSpeed', -0.2, 0.2, 0.01)
 
 `AxesHelper、GridHelper、PolarGridHelper`
 
-## 2、构成 Three.js 应用程序的基本组件
+# 2、构成 Three.js 应用程序的基本组件
+
+# 13 使用 Blender 和 Three.js
+
+Baking lightmaps and ambient occlusion maps in Blender，
+
+在 Blender 中烘焙光照贴图和环境遮挡贴图
+
+# 14 Three.js 与 React、TypeScript 和 Web-XR 一起使用
+
+## 14.1 将 Three.js 与 TypeScript 结合使用
+
+```bash
+$ yarn add three
+$ yarn add -D @types/three
+```
+
+## 14.2 使用 Three.js 和 React 与 TypeScript
+
+## 14.3 使用 Three.js 和 React Three Fiber
+
+https://docs.pmnd.rs/react-three-fiber/getting-started/introduction
+
+`'@react-three/fiber'`
+
+https://github.com/pmndrs/drei
+
+`'@react-three/drei'`
+
+## 14.4 Three.js 和 VR
