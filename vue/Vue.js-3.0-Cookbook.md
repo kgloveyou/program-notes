@@ -384,9 +384,9 @@ Mixins work as an object merge, but do make sure you don't replace an already-ex
 
 ### 使用 MirageJS 创建你的假 JSON API 服务器
 
-### 使用 axios 作为新的 HTTP 客户端
+### 5.4 使用 axios 作为新的 HTTP 客户端
 
-### 创建不同的 axios 实例
+### 5.5 创建不同的 axios 实例
 
 使用 `axios` 时，你可以运行它的多个实例，而它们之间不会相互干扰。 例如，你有一个指向版本 1 上的用户 API 的实例和另一个指向版本 2 上的支付 API 的实例，两者共享相同的命名空间。
 
@@ -408,7 +408,7 @@ export function createAxios(options = {}) {
 
 #### 这个怎么运作...
 
-### 为 axios 创建请求和响应拦截器
+### 5.6 为 axios 创建请求和响应拦截器
 
 拦截器最常见的使用方式是 `JWT` 令牌验证和刷新接收特定错误或 API 错误操作的请求。
 
