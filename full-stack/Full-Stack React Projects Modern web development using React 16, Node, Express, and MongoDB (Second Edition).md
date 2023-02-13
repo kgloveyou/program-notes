@@ -36,7 +36,7 @@ MERN 栈项目集成了 MongoDB、Express、React 和 Node 来构建 Web 应用�
 
 ## 设置 MERN 栈技术
 
-## 检查您的开发设置
+## 检查你的开发设置
 
 https://github.com/PacktPublishing/Full-Stack-React-Projects-Second-Edition/tree/master/Chapter02/mern-simplesetup
 
@@ -240,4 +240,49 @@ const useStyles = makeStyles(theme => ({
 
 Material-UI 使用 JSS，这是一种 CSS-in-JS 样式解决方案，用于向组件添加样式。 JSS 使用 JavaScript 作为描述样式的语言。
 
-111
+## 集成后端 API
+
+Fetch API 是一个较新的标准，它使网络请求类似于 XMLHttpRequest (XHR)，但使用 promises 代替，从而实现更简单、更清晰的 API。
+
+https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API
+
+## 在前端添加授权
+
+正如我们在上一章中讨论的那样，使用 JWT 实现身份验证会将管理和存储用户身份验证状态的责任交给客户端。为此，我们需要编写代码，允许客户端存储在成功登录时从服务器接收到的 JWT，在访问受保护的路由时使其可用，在用户注销时删除或使 token 无效， 并且还根据用户身份验证状态限制对前端视图和组件的访问。
+
+### 管理授权状态
+
+在我们的 MERN 应用程序中，我们将使用浏览器的 `sessionsStorage` 作为存储选项来存储 JWT 身份验证凭证。
+
+**提示**：或者，你可以使用 `localStorage` 而不是 `sessionStorage` 来存储 JWT 凭据。 使用 `sessionStorage`，用户身份验证状态只会在当前窗口选项卡中被记住。 使用 `localStorage`，用户身份验证状态将在浏览器的各个选项卡中被记住。
+
+### PrivateRoute 组件
+
+它将允许我们为前端声明受保护的路由，以限制基于用户身份验证的视图访问。
+
+Chapter03 and 04\mern-skeleton\client\auth\PrivateRoute.js
+
+```js
+import React, { Component } from 'react'
+import { Route, Redirect } from 'react-router-dom'
+import auth from './auth-helper'
+
+const PrivateRoute = ({ component: Component, ...rest }) => (
+  <Route {...rest} render={props => (
+    auth.isAuthenticated() ? (
+      <Component {...props}/>
+    ) : (
+      <Redirect to={{
+        pathname: '/signin',
+        state: { from: props.location }
+      }}/>
+    )
+  )}/>
+)
+
+export default PrivateRoute
+```
+
+## 完成 User 前端
+
+122
