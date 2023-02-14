@@ -285,4 +285,53 @@ export default PrivateRoute
 
 ## 完成 User 前端
 
-122
+### Users  组件
+
+```js
+  useEffect(() => {
+    const abortController = new AbortController()
+    const signal = abortController.signal
+
+    list(signal).then((data) => {
+      if (data && data.error) {
+        console.log(data.error)
+      } else {
+        setUsers(data)
+      }
+    })
+
+    return function cleanup(){
+      abortController.abort()
+    }
+  }, [])
+```
+
+在这个 effect  中，我们还添加了一个 cleanup  函数，以在组件卸载时中止获取调用。 为了将 signal  与 fetch 调用相关联，我们使用 AbortController Web API，它允许我们根据需要中止 DOM 请求。
+
+对应的 list 函数定义：
+
+```js
+const list = async (signal) => {
+  try {
+    let response = await fetch('/api/users/', {
+      method: 'GET',
+      signal: signal,
+    })
+    return await response.json()
+  } catch(err) {
+    console.log(err)
+  }
+}
+```
+
+https://developer.mozilla.org/zh-CN/docs/Web/API/Fetch_API
+
+要中止未完成的 `fetch()`，甚至 `XMLHttpRequest` 操作，请使用 [`AbortController`](https://developer.mozilla.org/zh-CN/docs/Web/API/AbortController) 和 [`AbortSignal`](https://developer.mozilla.org/zh-CN/docs/Web/API/AbortSignal) 接口。
+
+
+
+上述代码中的 signal 即为 [`AbortSignal`](https://developer.mozilla.org/zh-CN/docs/Web/API/AbortSignal) 接口，参见：https://developer.mozilla.org/zh-CN/docs/Web/API/AbortSignal
+
+
+
+125
