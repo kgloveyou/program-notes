@@ -334,4 +334,79 @@ https://developer.mozilla.org/zh-CN/docs/Web/API/Fetch_API
 
 
 
-125
+### Profile  组件
+
+读取用户信息
+
+```js
+  useEffect(() => {
+    const abortController = new AbortController()
+    const signal = abortController.signal
+
+    read({
+      userId: match.params.userId
+    }, {t: jwt.token}, signal).then((data) => {
+      if (data && data.error) {
+        setRedirectToSignin(true)
+      } else {
+        setUser(data)
+      }
+    })
+
+    return function cleanup(){
+      abortController.abort()
+    }
+
+  }, [match.params.userId])
+```
+
+注意，`cleanup` 函数，在组件卸载时，终止正在进行的请求。
+
+
+
+框架前端现已完成，并具有允许用户在考虑身份验证和授权限制的同时在后端注册、查看和修改用户数据的所有必要组件。 但是还是不能直接在浏览器地址栏访问前端路由； 这些只有在从前端视图中链接时才能访问。 要在框架应用程序中启用此功能，我们需要实现基本的服务器端渲染。
+
+## 实现基本的服务器端渲染
+
+目前，当直接在浏览器地址栏输入 React Router 路由或路径名或刷新不在根路径的视图时，该 URL 不起作用。 发生这种情况是因为服务器无法识别我们在前端定义的 React Router 路由。 我们必须在后端实现基本的服务器端渲染，以便服务器能够在收到对前端路由的请求时做出响应。
+
+### 服务器端渲染模块
+
+### 生成 CSS 和 markup
+
+### 发送带有 markup 和 CSS 的模板
+
+生成 markup 后，我们需要检查组件中是否渲染了要在 markup 中发送的重定向。 如果没有重定向，那么我们使用 sheets.toString 从sheets  中获取 CSS 字符串，并且在响应中，我们将带有 markup 和 CSS 注入的模板发回，如以下代码所示。
+
+### 更新 App.js
+
+一旦在服务器端渲染的代码到达浏览器并且前端脚本接管，我们需要在加载根 React 组件时使用 `useEffect`  hook 删除服务器端注入的 CSS。
+
+```js
+  React.useEffect(() => {
+    const jssStyles = document.querySelector('#jss-server-side')
+    if (jssStyles) {
+      jssStyles.parentNode.removeChild(jssStyles)
+    }
+  }, [])
+```
+
+### Hydrate instead of render  
+
+```js
+import React from 'react'
+import { hydrate } from 'react-dom'
+import App from './App'
+
+hydrate(<App/>, document.getElementById('root'))
+```
+
+`hydrate` 函数 hydrates  一个容器，该容器已经具有由 `ReactDOMServer` 渲染的 HTML 内容。 这意味着当 React 在浏览器中接管时，服务器呈现的标记将被保留并且仅附加事件处理程序，从而使初始加载性能更好。
+
+通过实现基本的服务器端渲染，服务器现在可以正确处理从浏览器地址栏到前端路由的直接请求，从而可以为 React 前端视图添加书签。
+
+# 5 将模板发展成社交媒体应用程序
+
+## 介绍 MERN Social  
+
+150
