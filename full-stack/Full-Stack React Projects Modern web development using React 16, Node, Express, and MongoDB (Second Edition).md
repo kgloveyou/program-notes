@@ -409,4 +409,46 @@ hydrate(<App/>, document.getElementById('root'))
 
 ## 介绍 MERN Social  
 
-150
+## 上传个人资料照片
+
+考虑到不同的文件存储选项，有多种方法可以实现此上传功能：
+
+- **服务器文件系统**：将文件上传并保存到服务器文件系统，并将 URL 存储在 MongoDB 中。
+- **外部文件存储**：将文件保存到Amazon S3等外部存储，并将URL存储在MongoDB中。
+- **在 MongoDB 中存储为数据**：将体积较小（小于16MB）的文件作为Buffer类型的数据保存到MongoDB中。
+
+对于 MERN Social，我们将假设用户上传的照片文件体积较小，并演示如何将这些文件存储在 MongoDB 中以用于个人资料照片上传功能。在第 8 章，扩展订单和支付市场，我们将讨论如何使用 GridFS 在 MongoDB 中存储更大的文件。
+
+### 更新用户模型以将照片存储在 MongoDB 中
+
+### 从编辑表单上传照片
+
+### Form submission with the file attached  
+
+```js
+  const clickSubmit = () => {
+    let userData = new FormData()
+    values.name && userData.append('name', values.name)
+    values.email && userData.append('email', values.email)
+    values.passoword && userData.append('passoword', values.passoword)
+    values.about && userData.append('about', values.about)
+    values.photo && userData.append('photo', values.photo)
+    update({
+      userId: match.params.userId
+    }, {
+      t: jwt.token
+    }, userData).then((data) => {
+      if (data && data.error) {
+        setValues({...values, error: data.error})
+      } else {
+        setValues({...values, 'redirectToProfile': true})
+      }
+    })
+  }
+```
+
+由于发送到服务器的数据的内容类型不再是 `'application/json'`，我们还需要修改 `api-user.js` 中的 `update` fetch 方法，以从 fetch 调用的标头中删除 `Content-Type`，如此处所示。
+
+### 处理包含文件上传的请求
+
+158
