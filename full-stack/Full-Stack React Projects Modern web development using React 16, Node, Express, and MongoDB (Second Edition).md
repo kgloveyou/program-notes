@@ -451,4 +451,36 @@ hydrate(<App/>, document.getElementById('root'))
 
 ### 处理包含文件上传的请求
 
-158
+在服务器上，为了处理对现在可能包含文件的更新 API 的请求，我们将使用 `formidable`  Node 模块。
+
+### 检索个人资料照片  
+
+检索存储在数据库中的图像然后在视图中显示它的最简单的选择是设置一个路由，该路由将获取数据并将其作为图像文件返回给请求的客户端。 在本节中，我们将学习如何设置此路由以公开照片 URL，以及如何使用此 URL 在前端视图中显示照片。
+
+#### 个人资料照片 URL
+
+#### 在视图中显示照片
+
+mern-social/client/user/Profile.js: 
+
+```js
+    const photoUrl = values.user._id
+              ? `/api/users/photo/${values.user._id}?${new Date().getTime()}`
+              : '/api/users/defaultphoto'
+```
+
+为了确保 `img` 元素在照片更新后重新加载到 `Profile` 视图中，我们必须向照片 URL 添加一个时间值以绕过浏览器的默认图像缓存行为。
+
+## 在 MERN Social 中关注用户
+
+### 关注和取消关注
+
+#### 更新用户模型
+
+#### 更新 userByID 控制器方法
+
+#### 添加 API 以关注和取消关注
+
+#### 在视图中访问关注和取消关注 API
+
+170
