@@ -483,4 +483,338 @@ mern-social/client/user/Profile.js:
 
 #### 在视图中访问关注和取消关注 API
 
-170
+## 在 MERN Social 上发帖
+
+### 在视图中获取创建帖子 API
+
+此方法与用户 `edit`  fetch 方法一样，将使用包含文本字段和图像文件的 FormData 对象发送多部分表单提交。
+
+### 制作 NewPost 组件
+
+mern-social/client/post/NewPost.js:  
+
+```js
+  const clickPost = () => {
+    let postData = new FormData()
+    postData.append('text', values.text)
+    postData.append('photo', values.photo)
+    create({
+      userId: jwt.user._id
+    }, {
+      t: jwt.token
+    }, postData).then((data) => {
+      if (data.error) {
+        setValues({...values, error: data.error})
+      } else {
+        setValues({...values, text:'', photo: ''})
+        props.addUpdate(data)
+      }
+    })
+  }
+  
+  const handleChange = name => event => {
+    const value = name === 'photo'
+      ? event.target.files[0]
+      : event.target.value
+    setValues({...values, [name]: value })
+  }  
+```
+
+# 6 构建基于 Web 的课堂应用程序
+
+## 介绍 MERN 课堂
+
+# 7 通过在线市场锻炼 MERN 技能
+
+
+
+# 9 为市场添加实时竞价功能
+
+## 使用 Socket.IO 实现实时竞价
+
+### 集成 Socket.IO
+
+Socket.IO 是一个 JavaScript 库，具有在浏览器中运行的客户端模块和与 Node.js 集成的服务器端模块。将这些模块与我们基于 MERN 的应用程序集成将实现客户端和服务器之间的双向和实时通信。
+
+**提示**：Socket.IO 的客户端部分可作为 Node 模块 `socket.io-client` 使用，而服务器端部分可作为 Node 模块 `socket.io` 使用。 你可以在 https://socket.io 上了解有关 Socket.IO 的更多信息并尝试他们的入门教程。
+
+### 出价
+
+为了允许用户出价，在接下来的部分中，我们将添加一个表单，让他们输入一个比上次出价更高的值，并使用 socket 通信将其提交给服务器。 然后，在服务器上，我们将处理通过 socket 发送的新出价，以便可以将更改后的拍卖出价保存在数据库中，并且当服务器接受此出价时，可以立即为所有连接的用户更新视图。
+
+### 在服务器上接收竞价
+
+### 显示变化的竞价历史
+
+# 10 将数据可视化与费用跟踪应用程序集成
+
+# 11 构建流媒体应用程序
+
+在本章中，我们将扩展 MERN 骨架应用程序以构建媒体流应用程序，同时演示如何利用 MongoDB GridFS 并将媒体流功能添加到您的 Web 应用程序。
+
+## 上传和存储媒体
+
+### 使用MongoDB GridFS存储大文件
+
+在前面的章节中，我们讨论了如何将用户上传的文件作为二进制数据直接存储在MongoDB中；但这只适用于小于 16 MB 的文件。 为了在 MongoDB 中存储更大的文件，例如这个流媒体应用程序所需的视频文件，我们将需要使用 GridFS。
+
+GridFS 是 MongoDB 中的一个规范，它允许我们通过将给定文件分成几个块来将大文件存储在 MongoDB 中。 每个块的最大大小为 255 KB，并存储为单独的文档。 当必须检索文件以响应对 GridFS 的查询时，将根据需要重新组合块。 这打开了根据需要仅获取和加载文件部分的选项，而不是检索整个文件。
+
+在为 MERN Mediastream 应用程序存储和检索视频文件的情况下，我们将利用 GridFS 来存储视频文件和流式传输部分视频，具体取决于用户跳到并开始播放的部分。
+
+**提示**：您可以在中了解有关 GridFS 规范及其功能的更多信息。官方 MongoDB 文档位于 https://docs.mongodb.com/manual/core/gridfs/。
+
+要从我们的后端代码访问和使用 MongoDB GridFS，我们将使用 Node.js MongoDB 驱动程序的流 API，方法是创建一个具有已建立的数据库连接的 `GridFSBucket`。
+
+### 创建一个新的媒体帖子
+
+```js
+import Media from '../models/media.model'
+import extend from 'lodash/extend'
+import errorHandler from './../helpers/dbErrorHandler'
+import formidable from 'formidable'
+import fs from 'fs'
+
+//media streaming
+import mongoose from 'mongoose'
+let gridfs = null
+mongoose.connection.on('connected', () => {
+  gridfs = new mongoose.mongo.GridFSBucket(mongoose.connection.db)
+})
+
+const create = (req, res) => {
+  let form = new formidable.IncomingForm()
+  form.keepExtensions = true
+  form.parse(req, async (err, fields, files) => {
+      if (err) {
+        return res.status(400).json({
+          error: "Video could not be uploaded"
+        })
+      }
+      let media = new Media(fields)
+      media.postedBy= req.profile
+      if(files.video){
+        let writestream = gridfs.openUploadStream(media._id, {
+          contentType: files.video.type || 'binary/octet-stream'})
+        fs.createReadStream(files.video.path).pipe(writestream)
+      }
+      try {
+        let result = await media.save()
+        res.status(200).json(result)
+      }
+      catch (err){
+          return res.status(400).json({
+            error: errorHandler.getErrorMessage(err)
+          })
+      }
+    })
+}
+```
+
+如果请求中有文件，`formidable` 会将其临时存储在文件系统中。我们将使用此临时文件和媒体对象的 ID 通过 `gridfs.openUploadStream` 创建一个可写流。 在这里，临时文件会被读取然后写入到`MongoDB GridFS`中，同时将 `filename`  值设置为媒体ID。这将在MongoDB中生成关联的块和文件信息文档，当需要检索这个文件时，我们将用媒体 ID 识别它。
+
+#### NewMedia 组件
+
+```jsx
+          <input accept="video/*" onChange={handleChange('video')} className={classes.input} id="icon-button-file" type="file" />
+          <label htmlFor="icon-button-file">
+            <Button color="secondary" variant="contained" component="span">
+              Upload
+              <FileUpload/>
+            </Button>
+          </label> <span className={classes.filename}>{values.video ? values.video.name : ''}</span><br/>
+```
+
+在文件 `input` 元素中，我们指定它接受视频文件，因此当用户单击“上传”并浏览其本地文件夹时，他们只能选择上传视频文件。
+
+```js
+  const clickSubmit = () => {
+    let mediaData = new FormData()
+    values.title && mediaData.append('title', values.title)
+    values.video && mediaData.append('video', values.video)
+    values.description && mediaData.append('description', values.description)
+    values.genre && mediaData.append('genre', values.genre)
+    create({
+      userId: jwt.user._id
+    }, {
+      t: jwt.token
+    }, mediaData).then((data) => {
+      if (data.error) {
+        setValues({...values, error: data.error})
+      } else {
+        setValues({...values, error: '', mediaId: data._id, redirect: true})
+      }
+    })
+  }
+```
+
+## Retrieving and streaming media
+
+实现此功能需要将存储在 MongoDB GridFS 中的视频文件流式传输到发出请求的客户端，并在媒体播放器中渲染流。
+
+mern-mediastream/server/controllers/media.controller.js:  
+
+```js
+const video = (req, res) => {
+  const range = req.headers["range"]
+  if (range && typeof range === "string") {
+    const parts = range.replace(/bytes=/, "").split("-")
+    const partialstart = parts[0]
+    const partialend = parts[1]
+
+    const start = parseInt(partialstart, 10)
+    const end = partialend ? parseInt(partialend, 10) : req.file.length - 1
+    const chunksize = (end - start) + 1
+
+    res.writeHead(206, {
+        'Accept-Ranges': 'bytes',
+        'Content-Length': chunksize,
+        'Content-Range': 'bytes ' + start + '-' + end + '/' + req.file.length,
+        'Content-Type': req.file.contentType
+    })
+
+    let downloadStream = gridfs.openDownloadStream(req.file._id, {start, end: end+1})
+    downloadStream.pipe(res)
+    downloadStream.on('error', () => {
+      res.sendStatus(404)
+    })
+    downloadStream.on('end', () => {
+      res.end()
+    })
+  } else {
+      res.header('Content-Length', req.file.length)
+      res.header('Content-Type', req.file.contentType)
+
+      let downloadStream = gridfs.openDownloadStream(req.file._id)
+      downloadStream.pipe(res)
+      downloadStream.on('error', () => {
+        res.sendStatus(404)
+      })
+      downloadStream.on('end', () => {
+        res.end()
+      })
+  }
+}
+```
+
+在前面的代码中，如果请求不包含 range  标头，我们使用 `gridfs.openDownloadStream` 流回整个视频文件，这为我们提供了存储在 GridFS 中的相应文件的可读流。 这是通过管道发送回客户端的响应。 在响应标头中，我们设置文件的内容类型和总长度。
+
+如果请求包含 range  标头——例如，当用户拖动到视频的中间并从该点开始播放时——我们需要将接收到的 range  标头转换为开始和结束位置，这将与存储的正确块相对应 在GridFS中，如下代码所示。
+
+### 使用 React 媒体播放器渲染视频
+
+React 风格的媒体播放器的一个不错选择是 `ReactPlayer` 组件，它可以作为 node 模块使用，可以根据需要进行自定义。
+
+```bash
+yarn add react-player
+```
+
+## Listing media  
+
+### 列出流行媒体
+
+# 12 定制化媒体播放器和改进 SEO
+
+## 将自定义媒体播放器添加到 MERN Mediastream
+
+在这个结构中，为了渲染每个媒体项的视频快照，我们将使用一个没有控件的基本 `ReactPlayer`，如下所示：
+
+```jsx
+<Link to={"/media/"+item._id}>
+    <ReactPlayer url={'/api/media/video/'+item._id} width='160px' height='140px'/>
+</Link>
+```
+
+### Fullscreen （*）
+
+为了实现视频的全屏选项，我们将使用 `screenfull` Node模块，用于跟踪视图何时处于全屏状态，和来自 `react-dom` 的 `findDOMNode` 来指定哪个文档对象模型 (DOM) 元素将使用 `screenfull`  显示为全屏。  
+
+```bash
+yarn add screenfull
+```
+
+
+
+为了显示时间，我们可以使用带有 `datetime`  值的 HTML `time` 元素，并将其添加到 `MediaPlayer` 的视图代码中，如下所示：
+
+mern-mediastream/client/media/MediaPlayer.js  
+
+```jsx
+<span style={{float: 'right', padding: '10px', color: '#b83423'}}>
+    <time dateTime={`P${Math.round(duration * values.played)}S`}>
+        {format(duration * values.played)}
+    </time> / 
+    <time dateTime={`P${Math.round(duration)}S`}>
+    	{format(duration)}
+    </time>
+</span>
+```
+
+## 使用数据进行服务器端渲染
+
+SEO 对于向用户提供内容并希望使内容易于查找的任何 Web 应用程序都很重要。 通常，如果内容易于搜索引擎读取，则任何网页上的内容将更有可能吸引更多的浏览者。 当搜索引擎机器人访问 Web URL 时，它将获得 SSR 输出。因此，要使内容可被发现，内容应该是 SSR 输出的一部分。
+
+在 MERN Mediastream 中，我们将使用使媒体详细信息在搜索引擎结果中流行的案例，来演示如何将数据注入基于 MERN 的应用程序中的 SSR 视图。 我们将专注于通过为“`/media/:mediaId`”路径返回的 `PlayMedia` 组件注入数据来实现 SSR。 此处概述的一般实施步骤可用于使用其他视图的数据实施 SSR。
+
+我们将首先定义一个静态路由配置文件，并使用它来更新后端现有的 SSR 代码，以从数据库中注入必要的媒体数据。 然后，我们将更新前端代码以在视图中渲染这个服务器注入的数据，最后，检查这个 SSR 实现是否按预期工作。
+
+### 添加路由配置文件
+
+```bash
+yarn add react-router-config  
+```
+
+接下来，我们将创建一个路由配置文件，该文件将列出前端 React Router 路由。 此配置将在服务器上用于将这些路由与传入请求 URL 进行匹配，以检查是否必须在服务器返回渲染的标记以响应此请求之前注入数据。
+
+mern-mediastream/client/routeConfig.js  
+
+```js
+import PlayMedia from './media/PlayMedia'
+import { read } from './media/api-media.js'
+
+const routes = [
+  {
+    path: '/media/:mediaId',
+    component: PlayMedia,
+    loadData: (params) => read(params)
+  }
+
+]
+export default routes
+```
+
+### 更新 Express 服务器的 SSR 代码
+
+#### 使用 route configuration 来加载数据
+
+当服务器收到任何请求时，我们将使用路由配置文件中定义的路由来寻找匹配的路由。 如果找到匹配项，我们将使用在配置中为此路由声明的相应 `loadData` 方法来检索必要的数据，然后将其注入代表 React 前端的服务器渲染标记（markup）中。 我们将在名为 `loadBranchData` 的方法中执行这些路由匹配和数据加载操作，该方法定义如下：
+
+#### Isomorphic-fetch
+
+我们将确保我们为客户端代码定义的任何 fetch 方法也可以通过使用 `isomorphic-fetch`   node 模块在服务器上使用。  
+
+##### Absolute URLs
+
+使用 `isomorphic-fetch` 的一个问题是它目前要求获取 URL 是绝对的。  
+
+#### 将数据注入 React 应用程序
+
+### 将服务器注入的数据应用到客户端代码
+
+### 在 PlayMedia 中渲染接收到的数据
+
+### 用数据检验SSR的执行情况
+
+我们可以通过在浏览器中打开应用程序 URL 并关闭 JavaScript 来验证带有数据的 SSR 的实现是否正常工作。
+
+#### 在 Chrome 中测试
+
+# 13 开发基于 Web 的 VR 游戏
+
+## 开始使用 React 360
+
+React 360 使使用与 React 相同的声明式和基于组件的方法构建 VR 体验成为可能。 React 360 的底层技术利用 Three.js JavaScript 3D 引擎在任何兼容的 Web 浏览器中使用 WebGL 渲染 3D 图形，还为我们提供了使用 Web VR API 访问 VR （具备麦克风的）头戴式耳机的权限。
+
+### 设置 React 360 项目
+
+558
