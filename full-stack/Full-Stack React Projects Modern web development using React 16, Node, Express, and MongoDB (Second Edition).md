@@ -550,7 +550,7 @@ Socket.IO 是一个 JavaScript 库，具有在浏览器中运行的客户端模�
 
 # 11 构建流媒体应用程序
 
-在本章中，我们将扩展 MERN 骨架应用程序以构建媒体流应用程序，同时演示如何利用 MongoDB GridFS 并将媒体流功能添加到您的 Web 应用程序。
+在本章中，我们将扩展 MERN 骨架应用程序以构建媒体流应用程序，同时演示如何利用 MongoDB GridFS 并将媒体流功能添加到你的 Web 应用程序。
 
 ## 上传和存储媒体
 
@@ -562,7 +562,7 @@ GridFS 是 MongoDB 中的一个规范，它允许我们通过将给定文件分�
 
 在为 MERN Mediastream 应用程序存储和检索视频文件的情况下，我们将利用 GridFS 来存储视频文件和流式传输部分视频，具体取决于用户跳到并开始播放的部分。
 
-**提示**：您可以在中了解有关 GridFS 规范及其功能的更多信息。官方 MongoDB 文档位于 https://docs.mongodb.com/manual/core/gridfs/。
+**提示**：你可以在中了解有关 GridFS 规范及其功能的更多信息。官方 MongoDB 文档位于 https://docs.mongodb.com/manual/core/gridfs/。
 
 要从我们的后端代码访问和使用 MongoDB GridFS，我们将使用 Node.js MongoDB 驱动程序的流 API，方法是创建一个具有已建立的数据库连接的 `GridFSBucket`。
 
@@ -817,4 +817,21 @@ React 360 使使用与 React 相同的声明式和基于组件的方法构建 VR
 
 ### 设置 React 360 项目
 
-558
+## 开发 VR 游戏的关键概念
+
+### 等距柱状全景图像（Equirectangular panoramic images  ）
+
+**提示**：https://facebook.github.io/react-360/docs/setup.html
+
+**提示**：等距柱状全景图像由纵横比为 2:1 的单个图像组成，其中宽度是高度的两倍。 这些图像是使用特殊的 360 度相机创建的。 等距柱状图像的一个极好的来源是 Flickr； 你只需要搜索 `equirectangular` 标签。
+
+### 3D 位置——坐标和变换
+
+#### 3D坐标系
+
+对于 3D 空间中的映射，React 360 使用类似于 OpenGL® 3D 坐标系的基于米的三维坐标系。这允许单个组件相对于其父组件中的布局在 3D 中进行变换、移动或旋转。
+
+**提示**：React 360 中使用的 3D 坐标系是右手系。
+
+# 14 Making the VR Game Dynamic using MERN
+
