@@ -278,7 +278,7 @@ mail submission agent (MSA)
 
 mail transfer agent (MTA)  
 
-虽然可以使用 SMTP 将电子邮件直接发送到收件人的邮件服务器，但这通常不是一个好主意：除非你是 Google 或 Yahoo! 等“受信任的发件人”，否则你的电子邮件很可能会被直接扔进垃圾邮件 垃圾桶。最好使用邮件提交代理 (MSA)，它会通过受信任的渠道发送电子邮件，从而减少您的电子邮件被标记为垃圾邮件的可能性。除了确保您的电子邮件送达之外，MSA 还会处理临时中断和退回电子邮件等麻烦事。等式的最后一部分是邮件传输代理 (MTA)，它是实际将电子邮件发送到最终目的地的服务。 就本书而言，MSA、MTA 和 SMTP 服务器本质上是等同的。
+虽然可以使用 SMTP 将电子邮件直接发送到收件人的邮件服务器，但这通常不是一个好主意：除非你是 Google 或 Yahoo! 等“受信任的发件人”，否则你的电子邮件很可能会被直接扔进垃圾邮件 垃圾桶。最好使用邮件提交代理 (MSA)，它会通过受信任的渠道发送电子邮件，从而减少你的电子邮件被标记为垃圾邮件的可能性。除了确保你的电子邮件送达之外，MSA 还会处理临时中断和退回电子邮件等麻烦事。等式的最后一部分是邮件传输代理 (MTA)，它是实际将电子邮件发送到最终目的地的服务。 就本书而言，MSA、MTA 和 SMTP 服务器本质上是等同的。
 
 ## 接收邮件
 
@@ -294,4 +294,58 @@ mail transfer agent (MTA)
 
 ## 运行你的 Node 进程
 
-136
+根据你的托管解决方案，如果托管解决方案本身提供进程管理器，则你可能不需要进程管理器。 也就是说，托管提供商会给你一个配置选项来指向你的应用程序文件，它会处理进程管理。
+
+但是，如果你需要自己管理进程，进程管理员有两种流行的选择：
+
+• Forever
+• PM2  
+
+## 扩展你的网站
+
+构建设计用于横向扩展的网站时要记住的最重要的事情是持久性。 如果你习惯于依赖基于文件的存储来实现持久性，*请就此打住*。 那就是疯狂。
+
+### 使用 App Clusters  横向扩展
+
+ch12\01-server.js
+
+```js
+function startServer(port) {
+  app.listen(port, function() {
+    console.log(`Express started in ${app.get('env')} ` +
+      `mode on http://localhost:${port}` +
+      `; press Ctrl-C to terminate.`)
+  })
+}
+
+if(require.main === module) {
+  // application run directly; start app server
+  startServer(process.env.PORT || 3000)
+} else {
+  // application imported as a module via "require": export
+  // function to create server
+  module.exports = startServer
+}
+```
+
+如果`require.main === module`，说明脚本已经直接运行； 否则，它已从另一个脚本中用 `require` 调用。
+
+### 处理未捕获的异常
+
+**提示**：`process.nextTick` 类似于调用参数为 0 的 `setTimeout`，但效率更高。
+
+因此，考虑到这一点，当遇到未处理的异常时，我们如何才能尽可能优雅地关闭呢？ Node 的处理机制是 `uncaughtException` 事件。
+
+### 使用多个服务器（Multiple Servers）横向扩展
+
+尽管使用集群进行横向扩展可以最大限度地提高单个服务器的性能，但是当你需要多个服务器时会发生什么情况呢？ 这就是事情变得有点复杂的地方。 要实现这种并行，就需要一个代理服务器。（为了区别于常用于访问外部网络的代理，它通常被称为反向代理或前向代理，但我觉得这种语言令人困惑且没有必要，所以我 将简单地将其称为代理。）
+
+两个非常流行的选项是 [NGINX](https://www.nginx.com)（发音为“engine X”）和 [HAProxy](http://www.haproxy.org)。
+
+如果你确实配置了代理服务器，请确保你告诉 Express 你正在使用代理并且它应该是可信的：
+
+```js
+app.enable('trust proxy')
+```
+
+## 监控你的网站
