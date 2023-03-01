@@ -349,3 +349,78 @@ app.enable('trust proxy')
 ```
 
 ## 监控你的网站
+
+# 13 持久化
+
+## Filesystem  持久化
+
+Node 通过 `fs`（filesystem）模块使文件系统持久化成为可能。
+
+## 云持久化
+
+ AWS 将其文件存储机制称为`buckets`  ，而 Azure 称它们为 `containers` 。
+
+• [AWS: Getting Started in Node.js](https://amzn.to/2CCYk9s)
+• [Azure for JavaScript and Node.js Developers](http://bit.ly/2NEkTku)  
+
+## 数据库持久化
+
+### 关于性能的注释
+
+### 抽象数据库层
+
+### Mongoose
+
+虽然 MongoDB 有可用的低级驱动程序，但你可能希望使用 object document mapper    (ODM)。 MongoDB 最流行的 ODM 是 `Mongoose`。  
+
+Mongoose 试图通过引入`schemas`  和 `models`（结合起来，模式和模型类似于传统面向对象编程中的类）来取得平衡。 模式很灵活，但仍为你的数据库提供一些必要的结构。
+
+ch13\00-mongodb\models\vacation.js
+
+```js
+const mongoose = require('mongoose')
+
+const vacationSchema = mongoose.Schema({
+  name: String,
+  slug: String,
+  category: String,
+  sku: String,
+  description: String,
+  location: {
+    search: String,
+    coordinates: {
+      lat: Number,
+      lng: Number,
+    },
+  },
+  price: Number,
+  tags: [String],
+  inSeason: Boolean,
+  available: Boolean,
+  requiresWaiver: Boolean,
+  maximumGuests: Number,
+  notes: String,
+  packagesSold: Number,
+})
+
+const Vacation = mongoose.model('Vacation', vacationSchema)
+module.exports = Vacation
+```
+
+一旦我们有了模式，我们就使用 `mongoose.model` 创建一个模型：在这一点上，`Vacation` 非常像传统面向对象编程中的一个类。
+
+**注意**：由于浮点数的性质，你应该始终小心使用 JavaScript 进行金融计算。你应该考虑使用诸如 [currency.js](https://currency.js.org) 或 [decimal.jslight](http://bit.ly/2X6kbQ5) 之类的库。 此外，自 Node 10 起可用的 JavaScript 的 [BigInt](https://mzl.la/2Xhs45r) 内置对象（在我编写本文时浏览器支持有限）可用于此目的。
+
+### 播种初始数据
+
+### 检索数据
+
+### 添加数据
+
+### PostgreSQL
+
+object-relational mapping (ORM)   
+
+165
+
+###   
