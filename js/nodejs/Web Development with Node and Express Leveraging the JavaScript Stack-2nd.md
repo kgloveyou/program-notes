@@ -1,5 +1,7 @@
 # Web Development with Node and Express Leveraging the JavaScript Stack-2nd
 
+git registory: https://github.com/EthanRBrown/web-development-with-node-and-express-2e
+
 # 1、介绍 Express  
 
 Node 与更传统的 Web 服务器之间的另一个主要区别是 Node 是单线程的。单线程极大地简化了编写 Web 应用程序的业务，如果你需要多线程应用程序的性能，你可以简单地启动更多 Node 实例，并且你将有效地获得多线程的性能优势。
@@ -421,6 +423,47 @@ module.exports = Vacation
 
 object-relational mapping (ORM)   
 
-165
 
-###   
+
+使用[Lodash](https://lodash.com)  的函数，可以将pg字段的snake_case  格转换成 camelCase 。   
+
+```typescript
+const { Pool } = require('pg')
+const _ = require('lodash')
+
+const credentials = require('./credentials')
+
+const { connectionString } =
+  credentials.postgres[process.env.NODE_ENV || 'development']
+const pool = new Pool({ connectionString })
+
+module.exports = {
+  getVacations: async () => {
+    const { rows } = await pool.query('SELECT * FROM VACATIONS')
+    return rows.map(row => {
+      const vacation = _.mapKeys(row, (v, k) => _.camelCase(k))
+      vacation.price = parseFloat(vacation.price.replace(/^\$/, ''))
+      vacation.location = {
+        search: vacation.locationSearch,
+        coordinates: {
+          lat: vacation.locationLat,
+          lng: vacation.locationLng,
+        },
+      }
+      return vacation
+    })
+  },
+  addVacationInSeasonListener: async (email, sku) => {
+    await pool.query(
+      'INSERT INTO vacation_in_season_listeners (email, sku) ' +
+      'VALUES ($1, $2) ' +
+      'ON CONFLICT DO NOTHING',
+      [email, sku]
+    )
+  },
+}
+```
+
+它还使用Lodash的 `mapKeys`  和 `camelCase`  函数将我们的数据库属性转换为 camelCase。
+
+167
