@@ -476,3 +476,58 @@ gmail/chrome密码
 
 # 14 路由
 
+以下是一些帮助你实现持久 IA 的建议：
+
+- 为你的 URLs 使用小写字母
+
+## Routes and SEO
+
+## Subdomains    
+
+Express 中的路由机制默认不考虑子域：app.get(/about) 将处理对 http://meadowlarktravel.com/about ，http://www.meadowlarktravel.com/about 和 http://admin.meadowlarktravel.com/about 的请求。如果你想单独处理一个子域，你可以使用一个名为 `vhost` 的包（用于“虚拟主机”，它来自通常用于处理子域的 Apache 机制）。
+
+要在你的开发机器上测试基于子域的路由，你需要一些方法来“伪造”域名。 幸运的是，这就是您的 `hosts file`  的用途。
+
+C:\Windows\System32\drivers\etc\hosts
+
+```bash
+127.0.0.1 admin.meadowlark.local
+127.0.0.1 meadowlark.local
+```
+
+## 路由处理程序是中间件
+
+我们还可以使用这种方法实现授权机制。假设我们的用户授权代码设置了一个名为 `req.session.authorized` 的会话变量。我们可以使用以下内容来制作可重用的授权过滤器（配套仓库中的 ch14/04-authorizer.js）：
+
+```js
+function authorize(req, res, next) {
+  if(req.session.authorized) return next()
+  res.render('not-authorized')
+}
+
+app.get('/public', (req, res) => res.render('public'))
+
+app.get('/secret', authorize, (req, res) => res.render('secret'))
+```
+
+## 路由路径和正则表达式
+
+```js
+app.get('/user(name)?', (req, res) => res.render('user'))
+```
+
+```js
+app.get('/khaa+n', (req, res) => res.render('khaaan'))
+```
+
+## 路由参数
+
+## 组织路由
+
+### 在模块中声明路由
+
+### 将处理程序按逻辑分组
+
+### 自动渲染视图
+
+183
