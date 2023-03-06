@@ -667,17 +667,27 @@ app.use('/static', express.static('public'))
 
 ## 缓存静态资产
 
-`Expires/Cache-Control`  
+1、`Expires/Cache-Control`  （强缓存）
 
 你只需要这些标头之一，并且 Expires 得到更广泛的支持，因此最好使用那个标头。 如果资源在缓存中，并且还没有过期，浏览器根本不会发出 GET 请求，这提高了性能，尤其是在移动设备上。
 
-`Last-Modified/ETag`  
+- 同在 `Response Headers` 中
+- 同为控制缓存的过期时间（早期使用Expires）
+- 如果 `cache-control 与 expires` 同时存在的话， `cache-control` 的优先级高于 `expires`
+
+2、`Last-Modified/ETag`  （协商缓存）
 
 这两个标签提供了某种版本控制：如果浏览器需要获取资源，它会在下载内容之前检查这些标签。 仍然向服务器发出 GET 请求，但如果这些标头返回的值使浏览器满意资源没有更改，则不会继续下载文件。 顾名思义，`Last-Modified` 允许你指定资源的最后修改日期。 `ETag` 允许你使用任意字符串，通常是版本字符串或内容哈希。 
+
+- 当响应头部 `Response Headers` 同时存在 `Last-Modified` 和 `Etag` 的值时，会优先使用 `Etag` ；
+- `Last-Modified` 只能精确到秒级；
+- 如果资源被重复生成，而内容不变，则 `Etag` 更精确。
 
 
 
 提供静态资源时，你应该使用 `Expires` 标头和 `LastModified` 或 `ETag`。 Express 内置 `static` 中间件设置 `Cache-Control`，但不处理 `Last-Modified` 或 `ETag`。 因此，虽然它适用于开发，但并不是一个很好的部署解决方案。
+
+参考：[你知道304吗？图解强缓存和协商缓存](https://juejin.cn/post/6974529351270268958#heading-26，)
 
 ## 改变你的静态内容
 
