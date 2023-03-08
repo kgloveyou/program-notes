@@ -230,6 +230,8 @@ http://www.spatial-go.com/zh_CN/docs/overview.html
 
 [GDAL/OGR Cookbook](http://pcjericks.github.io/py-gdalogr-cookbook/geometry.html#calculate-intersection-between-two-geometries) 
 
+[@flatten-js/core](https://www.npmjs.com/package/@flatten-js/core)
+
 ## 保存标注
 
 cvat-ui\src\actions\annotation-actions.ts
