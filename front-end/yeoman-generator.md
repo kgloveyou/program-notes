@@ -59,3 +59,44 @@ module.exports = class extends Generator {
 };
 ```
 
+模板的代码是放在templates目录下面。
+
+```bash
+D:\work_repos\apulis-frontend-cli [master ≡]> cd .\generators\
+D:\work_repos\apulis-frontend-cli\generators [master ≡]> cd .\app\
+D:\work_repos\apulis-frontend-cli\generators\app [master ≡]> tree
+Folder PATH listing for volume 新加卷
+Volume serial number is B0B1-BF9D
+D:.
+└───templates
+    ├───config
+    ├───public
+    │   └───icons
+    ├───server
+    ├───src
+    │   ├───assets
+    │   ├───components
+    │   │   ├───Authorized
+    │   │   ├───GlobalHeader
+    │   │   ├───HeaderDropdown
+    │   │   └───PageLoading
+    │   ├───e2e
+    │   │   └───__mocks__
+    │   ├───hooks
+    │   ├───layouts
+    │   ├───locales
+    │   │   ├───en-US
+    │   │   └───zh-CN
+    │   ├───models
+    │   ├───pages
+    │   │   └───exception
+    │   │       ├───401
+    │   │       ├───403
+    │   │       ├───404
+    │   │       └───500
+    │   │           └───locales
+    │   ├───services
+    │   └───utils
+    └───tests
+```
+
