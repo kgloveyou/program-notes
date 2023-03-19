@@ -36,6 +36,8 @@ https://mp.weixin.qq.com/s/Cm-xgtregfljwk6Ep9hSpw
 
 该怎么做呢？
 
+## git submodule
+
 我们先用 git submodule 的方式：
 
 执行
@@ -168,6 +170,8 @@ git clone --recursive-submodules xxx
 
 可以体会到啥叫复用子项目代码的同时保留项目的独立性了么？
 
+## git subtree
+
 然后我们再来试试 git subtree：
 
 还是这样一个项目：
@@ -236,6 +240,10 @@ git remote add child git@github.com:QuarkGluonPlasma/git-research-child.git
 
 ![图片](https://mmbiz.qpic.cn/mmbiz_png/YprkEU0TtGjWuq18zWIsIXNqjenWfeYUMoia0A6EiaOYP1cPUxn9h8FZoWQPx5BQasm85ZyAQjh6YdbgkP3gH1pg/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
 
+```bash
+git subtree pull --prefix=child child
+```
+
 这样 pull，会生成 3 个 commit：
 
 ![图片](https://mmbiz.qpic.cn/mmbiz_png/YprkEU0TtGjWuq18zWIsIXNqjenWfeYUicChibIicgzsBKuJwkmNNMdzJEicDQwdiaA1xfRJ82zYibI08DFicicawGopqA/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
@@ -259,6 +267,10 @@ git subtree pull --prefix=child child main --squash
 再来试下独立的 push。
 
 ![图片](https://mmbiz.qpic.cn/mmbiz_png/YprkEU0TtGjWuq18zWIsIXNqjenWfeYUlwFo0HqZph2AEIiaDBcFTbIqJZIduxHkiaZ4zWI3zVMDyMaKicy9nRTJA/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1)
+
+```bash
+git subtree push --prefix=child child
+```
 
 这样就把它 push 上去了。
 
