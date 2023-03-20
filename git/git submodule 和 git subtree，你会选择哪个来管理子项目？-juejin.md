@@ -16,6 +16,8 @@
 
 这篇文章我们就来详细对比下 git submodule 还有 git subtree。
 
+## 准备
+
 首先我们准备这样一个 git 项目：
 
 ![](https://p6-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/8d65e83590304940b561e4828d8764b0~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?)
@@ -27,6 +29,8 @@
 ![](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/1797ce73bab14596ac7b2a176c1503a0~tplv-k3u1fbpfcp-zoom-in-crop-mark:1512:0:0:0.awebp?)
 
 该怎么做呢？
+
+## git submodule
 
 我们先用 git submodule 的方式：
 
@@ -164,6 +168,8 @@ git clone --recursive-submodules xxx
     
 
 可以体会到啥叫复用子项目代码的同时保留项目的独立性了么？
+
+## git subtree
 
 然后我们再来试试 git subtree：
 
