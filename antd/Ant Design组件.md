@@ -73,3 +73,6 @@ Send multipart/form-data with antd upload
 
 https://github.com/ant-design/ant-design/issues/11616
 
+# table cloums 自定义render，使用了state属性的render函数不会更新 #35820
+
+https://github.com/ant-design/ant-design/issues/35820
