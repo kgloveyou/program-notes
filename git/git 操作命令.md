@@ -353,3 +353,9 @@ $ git config user.name 'hanjf'
 $ git config --list
 ```
 
+## 查看指定日期内修改过的文件
+
+```bash
+git log --name-only --since='2023-05-08' --until='2023-05-17' --pretty=format: | sort -u
+```
+
