@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>SVG实现闪烁动画</title>
+</head>
+
+<body>
+  <svg width="960px" height="500px" class="left-top border" style="background-color: #0e2439;">
+    <path fill="none" style="stroke: #2de8e8;stroke-width: 3px;" d="m50,150 0,-40 30,-30 150,0 20,20 150,0">
+      <animate attributeName="stroke" values="#2de8e8;#235fa7;#2de8e8" dur="0.5s" begin="0s" repeatCount="indefinite" />
+    </path>
+    <polygon fill="#2de8e8" style="stroke: #235fa7;stroke-width: 3px;" points="250,80 360,80 370,90 260,90">
+      <animate attributeName="fill" values="#235fa7;#2de8e8;#235fa7" dur="1s" begin="0s" repeatCount="indefinite" />
+      <animate attributeName="stroke" values="#235fa7;#2de8e8;#235fa7" dur="1s" begin="0s" repeatCount="indefinite" />
+    </polygon>
+    <path fill="none" style="stroke: #2de8e8;stroke-width: 3px;" d="m350,60 50,20 170,0 30,30 0,40">
+      <animate attributeName="stroke" values="#2de8e8;#235fa7;#2de8e8" dur="0.5s" begin="0.5s"
+        repeatCount="indefinite" />
+    </path>
+  </svg>
+</body>
+
+</html>
