@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js@3.0/dist/svg.min.js"></script>
+</head>
+<body>
+  <div id="drawing"></div>
+
+  <script>
+    // 创建 SVG 画布
+    var draw = SVG().addTo('#drawing').size(400, 400);
+
+    // 创建 polyline
+    var polyline = draw.polyline([50, 50, 100, 150, 200, 100, 300, 200, 350, 50])
+                      .fill('none')
+                      .stroke({ color: 'black', width: 2 });
+
+    // 创建点组
+    var points = draw.group();
+
+    // 循环创建各个点
+    polyline.array().forEach(function(coord, index) {
+      var circle = draw.circle(10).fill('red');
+      
+      // 设置点的初始位置
+      circle.center(coord[0], coord[1]);
+
+      // 将点添加到点组中
+      points.add(circle);
+    });
+
+    // 移动 polyline 和对应点
+    function movePolyline(dx, dy) {
+      polyline.dmove(dx, dy);
+
+      // 更新每个点的位置
+      polyline.array().forEach(function(coord, index) {
+        points.get(index).center(coord[0], coord[1]);
+      });
+    }
+
+    // 注册鼠标拖动事件
+    polyline.on('mousedown', function(event) {
+      var start = { x: event.clientX, y: event.clientY };
+
+      function move(event) {
+        var dx = event.clientX - start.x;
+        var dy = event.clientY - start.y;
+        start = { x: event.clientX, y: event.clientY };
+
+        movePolyline(dx, dy);
+      }
+
+      function stop() {
+        window.removeEventListener('mousemove', move);
+        window.removeEventListener('mouseup', stop);
+      }
+
+      window.addEventListener('mousemove', move);
+      window.addEventListener('mouseup', stop);
+    });
+  </script>
+</body>
+</html>

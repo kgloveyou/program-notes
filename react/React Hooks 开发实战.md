@@ -1,5 +1,56 @@
 # React Hooks 开发实战
 
+## 3.3 forwardRef
+
+如果目标组件是一个自定义函数组件，那么它是没有实例的，此时用`ref`去传递会报错，因为它无法获取到实例。`forwardRef`就是用来解决这个问题的。
+
+```jsx
+import React, { useRef, useState, useEffect, forwardRef } from 'react';
+import './App.css';
+
+const Child = forwardRef((props, ref) => 
+  return (
+    <input
+      placeholder={props.placeholder}
+      type='text'
+      ref={ref}
+    />
+  )
+});
+
+function App() {
+  const ref = useRef(null)
+  const [placeholder, setPlaceholder] = useState('请输入搜索内容')
+  const onClick = () => {
+    console.log("子组件的内容==>", ref.current.value)
+  }
+  useEffect(() => {
+    ref.current.focus();
+  }, [])
+
+  return (
+    <div className="App">
+      <Child ref={ref} placeholder={placeholder} />
+      <button onClick={onClick}>获取子组件内容</button>
+    </div>
+  );
+}
+
+export default App;
+```
+
+### 3.3.2 使用forwardRef时的注意事项
+
+**1、ref必须指向DOM元素。**
+
+
+
+
+
+
+
+
+
 ## 3.7 useReducer
 
 `useReducer` 可以同时更新多个状态，当状态更新逻辑较复杂时就可以考虑使用 `useReducer` 了。
