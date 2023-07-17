@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SVG.js Polyline with Circle Points</title>
+  <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js@3.0/dist/svg.min.js"></script>
+</head>
+<body>
+
+<div id="drawing"></div>
+
+<script>
+  // 获取SVG容器
+  var draw = SVG().addTo('#drawing').size(400, 200);
+
+  // 定义polyline的点坐标数组
+  var points = [
+    [50, 100],
+    [100, 50],
+    [150, 100],
+    [200, 50],
+    [250, 100]
+  ];
+
+  // 绘制polyline
+  var polyline = draw.polyline(points).fill('none').stroke({ width: 2, color: 'blue' });
+
+  // 给每个点创建圆形
+  var circleRadius = 5;
+  for (var i = 0; i < points.length; i++) {
+    var point = points[i];
+    var circle = draw.circle(circleRadius * 2).move(point[0] - circleRadius, point[1] - circleRadius).fill('red');
+  }
+</script>
+
+</body>
+</html>
