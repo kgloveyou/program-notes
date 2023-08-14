@@ -245,6 +245,22 @@ return (
 
 https://www.yuque.com/asuncat/blog/wgnx0u
 
+# Antd-Pro 动态路由
+
+https://webliuyang.com/react/problem/Antd-Pro%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1.html
+
+# ant design pro 动态路由
+
+https://juejin.cn/s/ant%20design%20pro%20%E5%8A%A8%E6%80%81%E8%B7%AF%E7%94%B1
+
+# antd pro 动态菜单与动态路由
+
+https://www.yuque.com/liuyin-zzwa0/ada6ao/va6p77
+
+# ant-design-pro动态加载menu菜单
+
+https://www.cnblogs.com/steamed-twisted-roll/p/16257672.html
+
 # 基于 Ant Design Pro 的菜单栏权限控制
 
 https://juejin.cn/post/6875880022537109512
