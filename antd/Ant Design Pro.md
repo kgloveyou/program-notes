@@ -243,7 +243,11 @@ return (
 
 # ant design pro v4 从后台服务器请求菜单
 
-https://www.yuque.com/asuncat/blog/wgnx0u
+https://www.yuque.com/deepstates/blog/wgnx0u
+
+# ant design pro v4 菜单权限、按钮权限控制
+
+https://www.yuque.com/deepstates/blog/rkv8p1
 
 # Antd-Pro 动态路由
 
