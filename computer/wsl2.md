@@ -12,6 +12,10 @@ lenovo/apulis#2020
 
 portainer  http://localhost:9000  admin/VMAtwP@BPXG6DXw
 
+wsl ubuntu
+
+hanjf/apulis#2020
+
 
 
 ## Windows10 与 WSL（Ubuntu）的文件互访
