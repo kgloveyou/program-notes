@@ -1,5 +1,9 @@
 # advanced-react
 
+## Table of contents
+
+https://advanced-react.com/
+
 # Chapter 1. Intro to re-renders
 
 P8：如果没有触发状态更新，那么改变 props 将被“吞噬”：React 不会监控它们。
@@ -38,3 +42,108 @@ https://advanced-react.com/examples/01/02
 # Chapter 2. Elements, children as props, and re-renders  
 
 P28
+
+## 问题
+
+```tsx
+import { ReactNode, useState } from 'react';
+
+import { BunchOfStuff, OtherStuffAlsoComplicated } from './components/mocks';
+import { VerySlowComponent } from './components/very-slow-component';
+import './styles.scss';
+
+const MovingBlock = ({ position }: { position: number }) => (
+  <div className="movable-block" style={{ top: position }}>
+    {position}
+  </div>
+);
+
+// just hard-coded approximation to demonstrate the re-renders problem
+// not to be used in real code
+const getPosition = (val: number) => 150 - val / 2;
+
+const ScrollableWithMovingBlock = ({ content }: { content: ReactNode }) => {
+  const [position, setPosition] = useState(150);
+
+  const onScroll = (e: any) => {
+    const calculated = getPosition(e.target.scrollTop);
+    setPosition(calculated);
+  };
+
+  return (
+    <div className="scrollable-block" onScroll={onScroll}>
+      <MovingBlock position={position} />
+      {/* put our content prop here, where the slow bunch of stuff used to be */}
+      {content}
+    </div>
+  );
+};
+
+export default function App() {
+  const slowComponents = (
+    <>
+      <VerySlowComponent />
+      <BunchOfStuff />
+      <OtherStuffAlsoComplicated />
+    </>
+  );
+
+  return <ScrollableWithMovingBlock content={slowComponents} />;
+}
+```
+
+## 元素、组件和渲染
+
+```jsx
+const Parent = (props) => {
+	return <Child />;
+};
+```
+
+事实上，漂亮的类似 HTML 的语法只不过是 `React.createElement` 函数的语法糖[2]。我们甚至可以用以下内容替换该元素：`React.createElement(Child, null, null)` 一切都会按预期工作 。
+
+
+
+现在来谈谈重新渲染。通常我们所说的 "重新渲染" 是指 React 调用那些函数并执行在此过程中需要执行的一切（比如钩子）。从这些函数的返回值，React 构建了一个对象树。我们现在称之为 Fiber 树，有时也叫虚拟 DOM。事实上，它甚至是两棵树：重新渲染之前和之后的树。通过比较（"diffing"），React 将提取信息发送给浏览器：哪些 DOM 元素需要更新、删除或添加。这就是所谓的 "协调" 算法。
+
+在本章问题中最重要的部分是：如果在重新渲染之前和之后的对象（元素）完全相同，那么React将跳过表示该元素及其嵌套组件的组件的重新渲染。而所谓的 "完全相同" 意味着 `Object.is(ElementBeforeRerender, ElementAfterRerender)` 返回 `true`。React不会执行对象的深度比较。如果这个比较的结果是 `true`，那么React将保持该组件不变，并继续下一个组件。
+
+如果比较返回 `false`，这就是向 React 发出的信号，表示某些东西发生了变化。接着，React会查看组件的`type`。如果`type`相同，React将重新渲染此组件。如果`type`发生了变化，它将删除 "旧" 组件并挂载 "新" 组件。我们将在第6章中更详细地研究这一过程，深入了解比较和协调。
+
+## Children as props  
+
+```jsx
+<Parent children={<Child />} />
+
+// exactly the same as above
+<Parent>
+	<Child />
+</Parent>
+```
+
+## 要点总结
+
+希望这一切都讲得清楚，你现在对"组件作为属性"和"子元素作为属性"的模式有了信心。在下一章中，我们将看看在性能之外，组件作为属性如何有用。与此同时，这里有一些需要记住的事项：
+
+- 一个组件只是一个接受参数（props）并返回应该在屏幕上渲染时渲染的元素的函数。`const A = () => <B />` 就是一个组件的示例。这个组件不接受任何 props，它返回了一个 `<B />` 元素，表示在渲染时会渲染组件 `B`。这是 React 中组件的基本构建块之一，通过组件的嵌套和组合，你可以构建复杂的用户界面。
+
+- 一个元素（Element）是一个对象，它描述了需要在屏幕上渲染的内容，类型可以是字符串（用于表示DOM元素）或组件的引用。`const b = <B />` 是一个元素的示例。这个元素表示在渲染时应该渲染组件 `B`。元素是 React 构建用户界面的基本单位，它们可以包含在组件中，形成组件树，最终渲染成实际的UI。
+
+- 重新渲染只是React调用组件函数。
+
+- 当组件的元素对象发生变化时，组件会重新渲染，这是通过在重新渲染之前和之后对其进行 `Object.is` 比较来确定的。
+
+- 当元素作为 props 传递给组件，并且这个组件通过状态更新触发重新渲染时，作为 props 传递的元素不会重新渲染。
+
+- "children" 只是 props，当它们通过 JSX 嵌套语法传递时，它们的行为与其他 prop 类似：
+
+```jsx
+<Parent>
+	<Child />
+</Parent>
+
+// the same as:
+<Parent children={<Child />} />
+```
+
+# 第3章：将元素作为 props 的配置问题
