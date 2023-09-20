@@ -147,3 +147,40 @@ const Parent = (props) => {
 ```
 
 # 第3章：将元素作为 props 的配置问题
+
+## 问题
+
+## Elements as props  
+
+```jsx
+const ModalDialog = ({ children, footer }) => {
+  return (
+    <div className="dialog">
+      <div className="content">{children}</div>
+      <div className="footer">{footer}</div>
+    </div>
+  );
+};
+```
+
+永远记住：在这种情况下，“children”只不过是一个 prop，而“嵌套”语法只是它的语法糖！
+
+## 条件渲染和性能
+
+```jsx
+const App = () => {
+  return (
+    <>
+      <Route path="/some/path" element={<Page />} />
+      <Route path="/other/path" element={<OtherPage />} />
+      ...
+    </>
+  );
+};
+```
+
+这里没有条件，所以感觉就像 App 同时拥有和渲染了 <Page /> 和 <OtherPage />。但事实并非如此。它只是创建了描述这些页面的小对象。实际的渲染只会在路径与URL匹配并且element属性确实从Route组件中返回时发生。
+
+## `props` 中元素的默认值
+
+50
