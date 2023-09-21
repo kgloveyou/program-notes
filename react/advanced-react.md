@@ -184,3 +184,81 @@ const App = () => {
 ## `props` 中元素的默认值
 
 50
+
+```tsx
+import React, { ReactElement } from 'react';
+
+import LoadingIcon from '@mui/icons-material/HourglassEmpty';
+import './styles.scss';
+
+type IconProps = {
+  color?: string;
+  size?: 'large' | 'medium' | 'small';
+};
+const Loading = ({ color, size }: IconProps) => <LoadingIcon style={{ color }} fontSize={size} />;
+
+type ButtonProps = {
+  icon: ReactElement;
+  size?: 'large' | 'normal';
+  appearance?: 'primary' | 'secondary';
+};
+const Button = ({ icon, size = 'normal', appearance = 'primary' }: ButtonProps) => {
+  // create default props
+  const defaultIconProps = {
+    size: size === 'large' ? 'large' : 'medium',
+    color: appearance === 'primary' ? 'white' : 'black',
+  };
+  const newProps = {
+    ...defaultIconProps,
+    // make sure that props that are coming from the icon override default if they exist
+    ...icon.props,
+  };
+
+  // clone the icon and assign new props to it
+  const clonedIcon = React.cloneElement(icon, newProps);
+
+  return <button className={`button ${appearance}`}>Submit {clonedIcon}</button>;
+};
+
+export default function App() {
+  return (
+    <>
+      <h4>primary button will have white icons</h4>
+      <Button appearance="primary" icon={<Loading />} />
+
+      <h4>secondary button will have black icons</h4>
+      <Button appearance="secondary" icon={<Loading />} />
+
+      <h4>large button will have large icons</h4>
+      <Button size="large" icon={<Loading />} />
+
+      <h4>override default icons</h4>
+      <Button size="large" icon={<Loading color="red" />} />
+    </>
+  );
+}
+```
+
+https://react.dev/reference/react/cloneElement
+
+使用 `cloneElement` 不常见，可能会导致脆弱的代码。请参阅常见的替代方法。
+
+`cloneElement` 允许你使用另一个元素作为起点来创建一个新的 React 元素。
+
+```tsx
+const clonedElement = cloneElement(element, props, ...children)
+```
+
+- 参考
+-- cloneElement(element, props, ...children)
+- 用法
+-- 覆盖元素的属性
+- 替代方法
+-- 使用渲染属性传递数据
+-- 通过上下文传递数据
+-- 将逻辑提取到自定义 Hook 中
+
+## 为什么我们不应该在默认值上过于疯狂
+
+52
+
