@@ -262,3 +262,115 @@ const clonedElement = cloneElement(element, props, ...children)
 
 52
 
+## 要点总结
+
+# 第4章：使用`render`  属性进行高级配置
+
+## Render props for rendering Elements  
+
+一个渲染属性（render prop）本质上就是一个返回元素的函数。这个函数几乎与一个组件（Component）相同。唯一的不同是，你不会直接调用一个组件 - React会代为调用，但渲染函数（render function）在你的控制之下。
+
+## 共享有状态逻辑：将子元素作为渲染属性（render props）
+
+## Hooks replaced render props  
+
+```tsx
+const useResizeDetector = () => {
+  const [width, setWidth] = useState(0);
+
+  useEffect(() => {
+    const listener = () => {
+      const width = window.innerWidth;
+      setWidth(width);
+    };
+    window.addEventListener('resize', listener);
+    // the rest of the code
+  }, []);
+
+  return width;
+};
+
+export default function App() {
+  const windowWidth = useResizeDetector();
+
+  return windowWidth > 600 ? <WideLayout /> : <NarrowLayout />;
+}
+```
+
+## 要点总结
+
+# 第5章：使用useMemo、useCallback和React.memo进行记忆化（Memoization）
+
+## 问题：比较值
+
+```jsx
+const Component = () => {
+  const submit = () => { };
+  useEffect(() => {
+    // call the function here
+    submit();
+    // it's declared outside of the useEffect
+    // so should be in the dependencies
+  }, [submit]);
+  return ...
+}
+```
+
+重新渲染就是React调用组件的函数。在重新渲染过程中，每个局部变量都会被重新创建，与JavaScript中的任何函数一样。
+
+因此，React将比较重新渲染前后的 `submit` 变量，以确定这次是否应该运行 `useEffect` 钩子。由于每次都是一个新的引用，比较将始终返回false。因此，`useEffect` 钩子将在每次重新渲染时触发。这可能会导致不必要的副作用执行。
+
+## useMemo 和 useCallback：它们是如何工作的
+
+正如您所看到的，API 中存在轻微的差异。`useCallback` 将我们要记忆化的函数作为第一个参数，而 `useMemo` 接受一个函数并记忆化其返回值。正因为这一点，它们的行为也存在轻微差异。
+
+这一切为什么重要呢？对于实际应用程序而言，除了理解API之间的差异外，它并不重要。然而，有时会出现这种观点，即 `useMemo` 在性能方面比 `useCallback` 更好，因为 `useCallback` 在每次重新渲染时都会重新创建传递给它的函数，而 `useMemo` 不会这样做。但正如您所看到的，这并不正确。对于它们两者来说，第一个参数中的函数都会被重新创建。
+
+理论上，我唯一能想到会真正重要的情况是，当我们将另一个函数执行的结果硬编码内联传递为第一个参数时。基本上就是这样的情况：
+
+## 反模式：对props进行记忆化
+
+在记忆化钩子的使用中，除了记忆化值作为依赖项之外，第二常见的用例是将它们传递给props。您肯定已经见过类似这样的代码：
+
+```jsx
+const Component = () => {
+  const onClick = useCallback(() => {
+    // do something on click
+  }, []);
+  return <button onClick={onClick}>click me</button>;
+};
+```
+
+不幸的是，这里的 `useCallback` 是多余的。有一种广泛传播的观点，即即使是ChatGPT似乎也持有这种观点，即对props进行记忆化可以防止组件重新渲染。但正如我们在前几章已经了解到的那样，如果一个组件重新渲染，那么该组件内部的每个组件也将重新渲染。
+
+所以，无论我们是否将`onClick`函数包装在`useCallback`中，在这里都没有什么关系。我们所做的只是让React多做一些工作，使我们的代码变得更难阅读。当只有一个`useCallback`时，看起来还不算太糟糕。但通常情况下不会只有一个，对吧？会有另一个，然后是另一个，它们将开始相互依赖，然后在你知道之前，应用程序中的逻辑就被埋在了难以理解和难以调试的`useMemo`和`useCallback`的混乱之中。
+
+实际上只有两种主要情况下我们需要在组件上对props进行记忆化。第一种情况是当这个prop在下游组件中的另一个hook中用作依赖项时。
+
+```jsx
+const Parent = () => {
+  // this needs to be memoized!
+  // Child uses it inside useEffect
+  const fetch = () => { };
+  return <Child onMount={fetch} />;
+};
+const Child = ({ onMount }) => {
+  useEffect(() => {
+    onMount();
+  }, [onMount]);
+};
+```
+
+这应该是不言自明的：如果一个非原始值（non-primitive  ）进入依赖项，它应该在重新渲染之间具有稳定的引用，即使它来自一系列的props。
+
+第二种情况是当一个组件被包装在`React.memo`中。
+
+## What is React.memo  
+
+React.memo或简称memo是React提供给我们的一个非常有用的工具。它允许我们对组件本身进行记忆化。如果一个组件的重新渲染是由其父组件触发的（仅在这种情况下），并且如果这个组件被包装在React.memo中，那么只有在这种情况下，React才会停下来检查它的props。如果没有props发生变化，那么组件将不会重新渲染，并且正常的重新渲染链将被停止。这有助于提高性能，避免不必要的重新渲染。
+
+这再次是React执行我们在本章开头谈到的比较的情况。如果其中一个props发生了变化，那么被包装在React.memo中的组件将像通常一样重新渲染：
+
+## React.memo and children  
+
+88
