@@ -262,6 +262,7 @@ const clonedElement = cloneElement(element, props, ...children)
 
 52
 
+<<<<<<< HEAD
 ## 要点总结
 
 # 第4章：使用`render`  属性进行高级配置
@@ -373,4 +374,12 @@ React.memo或简称memo是React提供给我们的一个非常有用的工具。�
 
 ## React.memo and children  
 
-88
+# 5
+
+## useMemo and expensive calculations
+
+## 要点总结
+
+# 第6章：深入探讨差异计算和协调（Diffing and Reconciliation）
+
+92
