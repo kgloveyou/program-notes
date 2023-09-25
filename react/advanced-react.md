@@ -390,3 +390,44 @@ React.memo或简称memo是React提供给我们的一个非常有用的工具。�
 
 ## Reconciliation and state update  
 
+## 为什么不应该在其他组件内部创建组件？
+
+为什么通常认为这种代码是一个反模式？
+
+```jsx
+const Component = () => {
+  const Input = () => <input />;
+  return <Input />;
+};
+```
+
+```tsx
+import { useState } from 'react';
+import './styles.scss';
+
+export default function App() {
+  const [text, setText] = useState('');
+
+  const ComponentWithState = () => {
+    const [isActive, setIsActive] = useState(false);
+
+    return (
+      <div className={`block ${isActive ? 'active' : ''}`}>
+        <button onClick={() => setIsActive(!isActive)}>click to highlight</button>
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      <input type="text" className="input" value={text} onChange={(e) => setText(e.target.value)} />
+      <ComponentWithState />
+    </div>
+  );
+}
+```
+
+在React中像这样在其他组件内部声明组件可以是性能上的重大隐患之一。
+
+## 谜题的答案
+
