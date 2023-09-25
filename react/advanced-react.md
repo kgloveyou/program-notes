@@ -382,4 +382,11 @@ React.memo或简称memo是React提供给我们的一个非常有用的工具。�
 
 # 第6章：深入探讨差异计算和协调（Diffing and Reconciliation）
 
-92
+## 神秘的Bug
+
+## 差异比对和协调
+
+这个虚拟DOM只是一个巨大的对象，包含了所有应该渲染的组件、它们的所有props以及它们的子组件 - 这些子组件也是具有相同结构的对象。
+
+## Reconciliation and state update  
+
