@@ -262,3 +262,12 @@ const clonedElement = cloneElement(element, props, ...children)
 
 52
 
+# 5
+
+## useMemo and expensive calculations
+
+## 要点总结
+
+# 第6章：深入探讨差异计算和协调（Diffing and Reconciliation）
+
+92
