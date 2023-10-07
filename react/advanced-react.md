@@ -431,3 +431,10 @@ export default function App() {
 
 ## 谜题的答案
 
+有至少两种简单的方法可以修复它：使用数组和keys。
+
+## Reconciliation and arrays  
+
+## Reconciliation and "key"  
+
+还有另一种修复相同 bug 的方法：借助 "key" 属性。 
