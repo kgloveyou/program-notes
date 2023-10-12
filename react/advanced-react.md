@@ -438,3 +438,7 @@ export default function App() {
 ## Reconciliation and "key"  
 
 还有另一种修复相同 bug 的方法：借助 "key" 属性。 
+
+## "Key" attribute and memoized list  
+
+116
