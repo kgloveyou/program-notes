@@ -441,4 +441,10 @@ export default function App() {
 
 ## "Key" attribute and memoized list  
 
-116
+## 使用 "key" 强制重用现有元素
+
+## 为什么我们在数组外部不需要使用键（keys）？
+
+## 动态数组和普通元素一起使用
+
+123
