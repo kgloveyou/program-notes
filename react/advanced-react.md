@@ -471,4 +471,49 @@ export default function App() {
 
 但最重要的是，理解上下文对于外部状态管理库（如Redux）非常有用。心智模型完全相同。如果你学会了上下文，你将能够以非常少的努力以最优的方式使用任何状态管理库。
 
-141
+## 问题
+
+very-slow-component.tsx
+
+```tsx
+const wait = (ms: number) => {
+  const start = Date.now();
+  let now = start;
+
+  while (now - start < ms) now = Date.now();
+};
+
+export const VerySlowComponent = () => {
+  wait(400);
+  return null;
+};
+
+export const AnotherVerySlowComponent = () => {
+  wait(400);
+  return null;
+};
+```
+
+模拟耗时操作。
+
+## How Context can help  
+
+不再需要在任何地方传递属性！现在，当状态发生变化时，上下文提供程序（Context provider ）上的 `value` 属性将发生变化，只有使用 `useNavigation` 钩子的组件将重新渲染。侧边栏或主块内的所有其他组件都不使用它，因此它们是安全的，不会重新渲染。就是这样，通过简单使用 Context ，我们大幅提高了整个应用程序的性能。
+
+
+
+## Context value change  
+
+每次 Context 提供者上的 `value` prop 发生变化时，使用此 Context 的每个组件都会重新渲染。
+
+每当我们改变状态时，值对象都会发生变化，因此每个通过 `useNavigation` 使用此上下文的组件都会重新渲染。这是自然而预期的：我们希望每个人都能访问到最新的值，而在React中更新组件的唯一方式就是重新渲染它们。
+
+## 防止不必要的 Context  重新渲染：拆分 providers  
+
+## Reducers and split providers  
+
+`useReducer`  
+
+## Context selectors
+
+163
