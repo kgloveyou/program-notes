@@ -516,4 +516,18 @@ export const AnotherVerySlowComponent = () => {
 
 ## Context selectors
 
-163
+## 要点
+
+- 使用 Context（或任何类似上下文状态管理库），我们可以在渲染树深处将数据直接从一个组件传递给另一个组件，而无需通过 props 连接它。
+
+- 通过这种方式传递数据可以提高我们应用程序的性能，因为我们可以避免重新渲染中间的所有组件。
+
+- 然而，Context 可能存在风险：如果上下文提供程序中的值发生更改，所有使用它的组件都将重新渲染。这种重新渲染无法通过标准的记忆化技术来阻止。
+
+- 为了最小化 Context 重新渲染，我们应该始终对传递给提供程序的值进行记忆化处理。
+
+- 我们可以将 Context 提供程序拆分为多个提供程序，以进一步减少重新渲染。切换从 `useState` 到 `useReducer` 可以在这方面提供帮助。
+
+- 即使我们没有适当的 Context 选择器，我们可以使用高阶组件和 `React.memo` 来模拟它们的功能。
+
+# Chapter 9. Refs: from storing data to imperative API  
