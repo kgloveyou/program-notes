@@ -531,3 +531,139 @@ export const AnotherVerySlowComponent = () => {
 - 即使我们没有适当的 Context 选择器，我们可以使用高阶组件和 `React.memo` 来模拟它们的功能。
 
 # Chapter 9. Refs: from storing data to imperative API  
+
+## 在React中访问DOM
+
+## Ref 是什么?  
+
+Ref（引用）是React在重新渲染之间保留的可变对象。请记住，在组件内部声明的一切将会在每次重新创建。
+
+```jsx
+const Component = () => {
+    //  "data"对象将在每次重新渲染时都是新的
+    const data = { id: 'test' };
+};
+```
+
+组件只是函数，所以其中的一切基本上都是该函数的局部变量。Refs允许我们绕过这种限制。
+
+要创建一个Ref，我们可以使用`useRef`钩子，并将Ref的初始值传递给它：
+
+```jsx
+const Component = () => {
+  const ref = useRef({ id: "test" });
+};
+```
+
+这个初始值现在可以通过`ref.current`属性访问，我们传递给Ref的所有内容都存储在那里。
+
+```jsx
+const Component = () => {
+  // pass initial value here
+  const ref = useRef({ id: "test" });
+  useEffect(() => {
+    // access it here
+    console.log(ref.current);
+  });
+};
+```
+
+初始值被缓存，所以如果我们在重新渲染之间比较`ref.current`，引用将保持不变。这就好像我们只是在该对象上使用了`useMemo`钩子一样。
+
+所有这些看起来非常类似于状态（state），是吗？只是API不同。那么，有什么需要注意的地方呢？为什么我们在各处都使用状态，但Ref被认为是一个不应该使用的逃生舱？在使表单太花哨之前，让我们首先弄清楚这个问题。也许我们根本不需要在那里使用状态？
+
+## Ref 和 state 之间的区别
+
+在React中，通常情况下，我们会将一个`onChange`回调函数添加到 `input`  ，将输入的信息保存在 state 中，以便在重新渲染时保留它，然后在 `submit`  函数中访问它：
+
+
+
+但是我已经多次提到，我们存储在Ref中的任何内容也会在重新渲染之间保留。而且，方便的是，可以将任何内容分配给Ref。如果我只是将输入框的值保存在Ref中，而不是状态中，会发生什么呢？
+
+看起来它的工作方式与状态（state）完全相同：我在输入框中输入一些内容，然后点击按钮，该值就会被发送。
+
+那么，有什么区别呢？为什么我们通常不在我们的应用程序中看到这种模式呢？其中有一些原因。
+
+## Ref 的更新不会触发重新渲染
+
+在Ref和状态之间最显著的差异之一是，Ref的更新不会引起重新渲染。如果在这两种表单中都放置`console.log`，你会看到带有状态的Form组件在每次按键时重新渲染，而带有Ref的Form保持不变。
+
+表面上看，这似乎是个好消息。不是这本书的一半都专注于重新渲染以及如何避免它们吗？如果Refs不会引起重新渲染，那么它们肯定是解决所有性能问题的解决方案吗？
+
+并不是。如果你还记得第一章的内容，重新渲染是React生命周期的一个关键部分。这是React如何使用新信息更新我们的组件的方式。例如，如果我想在文本字段下方显示输入的字母数，使用Refs是无法实现的。
+
+## Ref 更新是同步的和可变的
+
+第二个重大的不同之处在于Ref的更新是同步的。毕竟，我们只是在JavaScript中进行同步操作，改变一个对象。然而，状态通常是异步的。它甚至更多于异步：状态更新是以"快照"的方式运行的。React拥有一个复杂的系统来管理它，并确保一个"快照"内的数据和组件保持一致并得到适当更新。然而，Ref没有这些复杂性：我们直接修改一个对象，就是这样。
+
+当你尝试在设置它们后在`onChange`回调中访问状态和Ref值时，这一点就变得非常明显。
+
+```jsx
+const Form = () => {
+  const [value, setValue] = useState();
+  const onChange = (e) => {
+    console.log("before", value);
+    setValue(e.target.value);
+    console.log("after", value); // same as before
+  };
+};
+```
+
+上面的代码中，"before"和"after"的值将是相同的。当我们调用`setValue`时，我们并没有立即更新状态。我们只是让React知道它需要在完成当前的操作后安排一个状态更新，使用新的数据。
+
+使用Ref，情况正好相反：
+
+```jsx
+const Form = () => {
+  const ref = useRef();
+  const onChange = (e) => {
+    console.log("before", ref.current);
+    ref.current = e.target.value;
+    console.log("after", ref.current); // already changed
+  };
+};
+```
+
+我们修改了一个对象，该对象中的数据立即可用，但并不触发React生命周期的任何操作。
+
+## 那么我们什么时候可以使用 Ref 呢？
+
+我们可以使用Ref，例如，来存储有关组件的一些"开发"信息。也许我们对组件渲染的次数感兴趣：
+
+```jsx
+useEffect(() => {
+  ref.current = ref.current + 1;
+  console.log("Render number", ref.current);
+});
+```
+
+或者也许我们想要访问先前的状态值：
+
+```jsx
+const usePrevious = (value) => {
+  const ref = useRef();
+  useEffect(() => {
+    // this will be changed after the value is returned
+    ref.current = value;
+  }, [value]);
+  return ref.current;
+};
+```
+
+然后在`useEffect`中有条件地触发某些操作：
+
+```jsx
+useEffect(() => {
+  if (previuosValue.length > value.length) {
+    console.log("Text was deleted");
+  } else {
+    console.log("Text was added");
+  }
+}, [previuosValue, value]);
+```
+
+当然，还有一个重要而广泛使用的情况是将DOM元素分配给Ref。这是Ref的最重要和最流行的用例之一。
+
+## Assigning DOM elements to Ref  
+
+178
