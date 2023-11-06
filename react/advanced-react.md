@@ -666,4 +666,24 @@ useEffect(() => {
 
 ## Assigning DOM elements to Ref  
 
-178
+
+
+## Passing Ref from parent to child as a prop  
+
+## 使用`forwardRef`将 Ref 从父组件传递给子组件
+
+是使用`forwardRef`还是简单地将 Ref 作为属性传递只是个人口味的问题：最终结果是相同的。
+
+## Imperative API with useImperativeHandle  
+
+看起来现在是为我们的InputField组件实现一个适当的命令式API的时候了。React是声明性的，并期望我们相应地编写我们的代码。但有时候我们需要以命令式的方式触发某些操作。幸运的是，React为我们提供了一个逃生口：`useImperativeHandle`钩子。
+
+## Imperative API without useImperativeHandle  
+
+## 要点
+
+- 引用（Ref）只是一个可变对象，可以存储任何值。这个值将在重新渲染之间保留不变。
+- 引用（Ref）的更新不会触发重新渲染，而且是同步的。
+
+# 第10章. React中的闭包
+
