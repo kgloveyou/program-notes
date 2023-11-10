@@ -808,3 +808,6 @@ const Component = () => {
 
 这实际上可能是基于`useMemo`和`useCallback`的上一解决方案的一个很好的替代方案。我不知道您的情况，但有时这些链式钩子会让我头疼。基于ref的解决方案似乎要简单得多。
 
+## 要点
+
+# 第12章. 使用 useLayoutEffect 避免闪烁的UI
