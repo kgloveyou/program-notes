@@ -753,23 +753,346 @@ const Component = () => {
 
 这是因为闭包的生存期与引发它们的函数存在的时间一样长。对函数的引用只是一个可以分配给任何东西的值。让我们稍微费点脑筋。这是我们之前的函数，返回一个完全无害的闭包：
 
+
+
+```js
+const cache = {};
+let prevValue;
+const something = (value) => {
+  // check whether the value has changed
+  if (!cache.current || value !== prevValue) {
+    cache.current = () => {
+      console.log(value);
+    };
+  }
+  // refresh it
+  prevValue = value;
+  return cache.current;
+};
+```
+
+将值保存在一个变量中，以便我们可以将下一个值与前一个值进行比较。然后，如果变量发生了变化，刷新 `cache.current` 闭包。
+
+现在它将正确记录变量，如果我们比较具有相同值的函数，该比较将返回 `true`：
+
+```jsx
+const first = something('first');
+const anotherFirst = something('first');
+const second = something('second');
+first(); // logs "first"
+second(); // logs "second"
+console.log(first === anotherFirst); // will be true
+```
+
 ## Stale closures in React: useCallback  
 
 如果你还记得"使用`useMemo`、`useCallback`和`React.memo`进行记忆化"这一章节，上面的代码应该看起来很熟悉。事实上，我们刚刚实现了`useCallback`钩子为我们做的事情。
 
 每当我们使用`useCallback`时，我们都创建一个闭包，并且我们传递给它的函数被缓存：
 
+```jsx
+// that inline function is cached exactly as in the section before
+const onClick = useCallback(() => {}, []);
+```
+
+如果我们需要在这个函数内部访问状态或属性，我们需要将它们添加到依赖项数组中：
+
+```jsx
+const Component = () => {
+  const [state, setState] = useState();
+  const onClick = useCallback(() => {
+    // access to state inside
+    console.log(state);
+    // need to add this to the dependencies array
+  }, [state]);
+};
+```
+
+这个依赖项数组是让 React 刷新缓存闭包的关键，正如我们在比较 `value !== prevValue` 时所做的一样。如果我忘记了这个数组，我们的闭包就会变得陈旧（stale）：
+
+```jsx
+const Component = () => {
+  const [state, setState] = useState();
+  const onClick = useCallback(() => {
+    // state will always be the initial state value here
+    // the closure is never refreshed
+    console.log(state);
+    // forgot about dependencies
+  }, []);
+};
+```
+
+每次触发回调时，所有被记录的内容都将是 `undefined`。
+
 ## Stale closures in React: Refs  
+
+在 `useCallback` 和 `useMemo` 钩子之后，引入陈旧闭包问题的第二种最常见方式是使用 Refs。
+
+如果我尝试使用 Ref 来替代 `useCallback` 钩子作为 `onClick` 回调会发生什么呢？这有时是互联网上的一些建议，用于在组件上记忆 props。表面上看，它确实更简单：只需将一个函数传递给 `useRef`，然后通过 `ref.current` 进行访问。没有依赖项，没有担忧。
+
+```jsx
+const Component = () => {
+  const ref = useRef(() => {
+    // click handler
+  });
+  // ref.current stores the function and is stable between rerenders
+  return <HeavyComponent onClick={ref.current} />;
+};
+```
+
+然而。组件内的每个函数都将形成一个闭包，包括我们传递给 `useRef` 的函数。我们的 ref 将只在创建时初始化一次，并且永远不会自行更新。基本上就是我们在一开始创建的逻辑。只是，我们不是传递 `value`，而是传递我们想要保留的函数。类似于这样：
+
+```jsx
+const ref = {};
+const useRef = (callback) => {
+  if (!ref.current) {
+    ref.current = callback;
+  }
+  return ref.current;
+};
+```
+
+因此，在这种情况下，当组件刚挂载时形成的闭包将被保留并永远不会刷新。当我们尝试在存储在 Ref 中的函数中访问状态或属性时，我们只会得到它们的初始值：
+
+```jsx
+const Component = ({ someProp }) => {
+  const [state, setState] = useState();
+  const ref = useRef(() => {
+    // both of them will be stale and will never change
+    console.log(someProp);
+    console.log(state);
+  });
+};
+```
+
+为了解决这个问题，我们需要确保在我们尝试访问的每次更改时更新该 ref 值。基本上，我们需要实现依赖项数组功能对于 `useCallback` 钩子所做的事情。
+
+```jsx
+const Component = ({ someProp }) => {
+  // initialize ref - creates closure!
+  const ref = useRef(() => {
+    // both of them will be stale and will never change
+    console.log(someProp);
+    console.log(state);
+  });
+  useEffect(() => {
+    // update the closure when state or props change
+    ref.current = () => {
+      console.log(someProp);
+      console.log(state);
+    };
+  }, [state, someProp]);
+};
+```
 
 ## Stale closures in React: React.memo  
 
+最后，我们回到本章一开始并引发所有这一切的谜题。让我们再次看看有问题的代码：
+
+```jsx
+const HeavyComponentMemo = React.memo(
+  HeavyComponent,
+  (before, after) => {
+    return before.title === after.title;
+  },
+);
+const Form = () => {
+  const [value, setValue] = useState();
+  const onClick = () => {
+    // submit our form data here
+    console.log(value);
+  };
+  return (
+    <>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+      <HeavyComponentMemo
+        title="Welcome to the form"
+        onClick={onClick}
+      />
+    </>
+  );
+};
+```
+
+每次点击按钮时，我们都会记录 "undefined"。我们 `onClick` 内部的值从未更新。现在你能知道为什么了吗？
+
+当然，这又是一个陈旧的闭包问题。当我们创建 `onClick` 时，闭包首先使用默认状态值形成，即 "undefined"。我们将该闭包与 `title` 属性一起传递给我们的记忆化组件。在比较函数内部，我们仅比较 `title`。它永远不会改变，它只是一个字符串。比较函数始终返回 `true`，`HeavyComponent` 从未更新，因此它保存对第一个 `onClick` 闭包的引用，其中 `undefined` 被冻结。
+
+既然我们知道问题所在，我们该如何解决呢？这里说起来容易做起来难…
+
+理想情况下，我们应该在比较函数中比较每个 prop，因此我们需要将 `onClick` 包含在其中：
+
+```jsx
+(before, after) => {
+  return (
+    before.title === after.title &&
+    before.onClick === after.onClick
+  );
+};
+```
+
+然而，在这种情况下，这意味着我们只是重新实现了 React 的默认行为，实际上就是在做没有比较函数的 React.memo 所做的事情。因此，我们可以放弃比较函数，只保留 `React.memo(HeavyComponent)`。
+
+但这样做意味着我们需要用 `useCallback` 包装我们的 `onClick`。但它依赖于状态，因此会在每次按键时更改。我们又回到了原点：我们的重组件将在每次状态更改时重新渲染，这正是我们试图避免的。
+
+我们可以尝试使用组合玩弄，并尝试提取和隔离状态或 `HeavyComponent`。我们在前几章中探讨的技术。但这不会很容易：`input` 和 `HeavyComponent` 都依赖于该状态。
+
+我们可以尝试许多其他方法。但是，为了摆脱这个闭包陷阱，我们不必进行任何繁重的重构。这里有一个很酷的技巧可以帮助我们。
+
 ## 使用引用（Refs）来避免闭包陷阱
 
+这个技巧绝对令人惊叹：它非常简单，但它可能会永远改变你在React中进行函数记忆的方式。或者也可能不会……无论如何，这将对下一章至关重要，让我们深入了解一下。
 
+暂时去掉我们React.memo和onClick实现中的比较函数，只保留一个带有状态和经过记忆的HeavyComponent的纯组件：
 
+```jsx
+const HeavyComponentMemo = React.memo(HeavyComponent);
+const Form = () => {
+  const [value, setValue] = useState();
+  return (
+    <>
+      <input type="text" value={value} onChange={(e) =>
+        setValue(e.target.value)} />
+      <HeavyComponentMemo title="Welcome to the form" onClick=
+        {...} />
+    </>
+  );
+}
+```
 
+现在我们需要添加一个在重新渲染之间保持稳定但同时又能访问最新状态的onClick函数，我们将把它存储在Ref中，先留空：
+
+```jsx
+const Form = () => {
+  const [value, setValue] = useState();
+  // adding an empty ref
+  const ref = useRef();
+};
+```
+
+为了让函数能够访问到最新的状态，它需要在每次重新渲染时被重新创建。这是无法避免的，它是闭包的本质，与React无关。我们应该在 useEffect 中修改 Ref，而不是直接在渲染中，所以让我们这样做。
+
+```jsx
+const Form = () => {
+  const [value, setValue] = useState();
+  // adding an empty ref
+  const ref = useRef();
+  useEffect(() => {
+    // our callback that we want to trigger
+    // with state
+    ref.current = () => {
+      console.log(value);
+    };
+    // no dependencies array!
+  });
+};
+```
+
+使用没有依赖数组的 useEffect 将在每次重新渲染时触发。这正是我们想要的。所以现在在我们的 ref.current 中，我们有一个闭包，它在每次重新渲染时都会被重新创建，因此在那里记录的状态始终是最新的。
+
+但我们不能简单地将该 ref.current 传递给记忆化组件。该值将在每次重新渲染时不同，因此记忆化将无法起作用。
+
+```jsx
+const Form = () => {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = () => {
+      console.log(value);
+    };
+  });
+  return (
+    <>
+      {/* Can't do that, will break memoization */}
+      <HeavyComponentMemo onClick={ref.current} />
+    </>
+  );
+};
+```
+
+因此，让我们创建一个小的空函数，使用 useCallback 包装，没有依赖项。
+
+```jsx
+const Form = () => {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = () => {
+      console.log(value);
+    };
+  });
+  const onClick = useCallback(() => {
+    // empty dependency! will never change
+  }, []);
+  return (
+    <>
+      {/* Now memoization will work, onClick never changes */}
+      <HeavyComponentMemo onClick={onClick} />
+    </>
+  );
+};
+```
+
+现在，记忆功能运行得很完美 - onClick 从不改变。然而，有一个问题：它什么也没做。
+
+这就是魔术的窍门：为了使它起作用，我们所需要的就是在记忆的回调内调用 ref.current：
+
+```jsx
+useEffect(() => {
+  ref.current = () => {
+    console.log(value);
+  };
+});
+const onClick = useCallback(() => {
+  // call the ref here
+  ref.current();
+  // still empty dependencies array!
+}, []);
+```
+
+请注意，ref 不在 useCallback 的依赖项中。它不需要在 useCallback 中。ref 本身永远不会改变。它只是 useRef 钩子返回的可变对象的引用。
 
 但是当闭包固定周围的一切时，它并不会使对象变得不可变或冻结。对象存储在内存的不同部分，多个变量可以包含对完全相同对象的引用。
+
+But when a closure freezes everything around it, it doesn't make objects immutable or frozen. Objects are stored in a different part of the memory, and multiple variables can contain references to exactly the same object.  
+
+在我们的例子中，甚至这也不会发生：我们在 useCallback 和 useEffect 内部具有完全相同的引用。因此，当我们在 useEffect 内部更改 ref 对象的 current 属性时，我们可以在 useCallback 内部访问该确切属性。该属性恰好是捕获了最新状态数据的闭包。
+
+完整的代码如下：
+
+```jsx
+const Form = () => {
+  const [value, setValue] = useState();
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = () => {
+      // will be latest
+      console.log(value);
+    };
+  });
+  const onClick = useCallback(() => {
+    // will be latest
+    ref.current?.();
+  }, []);
+  return (
+    <>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+      <HeavyComponentMemo
+        title="Welcome closures"
+        onClick={onClick}
+      />
+    </>
+  );
+};
+```
+
+现在，我们拥有最佳的两全其美：重组件得到了正确的记忆化，不会在每次状态变化时重新渲染。并且组件中的 onClick 回调函数可以访问组件中的最新数据，而不会破坏记忆化。我们现在可以安全地将所有需要发送到后端的东西发送过去了！
 
 ## 要点
 
