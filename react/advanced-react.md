@@ -1399,3 +1399,26 @@ const Component = () => {
 ## Stacking Context in real apps  
 
 ## How React Portal can solve this
+
+在CSS中，`position: sticky;`是一种特殊的定位类型。它表示元素在滚动到某个位置时相对于其最近的定位祖先（而不是相对于视口）固定位置。
+
+更具体地说，当一个元素的定位被设置为`sticky`时，该元素在滚动超过其最近的定位祖先之前会根据正常的文档流进行定位。然而，一旦元素滚动超过其最近的定位祖先，它就会固定在指定的位置，直到页面的其余部分滚动到足够远的位置，使得元素再次成为视口的一部分。
+
+这种效果非常适合创建例如导航栏、工具提示等效果，其中元素需要在用户滚动页面时保持可见。
+
+需要注意的是，`position: sticky;`需要指定一个`top`、`bottom`、`left`或`right`的值，以确定元素在滚动超过其最近的定位祖先时要固定的位置。
+
+例如：
+
+```css
+.sticky {  
+  position: sticky;  
+  top: 0; /* 指定元素在滚动到顶部0位置时固定 */  
+}
+```
+
+## React生命周期、重新渲染、Context和Portal
+
+## CSS、原生JavaScript、表单提交和Portals  
+
+272
