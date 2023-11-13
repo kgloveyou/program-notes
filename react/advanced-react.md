@@ -1129,8 +1129,130 @@ const Form = () => {
 
 这里有什么可以做的吗？当然！这是一个使用 Refs 的完美用例。如果您搜索关于防抖和 React 的文章，其中一半将提到 `useRef` 作为避免在每次重新渲染时重新创建防抖函数的方法。
 
+通常，模式如下：
+
+```jsx
+const Input = () => {
+  // creating ref and initializing it with the debounced backend
+  call;
+  const ref = useRef(
+    debounce(() => {
+      // this is our old "debouncedSendRequest" function
+    }, 500)
+  );
+  const onChange = (e) => {
+    const value = e.target.value;
+    // calling the debounced function
+    ref.current();
+  };
+};
+```
+
 这实际上可能是基于`useMemo`和`useCallback`的上一解决方案的一个很好的替代方案。我不知道您的情况，但有时这些链式钩子会让我头疼。基于ref的解决方案似乎要简单得多。
 
+很遗憾，它只适用于先前的用例：当我们在回调函数中没有状态时。还记得前一章的闭包问题吗？Ref 的初始值被缓存且永远不会更新。在组件挂载和 ref 初始化时，它被“冻结”。
+正如我们已经了解的，使用 Ref 中的函数时，我们需要在 useEffect 中更新它们。否则，闭包就会变得陈旧。
+
+这是前一章中详细讨论的解决闭包陷阱的解决方案的另一个很好的用例！我们需要做的就是将 `sendRequest` 赋值给 `Ref`，在 `useEffect` 中更新 `Ref` 以获取对最新闭包的访问权限，然后在我们的闭包中触发 `ref.current`。记住：`Ref` 是可变的，闭包不执行深克隆。它只“冻结”对该可变对象的引用，我们仍然可以在每次引用的对象中进行变更。
+
+思考闭包让我的大脑感到混乱，但实际上它确实有效，在代码中更容易理解这个思路：
+
+```jsx
+const Input = () => {
+  const [value, setValue] = useState();
+    
+  const sendRequest = () => {
+    // send request to the backend here
+    // value is coming from state
+    console.log(value);
+  };
+    
+  // creating ref and initializing it with the sendRequest function
+  const ref = useRef(sendRequest);
+    
+  useEffect(() => {
+    // updating ref when state changes
+    // now, ref.current will have the latest sendRequest with access to the latest state
+    ref.current = sendRequest;
+  }, [value]);
+    
+  // creating debounced callback only once - on mount
+  const debouncedCallback = useMemo(() => {
+    // func will be created only once - on mount
+    const func = () => {
+      // ref is mutable! ref.current is a reference to the latest
+      sendRequest;
+      ref.current?.();
+    };
+    // debounce the func that was created once, but has access to the latest sendRequest
+    return debounce(func, 1000);
+    // no dependencies! never gets updated
+  }, []);
+    
+  const onChange = (e) => {
+    const value = e.target.value;
+      
+    // calling the debounced function
+    debouncedCallback();
+  };
+};
+```
+
+现在，我们只需将这个令人头疼的闭包逻辑提取到一个小小的钩子中，放入一个单独的文件，并假装不去注意它。
+
+```jsx
+const useDebounce = (callback) => {
+  const ref = useRef();
+    
+  useEffect(() => {
+    ref.current = callback;
+  }, [callback]);
+    
+  const debouncedCallback = useMemo(() => {
+    const func = () => {
+      ref.current?.();
+    };
+      
+    return debounce(func, 1000);
+  }, []);
+    
+  return debouncedCallback;
+};
+```
+
+然后，我们的生产代码可以在不用经受 useMemo 和 useCallback 那令人眼花缭乱的链条的情况下使用它，无需担心依赖，并可以在内部访问到最新的状态和属性！
+
+```jsx
+const Input = () => {
+  const [value, setValue] = useState();
+
+  const debouncedRequest = useDebounce(() => {
+    // send request to the backend
+    // access to the latest state here
+    console.log(value);
+  });
+
+  const onChange = (e) => {
+    const value = e.target.value;
+    setValue(value);
+    debouncedRequest();
+  };
+  
+  return <input onChange={onChange} value={value} />;
+};
+```
+
+JavaScript 中闭包和可变性的威力是无穷的！
+
 ## 要点
+
+那是不是很有趣？JavaScript 的闭包一定是互联网上最受欢迎的特性之一。在下一章中，我们将尝试从处理它们中恢复过来，转而玩一些 UI 改进。更具体地说，我们将学习如何消除定位元素的“闪烁”效果。但在此之前，让我们快速回顾一下本章：
+
+- 我们在希望跳过某个函数因被过于频繁触发而执行的情况下使用防抖和节流。
+- 为了让这些函数正常工作，它们应该在组件的生命周期内只被调用一次，通常是在组件挂载时。
+- 如果我们直接在组件的渲染函数中调用它们，内部的计时器将在每次重新渲染时重新创建，这样函数将无法按预期工作。
+- 为了解决这个问题，我们可以使用 useMemo 进行记忆化，或者通过使用 Refs。
+- 如果我们简单地对它们进行记忆化，或者“天真地”使用 Refs，我们将无法访问组件的最新数据，如状态或 props。这是因为在初始化 Ref 时创建了一个闭包，它会在创建时冻结值。
+- 为了避免闭包陷阱，我们可以利用 Ref 对象的可变性，在 useEffect 中不断更新 ref.current 中的“封闭”函数，从而获得对最新数据的访问权限。
 
 # 第12章. 使用 useLayoutEffect 避免闪烁的UI
