@@ -1421,4 +1421,274 @@ const Component = () => {
 
 ## CSS、原生JavaScript、表单提交和Portals  
 
-272
+如果你依赖于“原生”事件传播，这也不会生效。如果你尝试通过 element.addEventListener 捕捉在模态框中产生的事件，而不是在“主”div上使用 onClick 回调，它是不会生效的。
+
+```jsx
+const App = () => {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    el.addEventListener("click", () => {
+      // trying to catch events, originated in the portalled modal
+      // not going to work!!
+    });
+  }, []);
+  // the rest of the app
+  return <div ref={ref} ... />;
+};
+```
+
+如果你尝试通过 parentElement 获取模态框的父元素，它将返回根div，而不是主应用程序。对于任何作用于DOM元素的原生JavaScript函数，情况也是一样的。
+
+最后是 `<form>` 元素上的 onSubmit 事件。这是关于此问题最不明显的部分。它感觉与 onClick 相同，但实际上，submit 事件并不由 React 管理[23]。这是一个本地API和DOM元素的事情。如果我将应用程序的主体包装在 `<form>` 中，那么单击对话框内的按钮将不会触发 "submit" 事件！从DOM的角度来看，这些按钮在表单之外。如果您希望对话框内有一个表单并希望依赖 onSubmit 回调，则 form 标记也应该在对话框内。
+
+## 要点
+
+# 第14章. 客户端数据获取和性能
+
+## 数据获取的类型
+
+## 我真的需要在React中使用外部库来获取数据吗？
+
+## "性能良好" 的 React 应用是什么？
+
+## React生命周期和数据获取
+
+## 浏览器限制和数据获取
+
+你知道浏览器对同一主机并行处理的请求数量有限制吗？假设服务器是HTTP1（这仍然是互联网的70%），这个数字并不是很大。在Chrome中，只有6个[26]。只有6个请求可以同时处理！如果同时发送更多的请求，其余的请求都必须排队等待第一个可用的“槽位”。
+
+## 瀑布式请求：它们是如何出现的
+
+## 如何解决请求瀑布问题
+
+### Promise.all 解决方案
+
+```jsx
+useEffect(async () => {
+  const [sidebar, issue, comments] = await Promise.all([
+    fetch("/get-sidebar"),
+    fetch("/get-issue"),
+    fetch("/get-comments"),
+  ]);
+}, []);
+```
+
+```jsx
+fetch("/get-sidebar")
+  .then((data) => data.json())
+  .then((data) => setSidebar(data));
+fetch("/get-issue")
+  .then((data) => data.json())
+  .then((data) => setIssue(data));
+fetch("/get-comments")
+  .then((data) => data.json())
+  .then((data) => setComments(data));
+```
+
+现在，每个fetch请求都是并行发起的，但独立解决的。现在在App的渲染中，我们可以做一些很酷的事情，比如一旦Sidebar和Issue的数据出现在状态中，就进行渲染：
+
+
+
+
+
+这里需要注意的一点是，在这个解决方案中，我们独立触发了三次状态改变，这将导致父组件重新渲染三次。考虑到这是发生在应用程序的顶部，这样不必要的重新渲染可能导致半个应用程序不必要地重新渲染。性能影响实际上取决于组件的顺序，当然还取决于它们的大小，但这是需要牢记的事项。
+
+## 数据提供者用于抽象数据获取(Data providers to abstract away fetching)
+
+如上面的示例中将数据加载提升是有利于性能的，但对于应用程序架构和代码可读性来说却是糟糕的。
+
+突然间，我们不再有漂亮的数据获取请求和它们组件之间的关联，取而代之的是一个负责获取一切的庞大组件，以及贯穿整个应用程序的大量 prop 传递。
+
+幸运的是，对于这个问题有一个相对简单的解决方案：我们可以引入“数据提供者”的概念到应用中。“数据提供者”在这里只是一个围绕数据获取的抽象，它使我们能够在应用的一个地方获取数据，并在另一个地方访问该数据，绕过了中间的所有组件。本质上，它就像每个请求的一个小型缓存层。在“原始”的 React 中，它只是一个简单的上下文：
+
+```jsx
+const Context = React.createContext();
+export const CommentsDataProvider = ({ children }) => {
+  const [comments, setComments] = useState();
+  useEffect(async () => {
+    fetch("/get-comments")
+      .then((data) => data.json())
+      .then((data) => setComments(data));
+  }, []);
+  return <Context.Provider value={comments}>{children}</Context.Provider>;
+};
+export const useComments = () => useContext(Context);
+```
+
+如果你不是 Context 的狂热粉丝，不用担心，完全相同的概念可以适用于你选择的任何状态管理解决方案。
+
+## 如果我在 React 之前获取数据怎么办？
+
+最后一个要学习的技巧是对抗请求瀑布的。这个技巧非常重要，因此你可以在代码审查时阻止同事使用它。我的意思是，这是一件非常危险的事情，因此要谨慎使用。
+
+
+
+简单。记得浏览器的限制部分吗？只能并行处理 6 个请求，超过的请求会排队。而使用这种方法的 fetch 会立即触发，而且完全不受控制。在传统的瀑布流方法中，一个很少渲染的组件，即使它实际上被渲染了，也不会对任何人造成麻烦。但使用这个技巧，它有潜力窃取关键数据的初始获取中最宝贵的毫秒数。对于任何试图弄清楚一个位于代码某个存在的角落中、甚至从未在屏幕上渲染的组件如何拖慢整个应用程序的人，祝好运。
+
+这种模式只有两个“合理”的用例，我能想到的是：在路由器级别预获取一些关键资源和在懒加载组件中预获取数据。
+
+在第一种情况下，你实际上需要尽快获取数据，并且你确切地知道这些数据是关键的且立即需要的。而懒加载组件的 JavaScript 只有在它们出现在渲染树中时才会被下载和执行，因此，根据定义，它们在获取和渲染所有关键数据之后。所以是安全的。
+
+## 如果我使用数据获取的库呢？
+
+React 集成的库，如具有类似查询 API 的 hooks 的 swr[30]，此外还对使用 useCallback、state 和许多其他内容进行了抽象处理，如错误处理和缓存。与仍然需要许多工作才能达到生产就绪的这种代码怪物相比：
+
+## What about Suspense?
+
+```jsx
+const Issue = () => {
+  return (
+    <>
+      {/*issue data*/}
+      <Suspense fallback="loading">
+        <Comments />
+      </Suspense>
+    </>
+  );
+};
+```
+
+## 要点
+
+# 第15章。数据获取和竞态条件
+
+数据在前端获取时的另一个重要主题，值得拥有自己章节的关注是竞态条件。在我们日常生活中，这些条件相对较少，可以开发相当复杂的应用程序，而无需处理它们。但一旦它们发生，调查和修复它们可能是一个真正的挑战。由于在JavaScript中，fetch或任何异步操作大多数时候只是一个被美化的Promise，因此本章的主要焦点是Promises。
+
+## What is a Promise?  
+
+## Promises and race conditions  
+
+## Race condition reasons  
+
+一切归结为两个因素：Promises 的性质和 React 生命周期。
+
+但如果我在第一个 fetch 仍在进行且尚未完成时点击导航按钮，id 发生了变化会发生什么呢？这是一个很酷的情况！
+
+## 解决竞态条件：强制重新挂载(Fixing race conditions: force remounting  )
+
+```jsx
+const App = () => {
+  const [page, setPage] = useState("issue");
+  return (
+    <>
+      {page === "issue" && <Issue />}
+      {page === "about" && <About />}
+    </>
+  );
+};
+```
+
+顺便提一下，你还记得那个可怕的警告*"Can't perform a React state update on an unmounted component"*  吗？它通常会在这些情况下出现：当异步操作（比如数据获取）在组件已经卸载后完成时。不过“通常会”，因为它最近被移除了。
+
+然而，这并不是我会推荐用于解决一般竞态条件问题的解决方案。存在太多的注意事项：性能可能受到影响，焦点和状态可能出现意外的错误，可能会意外地触发渲染树下游的 useEffect。这更像是把问题搁置一边。在处理竞态条件的问题时有更好的方法（见下文）。但在某些情况下，如果小心使用，它可以是你工具库中的一种工具。
+
+## 解决竞态条件问题：丢弃错误的结果
+
+解决竞态条件问题的一种更温和的方式，而不是从整个`Page`组件中删除，只是确保`.then`回调中传入的结果与当前“活动”的id匹配。
+
+如果结果返回了用于生成URL的id，我们只需比较它们。如果它们不匹配，则忽略它们。这里的技巧是逃离React生命周期和函数的本地作用域，并在所有`useEffect`的迭代中（即使是“陈旧”的迭代）获取对“最新” id 的访问。这是在第9章“Refs：从存储数据到命令式API”中讨论过的Refs的另一个用例。
+
+```jsx
+const Page = ({ id }) => {
+  // create ref
+  const ref = useRef(id);
+  useEffect(() => {
+    // update ref value with the latest id
+    ref.current = id;
+    fetch(`/some-data-url/${id}`)
+      .then((r) => r.json())
+      .then((r) => {
+        // compare the latest id with the result
+        // only update state if the result actually belongs to that id
+        if (ref.current === r.id) {
+          setData(r);
+        }
+      });
+  }, [id]);
+};
+```
+
+你的结果没有返回可靠标识它们的内容？没问题，我们可以比较URL：
+
+```jsx
+const Page = ({ id }) => {
+  // create ref
+  const ref = useRef(id);
+  useEffect(() => {
+    // update ref value with the latest url
+    ref.current = url;
+    fetch(`/some-data-url/${id}`).then((result) => {
+      // compare the latest url with the result's url
+      // only update state if the result actually belongs to that url
+      if (result.url === ref.current) {
+        result.json().then((r) => {
+          setData(r);
+        });
+      }
+    });
+  }, [url]);
+};
+```
+
+## 解决竞态条件问题：删除所有先前的结果
+
+不喜欢之前的解决方案，或者认为为类似这样的问题使用 ref 很奇怪？没问题，还有另一种方法。useEffect 有一个称为 "cleanup" 函数的东西，我们可以在其中清理诸如订阅之类的东西。或者在我们的情况下，清理活跃的数据获取请求。
+
+它的语法如下：
+
+```jsx
+// normal useEffect
+useEffect(() => {
+  // "cleanup" function - function that is returned in useEffect
+  return () => {
+    // clean something up here
+  };
+  // dependency - useEffect will be triggered every time url has changed;
+}, [url]);
+```
+
+cleanup function[36]在组件卸载后运行，或在每次有更改的依赖项重新渲染之前运行。因此，在重新渲染期间的操作顺序如下：
+
+- url更改
+- 触发"清理"函数
+- 触发useEffect的实际内容
+
+这个结合了JavaScript函数和闭包的特性[37]，使我们能够这样做：
+
+```jsx
+useEffect(() => {
+  // local variable for useEffect's run
+  let isActive = true;
+  // do fetch here
+  return () => {
+    // local variable from above
+    isActive = false;
+  };
+}, [url]);
+```
+
+我们引入了一个本地的布尔变量 `isActive`，并在 `useEffect` 运行时将其设置为 `true`，在清理阶段设置为 `false`。`useEffect` 中的函数在每次重新渲染时都会重新创建，因此对于最新的 `useEffect` 运行，`isActive` 将始终重置为 `true`。但是！“清理”函数在之前运行，并且仍然可以访问先前函数的作用域，并将其重置为 `false`。这就是 JavaScript 闭包[38]的工作原理。
+
+虽然 fetch Promise 是异步的，但它仍然仅存在于该闭包内，并且仅能访问启动它的 `useEffect` 运行的本地变量。因此，在 `.then` 回调中检查 `isActive` 布尔值时，只有最新的运行，即尚未清理的运行，该变量才设置为 `true`。因此，我们现在只需要检查我们是否在活动的闭包中，如果是 - 设置状态。如果不是 - 什么都不做。数据将简单地消失在虚空中。
+
+```jsx
+useEffect(() => {
+  // set this closure to "active"
+  let isActive = true;
+  fetch(`/some-data-url/${id}`)
+    .then((r) => r.json())
+    .then((r) => {
+      // if the closure is active - update state
+      if (isActive) {
+        setData(r);
+      }
+    });
+  return () => {
+    // set this closure to not active before next re-render
+    isActive = false;
+  };
+}, [id]);
+```
+
+## 修复竞态条件：取消所有先前的请求
