@@ -1692,3 +1692,166 @@ useEffect(() => {
 ```
 
 ## 修复竞态条件：取消所有先前的请求
+
+与其清理或比较结果，我们可以简单地取消所有先前的请求。如果它们永远不完成，就不会发生包含过时数据的状态更新，问题就不会存在。我们可以使用 AbortController [39] 接口来实现。
+
+就是在 useEffect 中创建一个 AbortController 并在 cleanup 函数中调用 .abort()。
+
+```jsx
+useEffect(() => {
+  // create controller here
+  const controller = new AbortController();
+    
+  // pass controller as signal to fetch
+  fetch(url, { signal: controller.signal })
+    .then((r) => r.json())
+    .then((r) => {
+      setData(r);
+    });
+    
+  return () => {
+    // abort the request here
+    controller.abort();
+  };
+}, [url]);
+```
+
+因此，在每次重新渲染时，正在进行的请求将被取消，只有新的请求才能解析并设置状态。
+
+取消进行中的请求会导致 Promise 被拒绝，因此您需要捕获错误以消除控制台中的警告。但无论如何，正确处理 Promise 拒绝都是一个好主意，因此无论使用何种策略，都应该这样做。由于 AbortController 引起的拒绝会产生特定类型的错误，使得可以将其从常规错误处理中排除。
+
+```jsx
+fetch(url, { signal: controller.signal })
+  .then((r) => r.json())
+  .then((r) => {
+    setData(r);
+  })
+  .catch((error) => {
+    // error because of AbortController
+    if (error.name === 'AbortError') {
+      // do nothing
+    } else {
+      // do something, it's a real error!
+    }
+  });
+```
+
+## Async/await 改变了什么？
+
+不，实际上并没有。Async/await 只是以更好的方式编写相同的 promises。它只是从执行流的角度将它们变成了“同步”函数，但并没有改变它们的异步性质。与其说是：
+
+```jsx
+fetch('/some-url')
+  .then((r) => r.json())
+  .then((r) => setData(r));
+```
+
+我们会写成：
+
+```js
+const response = await fetch('/some-url');
+const result = await response.json();
+setData(result);
+```
+
+使用 async/await 而不是“传统”Promise实现的完全相同的应用程序将具有完全相同的竞争条件。
+
+上面的解决方案和原因都适用，只是语法略有不同。
+
+## 要点
+
+希望你对竞态条件是如何看似简单而又危险的问题有所印象，现在能够轻松地检测并避免它们。
+
+- 竞态条件可能发生在在同一个 React 组件中解析 promise 后多次更新状态的情况下。
+
+  ```jsx
+  useEffect(() => {
+    fetch(url)
+      .then((r) => r.json())
+      .then((r) => {
+        // this is vulnerable to the race conditions
+        setData(r);
+      });
+  }, [url]);
+  ```
+
+  
+
+- 我们可以通过以下方式解决它：
+  - 强制重新挂载一个组件，使用我们不需要的“旧”数据。
+  - 与触发 Promise 的变量比较返回的结果，如果它们不匹配，则不设置状态。
+  - 通过 useEffect 中的清理函数追踪最新的 Promise，并丢弃所有“旧” Promise 的结果。
+  - 使用 AbortController 取消所有先前的请求。
+
+
+
+# 第16章. 在React中的通用错误处理
+
+## 在 React 中为什么我们应该捕获错误
+
+答案很简单：从版本16开始，在 React 生命周期中抛出的错误如果没有被阻止，将导致整个应用卸载。在此之前，即使组件格式错误且表现异常，它们仍然会保留在屏幕上。现在，在UI的某个无关紧要的部分或者甚至一些你无法控制的外部库发生不可预知的未捕获错误时，都有可能破坏整个页面并呈现一个空白屏幕给所有用户。
+
+前端开发人员以前从未拥有过如此破坏性的力量！
+
+## 记住如何在JavaScript中捕获错误
+
+## 简单的React try/catch：如何操作以及注意事项
+
+## React ErrorBoundary 组件
+
+```jsx
+const Component = () => {
+  return (
+    <ErrorBoundary>
+      <SomeChildComponent />
+      <AnotherChildComponent />
+    </ErrorBoundary>
+  );
+};
+```
+
+现在，如果在这些组件或它们的子组件在渲染过程中出现问题，错误将被捕获并进行处理。
+
+但 React 并没有直接提供组件，它只是提供了一个工具来实现它。最简单的实现可能如下所示：
+
+## ErrorBoundary组件：局限性
+
+错误边界仅捕获在React生命周期中发生的错误。发生在生命周期之外的事情，比如已解析的Promise、带有setTimeout的异步代码、各种回调和事件处理程序，如果不明确处理，将会被忽略。
+
+```jsx
+const Component = () => {
+  useEffect(() => {
+    // this one will be caught by ErrorBoundary component
+    throw new Error('Destroy everything!');
+  }, []);
+  const onClick = () => {
+    // this error will just disappear into the void
+    throw new Error('Hulk smash!');
+  };
+  useEffect(() => {
+    // if this one fails, the error will also disappear
+    fetch('/bla');
+  }, []);
+  return <button onClick={onClick}>click me</button>;
+};
+const ComponentWithBoundary = () => {
+  return (
+    <ErrorBoundary>
+      <Component />
+    </ErrorBoundary>
+  );
+};
+```
+
+这里的常见建议是对这些类型的错误使用常规的try/catch。而至少在这里，我们可以相对安全地使用状态：事件处理程序的回调通常是我们通常设置状态的地方。因此，从技术上讲，我们可以将这两种方法结合起来，做如下操作：
+
+## 使用 ErrorBoundary 捕获异步错误
+
+有趣的是，我们实际上确实可以使用 ErrorBoundary 捕获所有错误！有一个很酷的技巧可以实现这一点。
+
+## 我可以使用 `react-errorboundary` 库吗？
+
+对于那些不喜欢重复造轮子或更喜欢已解决问题的库的人，有一个很好的库叫做 "react-error-boundary"，它实现了一个灵活的 ErrorBoundary 组件，并具有一些类似于上面描述的有用的工具。
+
+## 要点
+
