@@ -635,7 +635,7 @@ export const AnotherVerySlowComponent = () => {
 
 ## Ref 是什么?  
 
-Ref（引用）是React在重新渲染之间保留的可变对象。请记住，在组件内部声明的一切将会在每次重新创建。
+引用（Ref）是一个在重新渲染之间React保留的可变对象。记得组件内声明的所有内容都会一直被重新创建吗？
 
 ```jsx
 const Component = () => {
@@ -741,10 +741,12 @@ useEffect(() => {
 ```jsx
 const usePrevious = (value) => {
   const ref = useRef();
+    
   useEffect(() => {
     // this will be changed after the value is returned
     ref.current = value;
   }, [value]);
+    
   return ref.current;
 };
 ```
