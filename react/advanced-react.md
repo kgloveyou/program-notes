@@ -6,15 +6,118 @@ https://advanced-react.com/
 
 # Chapter 1. Intro to re-renders
 
-P8：如果没有触发状态更新，那么改变 props 将被“吞噬”：React 不会监控它们。
+## 问题
+
+very-slow-component.tsx 中模拟耗时操作。
+
+```tsx
+const wait = (ms: number) => {
+  const start = Date.now();
+  let now = start;
+
+  while (now - start < ms) now = Date.now();
+};
+
+export const VerySlowComponent = () => {
+  wait(500);
+  return null;
+};
+
+export const AnotherVerySlowComponent = () => {
+  wait(500);
+  return null;
+};
+```
+
+
+
+有经验处理 React 性能的人可能会说：“啊，当然！你在重新渲染整个应用，你只需要将所有东西包装在 React.memo 中，并使用 useCallback 钩子来防止它。”从技术上讲，这是对的。但不要急。在这里，记忆化是完全不必要的，而且会带来更多的弊端。
+
+但首先，让我们回顾一下这里到底发生了什么以及原因是什么。
+
+## 状态更新、嵌套组件和重新渲染
+
+让我们从头开始：组件的生命周期及在讨论性能时我们需要关注的最重要的阶段。这些阶段包括：挂载、卸载和重新渲染。
+
+接下来是卸载：这是当 React 检测到不再需要一个组件时的情况。因此，它进行最终的清理，销毁该组件的实例以及与之关联的所有内容，如组件的状态，最后移除与之关联的 DOM 元素。
+
+最后是重新渲染。这是当 React 用一些新信息更新已经存在的组件时发生的情况。与挂载相比，重新渲染是轻量级的：React 只是重用已经存在的实例，运行钩子，执行所有必要的计算，并使用新属性更新已存在的 DOM 元素。
+
+每次重新渲染都始于状态。在 React 中，每当我们使用像 useState、useReducer 或任何外部状态管理库（如 Redux）的钩子时，我们都为组件添加了交互性。从那时起，组件将具有在其生命周期内保留的一部分数据。如果发生需要交互响应的事件，比如用户点击按钮或传入一些外部数据，我们就使用新数据更新状态。
+
+重新渲染是 React 中最重要的概念之一。这是指 React 使用新数据更新组件并触发所有依赖于该数据的钩子。没有这些操作，React 中就不会有数据的更新，因此也就没有交互性。应用程序将会是完全静态的。而状态更新是 React 应用中所有重新渲染的初始来源。以我们的初始应用为例：
+
+```jsx
+const App = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  return <Button onClick={() => setIsOpen(true)}>Open dialog</Button>;
+};
+```
+
+当我们点击按钮时，触发了 `setIsOpen` setter 函数：我们使用新值（从 `false` 到 `true`）更新了 `isOpen` 状态。结果，持有该状态的 `App` 组件重新渲染自身。
+
+在状态更新并 `App` 组件重新渲染之后，需要将新数据传递给依赖它的其他组件。React 会自动为我们完成这个过程：它获取所有初始组件内渲染的组件，重新渲染它们，然后重新渲染它们内部的嵌套组件，以此类推，直到达到组件链的末尾。
+
+如果你将一个典型的 React 应用想象成一棵树，从状态更新发起的位置开始，向下的所有内容都将被重新渲染。
+
+在我们的应用中，当状态发生变化时，所有它渲染的东西，包括那些非常慢的组件，都将被重新渲染：
+
+```jsx
+const App = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  // everything that is returned here will be re-rendered when the state is updated
+  return (
+    <div className="layout">
+      <Button onClick={() => setIsOpen(true)}>Open dialog</Button>
+      {isOpen ? <ModalDialog onClose={() => setIsOpen(false)} /> : null}
+      <VerySlowComponent />
+      <BunchOfStuff />
+      <OtherStuffAlsoComplicated />
+    </div>
+  );
+};
+```
+
+结果，打开对话框几乎需要一秒钟的时间 - React 需要在对话框出现在屏幕上之前重新渲染所有内容。
+
+在这里要记住的重要一点是，当 React 重新渲染组件时，它永远不会沿着渲染树向上移动。如果状态更新起源于组件树的中间某个地方，那么只有树下方的组件将重新渲染。
+
+在“底部”的组件影响“顶部”组件的唯一方法是它们要么显式调用“顶部”组件中的状态更新，要么将组件作为函数传递。
+
+## The big re-renders myth
+
+您是否注意到我在这里没有提到有关 props 的任何内容？您可能听说过这个说法：“**组件在其 props 更改时重新渲染。**”这是React中最常见的误解之一：每个人都相信它，没有人怀疑它，但它实际上是不正确的。
+
+正常的 React 行为是，如果触发了状态更新，React 将重新渲染所有嵌套的组件，而不管它们的 props 如何。如果没有触发状态更新，那么更改 props 将被“吞噬”：React 不会监视它们。
+
+如果我有一个带有 props 的组件，并且我尝试在不触发状态更新的情况下更改这些 props，就像这样：
+
+```jsx
+const App = () => {
+  // local variable won't work
+  let isOpen = false;
+  return (
+    <div className="layout">
+      {/* nothing will happen */}
+      <Button onClick={() => (isOpen = true)}>Open dialog</Button>
+      {/* will never show up */}
+      {isOpen ? <ModalDialog onClose={() => (isOpen = false)} /> : null}
+    </div>
+  );
+};
+```
+
+它只是不起作用。当点击按钮时，本地的 `isOpen` 变量会改变。但是 React 生命周期没有被触发，所以渲染输出从未更新，模态对话框永远不会显示出来。
 
 https://advanced-react.com/examples/01/02
 
-这里的`prop`只是一个内部变量，并不是从外部传入的`prop`。所以，上面的说法存疑。
+（*疑问：这里的`prop`只是一个内部变量，并不是从外部传入的`prop`。所以，上面的说法存疑。*）
 
-在重新渲染的情况下，组件的属性是否发生变化只在一种情况下才会有影响：如果所说的组件被包裹在React.memo高阶组件中。只有在这种情况下，React才会停止其自然的重新渲染链，并首先检查属性。如果没有任何属性发生变化，那么重新渲染将在那里停止。如果有一个属性发生变化，它们将像平常一样继续重新渲染。
+在重新渲染的情况下，组件的属性是否发生变化只在一种情况下才会有影响：如果所说的组件被包裹在`React.memo`高阶组件中。只有在这种情况下，React才会停止其自然的重新渲染链，并首先检查属性。如果没有任何属性发生变化，那么重新渲染将在那里停止。如果有一个属性发生变化，它们将像平常一样继续重新渲染。
 
 正确地使用记忆化来防止重新渲染是一个复杂的话题，有许多注意事项。
+
+## Moving state down  
 
 ## 自定义 hooks 的危险性
 
@@ -40,8 +143,6 @@ https://advanced-react.com/examples/01/02
 - 在使用其他钩子的钩子的情况下，该钩子链中的任何状态更新都将触发使用第一个钩子的组件的重新渲染。
 
 # Chapter 2. Elements, children as props, and re-renders  
-
-P28
 
 ## 问题
 
@@ -260,9 +361,7 @@ const clonedElement = cloneElement(element, props, ...children)
 
 ## 为什么我们不应该在默认值上过于疯狂
 
-52
 
-<<<<<<< HEAD
 ## 要点总结
 
 # 第4章：使用`render`  属性进行高级配置
