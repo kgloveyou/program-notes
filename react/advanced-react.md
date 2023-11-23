@@ -123,7 +123,45 @@ https://advanced-react.com/examples/01/02
 
 毕竟，它们被引入的目的正是为了让我们能够抽象出有状态逻辑。
 
+为什么我称之为“危险”？这看起来像是一个合理的模式，而且代码稍微更清晰。因为这个钩子隐藏了我们在应用程序中有状态的事实。但是状态仍然存在！每当它更改时，它仍会触发使用此钩子的组件的重新渲染。甚至这个状态是直接在应用程序中使用的，甚至这个钩子是否返回任何东西都无关紧要。
 
+```jsx
+const useModalDialog = () => {
+  const [width, setWidth] = useState(0);
+  useEffect(() => {
+    const listener = () => {
+      setWidth(window.innerWidth);
+    };
+    window.addEventListener("resize", listener);
+    return () => window.removeEventListener("resize", listener);
+  }, []);
+  // return is the same
+  return ...
+};
+
+```
+
+整个 App 组件将在每次调整大小时重新渲染，即使这个值甚至并未从钩子中返回！
+
+Hooks 本质上就像裤子口袋。如果你手里拿着一块10公斤的哑铃，而不是把它放进口袋，这并不会改变它的重量：你身上多了10公斤的负担。但是如果你把那10公斤放在一个自动推车里，你就可以自由轻松地奔跑，甚至可以停下来喝杯咖啡：推车会照顾好自己。组件对于状态就像那个推车。
+
+同样的逻辑也适用于使用其他 hooks 的 hooks：无论在 hooks 链的多深处触发重新渲染，只要触发重新渲染的任何事物，都将导致使用第一个 hook 的组件重新渲染。如果我将额外的状态提取到一个返回 null 的 hook 中，App 仍然会在每次调整窗口大小时重新渲染：
+
+为了修复我们的应用，你仍然需要将按钮、对话框和自定义 hook 提取到一个组件中：
+
+```jsx
+const ButtonWithModalDialog = () => {
+  const { isOpen, open, close } = useModalDialog();
+
+  // render only Button and ModalDialog here
+  return (
+    <>
+      <Button onClick={open}>Open dialog</Button>
+      {isOpen ? <ModalDialog onClose={close} /> : null}
+    </>
+  );
+};
+```
 
 因此，状态的放置位置非常重要。理想情况下，为了避免未来的性能问题，你应该尽可能将状态隔离到尽可能小而轻的组件中。
 
