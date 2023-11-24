@@ -6,7 +6,7 @@
    - GitHub: [react-excel-renderer](https://github.com/ashishd751/react-excel-renderer)
    
 - 用法简单，适用于小型Excel文件。
-   
+  
    - Last publish 5 years ago
    
      
@@ -21,7 +21,7 @@
    
    - GitHub: [react-xlsx-renderer](https://github.com/catamphetamine/react-xlsx-renderer)
 - 用于渲染和预览XLSX文件。
-   
+  
 4. **react-excel-workbook-loader:**
    
    - GitHub: [react-excel-workbook-loader](https://github.com/Mayank8318/react-excel-workbook-loader)
@@ -44,4 +44,5 @@
 
 1、https://github.com/plangrid/react-file-viewer，已在adhub门头沟使用。
 
-2、
+2、[纯前端实现 Excel在线解析和预览（兼容APP、Web、小程序）](https://juejin.cn/post/7211805251216031801)
+
