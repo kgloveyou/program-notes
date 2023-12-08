@@ -23,3 +23,46 @@ useLayoutEffect 是一个同步执行的 Hook，它在 React 执行完所有的 
 例如，我们可以使用 useEffect 来发送网络请求获取数据，并在数据返回后更新组件的状态。这样可以确保数据获取的操作在组件渲染之后执行，避免阻塞渲染过程。类似地，我们可以使用 useLayoutEffect 来修改 DOM 元素的样式或进行其他 DOM 操作，确保这些操作在 DOM 变更之后立即生效。
 
 总而言之，副作用是指与组件渲染无关的操作，它们可能会对组件的行为产生影响。在 React 中，我们可以使用 useEffect 和 useLayoutEffect 来处理组件中的副作用，确保这些操作在合适的时机被触发。
+
+# useeffect uselayouteffect 哪个执行时机早
+
+根据React官方文档和Stack Overflow上的讨论，useEffect和useLayoutEffect是React中的两个Hook，它们都用于处理副作用，但它们的执行时机略有不同。
+
+useEffect是一个异步执行的Hook，它会在浏览器渲染完成后执行。这意味着当组件渲染完成并且屏幕更新后，useEffect中的副作用代码才会被触发执行。这使得useEffect非常适合处理不需要立即更新屏幕的副作用，比如数据获取、订阅管理等。
+
+相比之下，useLayoutEffect是一个同步执行的Hook，它会在浏览器渲染之前执行。这意味着useLayoutEffect中的副作用代码会在屏幕更新之前立即执行。这使得useLayoutEffect非常适合处理需要立即更新DOM布局的副作用，比如测量DOM元素、动画或过渡效果等。
+
+因此，总的来说，useLayoutEffect的执行时机比useEffect要早，它会在浏览器渲染之前同步执行，而useEffect则是在浏览器渲染完成后异步执行。
+
+以下是一个示例代码，用于演示useEffect和useLayoutEffect的执行时机差异：
+
+```javascript
+import React, { useState, useEffect, useLayoutEffect } from 'react';
+
+function ExampleComponent() {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    // 异步副作用代码，会在浏览器渲染完成后执行
+    fetchData().then((result) => {
+      setData(result);
+    });
+  }, []);
+
+  useLayoutEffect(() => {
+    // 同步副作用代码，会在浏览器渲染之前执行
+    measureDOMElement();
+  }, []);
+
+  return (
+    <div>
+      {/* 根据获取的数据渲染界面 */}
+      {data && <p>{data}</p>}
+    </div>
+  );
+}
+```
+
+在上面的示例中，useEffect用于获取数据并更新状态，而useLayoutEffect用于测量DOM元素。这样就清晰地展示了它们的执行时机差异。
+
+希望这能帮助你理解useEffect和useLayoutEffect的执行时机差异。
