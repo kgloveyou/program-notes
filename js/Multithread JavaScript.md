@@ -182,3 +182,7 @@ Worker的实例继承自EventTarget，并具有一些用于处理事件的通用
 ### 高级Shared worker 使用
 
 32
+
+## Service Workers  
+
+33
