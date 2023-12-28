@@ -185,4 +185,174 @@ Worker的实例继承自EventTarget，并具有一些用于处理事件的通用
 
 ## Service Workers  
 
-33
+服务工作线程（service worker）充当一种代理，位于在浏览器中运行的一个或多个网页与服务器之间。因为服务工作线程不仅与单个网页关联，而且可能与多个页面关联，它更类似于共享工作线程而不是专用工作线程。它们甚至以与共享工作线程相同的方式“keyed”。但服务工作线程可以在页面不一定仍然打开的情况下存在并运行在后台。因此，你可以将专用工作线程视为与一个页面关联，将共享工作线程视为与一个或多个页面关联，但将服务工作线程视为与零个或多个页面关联。但共享工作线程并不会奇迹般地自行生成。相反，它确实需要首先打开一个网页以安装共享工作线程。
+
+服务工作线程主要用于执行网站或单页面应用程序的缓存管理。它们最常在向服务器发送网络请求时被调用，在这种情况下，服务工作线程中的事件处理程序拦截网络请求。服务工作线程的闻名之处在于，当浏览器显示网页但其运行的计算机不再具有网络访问权限时，它可以用于返回缓存的资产。当服务工作线程收到请求时，它可能会查询缓存以查找缓存的资源，向服务器发出请求以检索资源的某种程度，甚至执行繁重的计算并返回结果。虽然最后一种选项使其类似于你已经了解的其他网络工作线程，但你真的不应该仅仅出于将 CPU 密集型工作卸载到另一个线程的目的而使用服务工作线程。
+
+服务工作线程暴露的 API 比其他网络工作线程更多，尽管它们的主要用途不是为了将繁重的计算卸载到主线程之外。服务工作线程足够复杂，可以有专门的书籍来介绍它们。也就是说，因为本书的主要目标是教你有关 JavaScript 的多线程能力，我们不会对其进行详细介绍。例如，有一个完整的推送 API 可用于接收从服务器推送到浏览器的消息，但这个部分我们将不涉及。
+
+就像其他 Web Worker 一样，Service Worker 无法访问 DOM。它们也不能进行阻塞请求。例如，将 XMLHttpRequest#open() 的第三个参数设置为 false，即阻塞代码执行，直到请求成功或超时，是不允许的。浏览器只允许 Service Worker 在使用 HTTPS 协议提供的 web 页面上运行。幸运的是，有一个显着的例外，即 localhost 可以使用 HTTP 加载 Service Worker，这是为了使本地开发更加方便。Firefox 在使用其隐私浏览功能时不允许 Service Worker。然而，Chrome 在使用其隐身模式功能时允许 Service Worker。尽管如此，Service Worker 实例无法在常规窗口和隐身窗口之间进行通信。
+
+Firefox 和 Chrome 都在检查器中有一个包含“Service Worker”部分的“应用”面板。您可以使用此功能查看与当前页面相关的任何Service Worker，并执行一个非常重要的开发操作：注销它们，这基本上允许您将浏览器状态重置到注册worker之前。不幸的是，截至当前浏览器版本，这些浏览器面板不提供进入Service Worker的 JavaScript 检查器的方法。
+
+**调试 Service Workers**
+
+要进入服务工作线程实例的检查器面板，您需要去其他地方。在 Firefox 中，打开地址栏并访问 `about:debugging#/runtime/this-firefox`。向下滚动到服务工作者部分，今天创建的任何工作者都应该显示在底部。对于 Chrome，有两个不同的屏幕可用于访问浏览器的服务工作者。更强大的页面位于 `chrome://serviceworker-internals/`。它包含服务工作者的列表、它们的状态和基本的日志输出。另一个在 `chrome://inspect/#service-workers`，它包含的信息要少得多。
+
+### Service Worker Hello World  
+
+在本节中，您将构建一个非常基本的 Service Worker，拦截从基本网页发送的所有 HTTP 请求。大多数请求将不经修改地传递到服务器。然而，对特定资源的请求将返回由 Service Worker 自己计算的值。大多数 Service Worker 通常会执行大量的缓存查找，但是再次强调，目标是从多线程的角度展示 Service Worker。
+
+main.js
+
+```js
+navigator.serviceWorker.register('/sw.js', { // <1>
+  scope: '/'
+});
+
+navigator.serviceWorker.oncontrollerchange = () => { // <2>
+  console.log('controller change');
+};
+
+async function makeRequest() { // <3>
+  const result = await fetch('/data.json');
+  const payload = await result.json();
+  console.log(payload);
+}
+```
+
+1、注册 Service Worker 并定义范围。
+2、监听 `controllerchange` 事件。
+3、用于发起请求的函数。
+
+
+
+现在事情开始变得有点有趣了。这个文件中的第一件事是创建 Service Worker。与您使用构造函数和 `new` 关键字创建的其他 Web Worker 不同，这里的代码依赖于 `navigator.serviceWorker` 对象来创建 Worker。第一个参数是充当 Service Worker 的 JavaScript 文件的路径。第二个参数是一个可选的配置对象，支持一个 `scope` 属性。
+
+`scope` 代表了当前 origin 的目录，其中任何在其中加载的 HTML 页面都会通过 Service Worker 传递其请求。默认情况下，`scope` 值与加载 Service Worker 的目录相同。在这种情况下，`/` 的值是相对于 `index.html` 目录的，因为 `sw.js` 位于相同的目录中，我们可以省略 `scope`，它会表现得完全相同。
+
+一旦 Service Worker 已经为页面安装，所有出站的 HTTP 请求都将通过 Service Worker 发送。这包括对不同 origin 的请求。由于此页面的 `scope` 设置为 origin 的最顶层目录，因此在此 origin 打开的任何 HTML 页面都必须通过 Service Worker 进行资源请求。如果 `scope` 设置为 `/foo`，那么在 `/bar.html` 打开的页面将不受 Service Worker 的影响，但在 `/foo/baz.html` 打开的页面将受到影响。
+
+接下来发生的事情是向 `navigator.serviceWorker` 对象添加了一个 `controllerchange` 事件的监听器。当这个监听器触发时，将在控制台中打印一条消息。此消息仅用于在 Service Worker 控制已加载的页面时进行调试，而这个页面位于 Worker 范围内。
+
+最后，定义了一个名为 `makeRequest()` 的函数。该函数发起一个对 `/data.json` 路径的 GET 请求，将响应解码为 JavaScript 对象表示法 (JSON)，并打印结果。正如你可能注意到的那样，这个函数没有被引用。相反，稍后你将在控制台中手动运行它以测试功能。
+
+有了这个文件，现在你已经准备好创建 Service Worker 本身了。创建一个名为 `sw.js` 的第三个文件，并将示例 2-10 中的内容添加到其中。
+
+
+
+
+
+最后一个事件处理程序是 `onfetch` 函数。这是最复杂的处理程序，也是在 Service Worker 的整个生命周期中被调用最多的处理程序。每当 Service Worker 控制的网页发起网络请求时，都会调用此处理程序。之所以称其为 `onfetch`，是为了表示它与浏览器中的 `fetch()` 函数相关，尽管这几乎是一个误称，因为任何网络请求都将通过它进行。例如，如果稍后向页面添加了图像标签，该请求也将触发 `onfetch`。
+
+此函数首先记录一条消息，以确认它正在运行，并打印正在请求的 URL。有关所请求资源的其他信息也是可用的，例如标头和 HTTP 方法。在实际应用程序中，可以使用这些信息与缓存进行交互，以查看资源是否已经存在。例如，可以从缓存中提供对当前源内资源的 GET 请求，但如果不存在，可以使用 `fetch()` 函数请求，然后将其插入缓存，然后返回给浏览器。
+
+### 高级 Service Worker 概念
+
+Service workers 的目的是仅用于执行异步操作。因此，技术上在读取和写入时会阻塞的 `localStorage` API 不可用。然而，异步的 `indexedDB` API 是可用的。此外，Service workers 中也禁用了顶级 `await`。
+
+在跟踪状态时，你主要会使用 self.caches 和 indexedDB。再次强调，在全局变量中保存数据是不可靠的。实际上，当调试你的 service worker 时，你可能会发现它们偶尔会停止，此时你无法进入检查器。浏览器有一个按钮允许你重新启动 worker，使你能够再次进入检查器。停止和启动会清除全局状态。
+
+浏览器对 Service Worker 脚本进行了相当积极的缓存。在重新加载页面时，浏览器可能会请求脚本，但除非脚本发生了变化，否则不会考虑替换它。Chrome 浏览器确实提供了在重新加载页面时触发脚本更新的功能；为此，请在检查器的 "Application" 选项卡中导航到 "Service Workers"，然后勾选 "Update on reload" 复选框。
+
+每个 Service Worker 从其创建时到可以使用的整个过程都会经历状态变化。通过读取 `self.serviceWorker.state` 属性，可以在 Service Worker 中获取其当前状态。以下是它可能经历的各个阶段：
+
+
+
+在哲学上，应该将 Service Worker 视为一种渐进增强的形式。这意味着如果根本不使用 Service Worker，任何使用它们的网页仍应该表现得像往常一样。这很重要，因为可能会遇到不支持 Service Worker 的浏览器，或者安装阶段可能会失败，或者注重隐私的用户可能会完全禁用它们。换句话说，如果您只想为应用程序添加多线程功能，那么选择其他 Web Worker 之一就足够了。
+
+在 Service Worker 中使用的全局 `self` 对象是 `ServiceWorker GlobalScope` 的实例。其他 Web Worker 中可用的 `importScripts()` 函数在这个环境中也是可用的。与其他 worker 一样，也可以将消息传递到 service worker 中，并从中接收消息。同样的 `self.onmessage` 处理程序可以被分配。这可能可用于向 Service Worker 发送信号，指示它应执行某种缓存失效。再次强调，通过这种方式传递的消息受到附录中讨论的相同克隆算法的影响。
+
+在调试 Service Worker 以及从浏览器发出的请求时，需要牢记缓存。不仅可以通过编程方式实现由您控制的缓存，而且浏览器本身还必须处理常规的网络缓存。这意味着从您的 Service Worker 发送到服务器的请求可能并不总是被服务器接收。因此，请牢记 `Cache-Control` 和 `Expires` 标头，并确保设置有意义的值。
+
+Service Worker 有许多更多的功能，超出了本节介绍的范围。Mozilla，Firefox 背后的公司，很友好地制作了一个包含构建 Service Worker 时常见策略的食谱网站。该网站位于 https://serviceworke.rs，如果您考虑在下一个 Web 应用程序中实现 Service Worker，我们建议您查看这个网站。
+
+Service Worker 和您已经了解的其他 Web Worker 确实带有一些复杂性。幸运的是，有一些方便的库和可以实现的通信模式，可以使它们的管理变得更容易。
+
+**跨文档通信**
+在浏览器中，有其他方法可以实现多线程 JavaScript 编程，而无需实例化 Web Worker。这可以通过在不同的浏览器上下文之间进行通信来实现，包括完全打开的页面和 iframe。浏览器提供了 API 以允许在这些页面之间进行通信。
+
+第一种方法是通过在网页中嵌入 iframe，或者创建一个弹出窗口，这在 Web Worker 存在之前就已经可用。父窗口能够获取对子窗口的引用，然后可以在该引用上调用 `.postMessage()` 方法以向子窗口发送消息。子窗口随后可以在其 window 对象上监听消息事件。子窗口还可以将消息传递回父窗口。这种模式可能启发了 Web Worker 接口的设计。
+
+第二种方法更为通用。它允许在不仅弹出窗口和 iframe，而且同一源打开的任何窗口之间进行通信。它甚至进一步允许在线程之间进行通信。通过实例化一个新的 BroadcastChannel 实例并将通道的名称作为第一个参数传递，可以实现此通信。然后，该通道允许进行发布/订阅（publish and subscribe）通信。生成的对象具有 `.postMessage()` 方法，并可以分配一个 `.onmessage` 处理程序。所有在不同环境中监听此通道的对象在发布消息后都将调用其消息处理程序。该实例还具有一个 `.close()` 方法，以断开与通道的连接。
+
+## 消息传递抽象
+
+本章介绍的每种 Web Worker 都提供了一个接口，用于在不同的 JavaScript 环境中传递消息，并从中接收消息。这使您能够构建能够同时在多个核心上运行 JavaScript 的应用程序。
+然而，到目前为止，您只处理了简单的、虚构的示例，传递简单的字符串并调用简单的函数。当构建更大型的应用程序时，重要的是传递可以扩展并在可扩展的 worker 中运行代码的消息，并在与 worker 一起工作时简化接口，从而减少潜在错误。
+
+### The RPC Pattern  
+
+RPC（远程过程调用）模式是一种将函数及其参数的表示序列化并传递到远程目的地以执行的方式。字符串 square_sum|num:1000000 实际上是一种我们无意中重新创建的 RPC 形式。也许它最终可以转化为一个函数调用，例如 squareNum(1000000)，这在第45页的“命令调度器模式”中有介绍。
+
+### The Command Dispatcher Pattern  
+
+虽然 RPC 模式对于定义协议很有用，但它并没有必要提供在接收端确定要执行的代码路径的机制。命令调度器模式解决了这个问题，提供了一种接受序列化命令、找到适当函数并执行它（可选地传入参数）的方式。
+
+这种模式实现起来相当简单，不需要太多的魔法。首先，我们可以假设有两个包含关于代码需要运行的方法或命令的相关信息的变量。第一个变量叫做 method，是一个字符串。第二个变量叫做 args，是要传递给方法的值的数组。假设这些信息已经从应用程序的 RPC 层中提取出来。
+
+最终需要运行的代码可能存在于应用程序的不同部分。例如，平方和的代码可能存在于第三方库中，而斐波那契代码可能是您更本地声明的。无论代码存在于何处，您都希望创建一个单一的存储库，将这些命令映射到需要运行的代码。有几种实现这一点的方法，例如使用 Map 对象，但由于这些命令将是相当静态的，一个简单的 JavaScript 对象就足够了。
+
+另一个重要的概念是只有已定义的命令应该被执行。如果调用者想要调用一个不存在的方法，应该生成一个优雅的错误，可以返回给调用者，而不会导致 Web Worker 崩溃。虽然参数可以作为数组传递到方法中，但如果将参数数组展开为普通的函数参数，接口会更加友好。
+
+示例 2-11 展示了一个命令调度器的示例实现，您可以在应用程序中使用。
+
+### Putting It All Together  
+
+在 JavaScript 应用程序中，我们经常考虑使用外部服务执行工作。例如，可能会调用数据库或进行 HTTP 请求。当这发生时，我们需要等待响应。理想情况下，我们可以提供一个回调函数或将此查找视为 Promise。尽管 Web Worker 消息传递接口不太直观，但我们绝对可以手动构建它。
+
+Example 2-17. ch2-patterns/worker.js  
+
+```js
+const sleep = (ms) => new Promise((res) => setTimeout(res, ms)); // <1>
+
+function asyncOnMessageWrap(fn) { // <2>
+  return async function(msg) {
+    postMessage(await fn(msg.data));
+  }
+}
+
+const commands = {
+  async square_sum(max) {
+    await sleep(Math.random() * 100); // <3>
+    let sum = 0; for (let i = 0; i < max; i++) sum += Math.sqrt(i);
+    return sum;
+  },
+  async fibonacci(limit) {
+    await sleep(Math.random() * 100);
+    let prev = 1n, next = 0n, swap;	//这里的 n 表示这是一个大整数（BigInt），用于处理超出 JavaScript 常规数值范围的整数。
+    while (limit) { swap = prev; prev = prev + next; next = swap; limit--; }
+    return String(next); // <4>
+  },
+  async bad() {
+    await sleep(Math.random() * 10);
+    throw new Error('oh no');
+  }
+};
+
+self.onmessage = asyncOnMessageWrap(async (rpc) => { // <5>
+  const { method, params, id } = rpc;
+
+  if (commands.hasOwnProperty(method)) {
+    try {
+      const result = await commands[method](...params);
+      return { id, result }; // <6>
+    } catch (err) {
+      return { id, error: { code: -32000, message: err.message }};
+    }
+  } else {
+    return { // <7>
+      id, error: {
+        code: -32601,
+        message: `method ${method} not found`
+      }
+    };
+  }
+});
+```
+
+
+
+<4> BigInt 结果被强制转换为 JSON 友好的字符串值。
+
+53
