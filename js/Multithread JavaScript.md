@@ -355,4 +355,83 @@ self.onmessage = asyncOnMessageWrap(async (rpc) => { // <5>
 
 <4> BigInt 结果被强制转换为 JSON 友好的字符串值。
 
-53
+# 第3章 Node.js
+
+在浏览器之外，只有一个值得注意的 JavaScript 运行时，那就是 Node.js。尽管它最初是一个强调单线程并采用传递继续风格回调的服务器并发平台，但在使其成为通用编程平台方面付出了大量努力。
+
+Node.js 程序执行的许多任务并不适用于其传统用例，即提供 Web 请求服务或处理网络连接。相反，许多较新的 Node.js 程序是作为 JavaScript 构建系统或其组成部分的命令行工具。这类程序通常涉及大量 I/O 操作，就像服务器一样，但它们通常还涉及大量数据处理。
+
+
+
+## Before We Had Threads  
+
+虽然我们可以使用 Node.js 的 child_process API 来实现类似的功能，但最好使用 cluster，因为它是专门为这种用例构建的模块。这个模块的目的是将网络流量分散到多个工作进程中。让我们继续在一个简单的“Hello, World”示例中使用它。
+
+Example 3-2. A “Hello, World” server in Node.js using cluster
+
+```js
+const http = require('http');
+const cluster = require('cluster'); // <1>
+
+if (cluster.isPrimary) { // <2>
+  cluster.fork(); // <3>
+  cluster.fork();
+  cluster.fork();
+  cluster.fork();
+} else {
+  http.createServer((req, res) => {
+    res.end('Hello, World!\n');
+  }).listen(3000); // <4>
+}
+```
+
+你可能注意到我们正在创建在四个不同进程中监听相同端口的 Web 服务器。这似乎是一个错误。毕竟，如果我们尝试将服务器绑定到已经在使用的端口，通常会出现错误。别担心！我们实际上并不是在同一个端口上监听四次。原来 Node.js 在集群中为我们进行了一些魔术。
+
+当在集群中设置工作进程时，对 `listen()` 的任何调用实际上都会导致 Node.js 在主进程而不是在工作进程上进行监听。然后，一旦在主进程中接收到连接，它将通过 IPC 传递给工作进程。在大多数系统上，这是以轮询的方式进行的。这种有点复杂的系统是使得每个工作进程看起来好像在同一个端口上进行监听，实际上它只是主进程在该端口上进行监听，并将连接传递给所有工作进程。
+
+进程产生一些线程不具备的额外开销，而且我们也无法获得共享内存，这有助于更快地传输数据。为了实现这一点，我们需要使用 `worker_threads` 模块。
+
+## The worker_threads Module  
+
+# 第4章 Shared Memory  
+
+这一章介绍了两个可用于 JavaScript 应用程序的强大工具：`Atomics` 对象和 `SharedArrayBuffer` 类。它们允许你在两个线程之间共享内存，而无需依赖消息传递。但在深入解释这些对象的完整技术细节之前，有必要先进行一个简短的介绍性示例。
+
+在错误的使用方式下，这里介绍的工具可能会很危险，给你的应用程序引入逻辑缺陷，这些缺陷在开发过程中潜伏在阴影中，只有在生产环境中才会显露出来。但在经过磨练并正确使用时，这些工具可以让你的应用程序在硬件上实现前所未见的性能水平。
+
+## 共享内存简介
+
+### 在浏览器中的共享内存
+
+### Node.js  中的共享内存
+
+## SharedArrayBuffer 和 TypedArrays  
+
+ArrayBuffer 和 SharedArrayBuffer 的实例表示的是一段二进制数据缓冲区，它具有固定的长度且无法调整大小。虽然这两者非常相似，但本节将重点介绍 SharedArrayBuffer，因为它允许应用程序在不同线程之间共享内存。二进制数据在许多传统编程语言（如C语言）中是一个普遍而且首要的概念，但对于使用高级语言如JavaScript的开发者来说，可能容易产生误解。
+
+在考虑到这种模糊性的同时，还值得提到 ArrayBuffer（以及 SharedArrayBuffer）的内容不能直接修改。相反，必须首先创建对缓冲区的“视图”。此外，与其他一些语言可能提供对废弃内存的访问不同，当在JavaScript中实例化ArrayBuffer时，缓冲区的内容会被初始化为0。考虑到这些缓冲区对象仅存储数值数据，它们确实是一种非常基本的数据存储工具，通常用于构建更复杂的系统。
+
+术语“`view`”已经在一些地方提到过，现在是定义它的好时机。由于二进制数据可能的含义不明确，我们需要使用视图来读取和写入底层缓冲区。在JavaScript中有几种这样的视图可用。每个视图都是从一个称为 TypedArray 的基类继承而来的。这个类不能直接实例化，也不作为全局变量提供，但可以通过获取从实例化的子类中获取 `.prototype` 属性来访问它。
+
+对于 Uint8ClampedArray，其行为略有不同。当写入负值时，它会被转换为 0。当写入大于 255 的值时，它会被转换为 255。当提供非整数值时，它会被传递给 Math.round()。根据您的用例，使用这个视图可能更有意义。
+
+最后，BigInt64Array 和 BigUint64Array 条目也值得特别关注。与其他 TypedArray 视图不同，这两个变体使用 BigInt 类型（1 是 Number，而 1n 是 BigInt）。这是因为可以用 64 字节表示的数值超出了可以用 JavaScript 的 Number 表示的范围。因此，使用这些视图设置值必须使用 BigInt，并且检索到的值也将是 BigInt 类型。
+
+总的来说，在可能的情况下，使用多个 TypedArray 视图，特别是不同大小的视图，查看同一缓冲区实例是一种危险的做法，应尽量避免。您可能会发现在执行不同操作时意外覆盖了一些数据。在线程之间传递多个 SharedArrayBuffer 是可能的，因此如果发现自己需要混合类型，则可能会受益于使用多个缓冲区。
+
+现在您已经熟悉了 ArrayBuffer 和 SharedArrayBuffer 的基础知识，可以使用更复杂的 API 与它们进行交互。
+
+## 原子操作用于数据操作的方法
+
+JavaScript提供了一个名为`Atomics`的全局对象，上面有几个静态方法。这个全局对象遵循与熟悉的`Math`全局对象相同的模式。在任一情况下，都不能使用`new`运算符创建新实例，而可用的方法是无状态的，不影响全局对象本身。相反，在`Atomics`中，它们通过传入要修改的数据的引用来使用。
+
+# 第7章 WebAssembly  
+
+虽然本书的标题是《Multithreaded JavaScript》，但现代JavaScript运行时还支持WebAssembly。对于不了解的人，WebAssembly（常简写为WASM）是一种以二进制编码的指令格式，运行在基于堆栈的虚拟机上。它被设计时考虑了安全性，并在一个沙盒中运行，只能访问由主机环境提供的内存和函数。在浏览器和其他JavaScript运行时中使用这样的技术的主要动机是，在执行速度比JavaScript快得多的环境中运行程序的性能敏感部分。另一个目标是为通常由编译的语言（如C、C++和Rust）编写的程序提供一个编译目标。这为这些语言的开发人员为Web开发提供了可能。
+
+通常，WebAssembly模块使用ArrayBuffers表示内存，但也可以使用SharedArrayBuffers表示。此外，还有用于原子操作的WebAssembly指令，类似于我们在JavaScript中拥有的Atomics对象。通过SharedArrayBuffers、原子操作和Web Workers（或Node.js中的worker_threads），我们有足够的工具来完成使用WebAssembly进行多线程编程的全部任务。
+
+在我们深入研究多线程WebAssembly之前，让我们构建一个“Hello, World!”的示例并执行它，以找出WebAssembly的优势和局限性。
+
+## Your First WebAssembly  
+
