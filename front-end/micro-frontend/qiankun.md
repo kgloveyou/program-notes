@@ -75,3 +75,17 @@ https://juejin.cn/post/6930921099869978632
 # qiankun 微前端指南
 
 https://juejin.cn/post/7064823546471514126
+
+# ant-design-pro使用qiankun微服务详解
+
+https://www.cnblogs.com/steamed-twisted-roll/p/15697081.html
+
+githup代码地址,
+
+主应用: https://github.com/shengbid/antpro-parent
+
+子应用: https://github.com/shengbid/antpro-child
+
+config\config.ts 中需要配置 `base: '/child-pro'`,  
+
+**base**: '/',   // 這個如果不加的話，頁面路由會自動拼上子應用package.json中name的内容（这个配置的作用[参见](https://www.laitimes.com/article/5k8hx_60oej.html)）
