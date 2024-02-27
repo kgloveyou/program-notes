@@ -28,3 +28,31 @@ https://github.com/umijs/umi/issues/8965
 6、从零搭建一个qiankun微前端demo #34
 
 https://github.com/zhangyu1818/blog/issues/34
+
+7、umi运行时配置
+
+https://v3.umijs.org/zh-CN/docs/runtime-config
+
+8、我们是怎么在项目中落地qiankun的
+
+https://mp.weixin.qq.com/s/yu1tKtwneoTI9eSGS4us-g
+
+9、Umi + qiankun 实现动态加载子应用路由
+
+https://developer.baidu.com/article/details/2836356
+
+用umi搭建项目微服务-qiankun微服务的配置
+
+https://blog.csdn.net/sinat_36146776/article/details/107528351
+
+基于qiankun的微前端最佳实践 -（同时加载多个微应用）
+
+https://developer.aliyun.com/article/858969
+
+请问antd pro的入口文件在哪里 我想在入口放一个类似Provider🧐[问题] #6763
+
+https://github.com/ant-design/ant-design-pro/issues/6763
+
+umi-qiankun
+
+https://github.com/blueju/umi-qiankun
