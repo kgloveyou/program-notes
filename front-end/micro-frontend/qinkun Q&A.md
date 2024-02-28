@@ -39,3 +39,30 @@ umi 3 不维护了，建议升级到 umi 4 。
 
 不可以使用约定式路由；当子应用不为 umi 时，这个子应用只是作为一个独立的 qiankun 外部应用来看待，和 umi 相关的 路由、model、数据传输等等 均不适用，因为 umi 在 qiankun 加载时增加了很多中间层代码使得这些 umi 的功能可以在均为 umi 的主、子应用间使用，而当子应用不为 umi 时，这些 umi 的功能都是用不了的。
 
+7、umi运行时配置
+
+https://v3.umijs.org/zh-CN/docs/runtime-config
+
+8、我们是怎么在项目中落地qiankun的
+
+https://mp.weixin.qq.com/s/yu1tKtwneoTI9eSGS4us-g
+
+9、Umi + qiankun 实现动态加载子应用路由
+
+https://developer.baidu.com/article/details/2836356
+
+用umi搭建项目微服务-qiankun微服务的配置
+
+https://blog.csdn.net/sinat_36146776/article/details/107528351
+
+基于qiankun的微前端最佳实践 -（同时加载多个微应用）
+
+https://developer.aliyun.com/article/858969
+
+请问antd pro的入口文件在哪里 我想在入口放一个类似Provider🧐[问题] #6763
+
+https://github.com/ant-design/ant-design-pro/issues/6763
+
+umi-qiankun
+
+https://github.com/blueju/umi-qiankun
