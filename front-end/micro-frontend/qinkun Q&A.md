@@ -28,3 +28,14 @@ https://github.com/umijs/umi/issues/8965
 6、从零搭建一个qiankun微前端demo #34
 
 https://github.com/zhangyu1818/blog/issues/34
+
+# 微前端 @umijs/plugin-qiankun 主应用，cra 子应用，可行吗？能不能用约定式路由？ #12141
+
+https://github.com/umijs/umi/discussions/12141
+
+umi 3 不维护了，建议升级到 umi 4 。
+
+在 umi 4 中是可行的。关于 umi 3 的 qiankun 用法，请自行参考 qiankun 文档学习和尝试。
+
+不可以使用约定式路由；当子应用不为 umi 时，这个子应用只是作为一个独立的 qiankun 外部应用来看待，和 umi 相关的 路由、model、数据传输等等 均不适用，因为 umi 在 qiankun 加载时增加了很多中间层代码使得这些 umi 的功能可以在均为 umi 的主、子应用间使用，而当子应用不为 umi 时，这些 umi 的功能都是用不了的。
+
