@@ -51,18 +51,59 @@ https://mp.weixin.qq.com/s/yu1tKtwneoTI9eSGS4us-g
 
 https://developer.baidu.com/article/details/2836356
 
-用umi搭建项目微服务-qiankun微服务的配置
+10、用umi搭建项目微服务-qiankun微服务的配置
 
 https://blog.csdn.net/sinat_36146776/article/details/107528351
 
-基于qiankun的微前端最佳实践 -（同时加载多个微应用）
+11、基于qiankun的微前端最佳实践 -（同时加载多个微应用）
 
 https://developer.aliyun.com/article/858969
 
-请问antd pro的入口文件在哪里 我想在入口放一个类似Provider🧐[问题] #6763
+12、请问antd pro的入口文件在哪里 我想在入口放一个类似Provider🧐[问题] #6763
 
 https://github.com/ant-design/ant-design-pro/issues/6763
 
-umi-qiankun
+13、umi-qiankun
 
 https://github.com/blueju/umi-qiankun
+
+14、Ant-Design-Pro使用QianKun微前端最佳实践（※）
+
+https://blog.csdn.net/Iversons/article/details/125599974
+
+![img](https://img-blog.csdnimg.cn/770fdee0896540eba73fe48af76a14f1.png)
+
+![img](https://img-blog.csdnimg.cn/3851acc51a544ac8896818d9e173556c.png)
+
+15、从0开始创建一个qiankun微前端项目
+
+https://juejin.cn/post/7047754090905862180
+
+```js
+const getBasename = () => {
+  return process.env.NODE_ENV === 'production'
+    ? window.__POWERED_BY_QIANKUN__ // 生产环境
+      ? '/app-react/' // qiankun 中的 base
+      : '/child/app-react/' // 独立访问的时候的 base
+    : window.__POWERED_BY_QIANKUN__ // 开发环境
+      ? '/app-react/' // 本地开发中的 qiankun 中的 base
+      : '/'
+}
+
+作者：大码哥
+链接：https://juejin.cn/post/7047754090905862180
+来源：稀土掘金
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+```
+
+16、qiankun微前端实践
+
+https://www.cnblogs.com/fozero/p/17717323.html
+
+1. 设置histroy模式路由base
+
+建议使用 history 模式的路由，设置histroy模式路由base，值和它的 activeRule 是一样的
+
+```javascript
+<BrowserRouter basename={window.__POWERED_BY_QIANKUN__ ? '/child-one' : '/'}>
+```
