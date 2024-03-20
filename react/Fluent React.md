@@ -1241,3 +1241,255 @@ Hydration 虽然是一种使服务器端渲染的 HTML 具有交互性的好方�
 
 ## 创建服务器端渲染
 
+一种方法是使用服务器渲染框架，例如 Next.js 或 Remix。虽然这些框架确实是服务器端渲染 React 应用的最佳方式，但是对于那些好奇的人来说，像这样的抽象可能会让他们渴望理解实现这一功能的底层机制。
+
+如果您对如何手动将服务器端渲染添加到仅客户端的 React 应用感兴趣，或者如果您对框架如何做到这一点感兴趣，请继续阅读。 再次强调，这可能是您在生产环境中不会使用的东西，但更适合好奇人士的学习目的。
+
+### 手动将服务器端渲染添加到仅客户端的 React 应用中
+
+完成这些步骤后，我们现在就拥有了一个服务器端渲染的 React 应用。通过这种「揭开神秘面纱」的方式来学习服务器端渲染，可以使我们更深入地理解服务器端渲染的工作原理以及它如何使我们的 React 应用受益。
+
+### Hydrating  
+
+服务器端渲染的输出送达用户后，当我们在文件结尾处使用 `<script>` 标签加载客户端包时，就会发生 hydration（水化）。正如我们讨论过的，hydration 是将事件监听器和其他 JavaScript 功能附加到服务器生成并发送给客户端的静态 HTML 的过程。Hydration 的目标是使服务器端渲染的应用程序在浏览器中加载后能够完全交互。
+
+如果我们想要探索应用程序的客户端包的 hydration 步骤，它看起来会是这样：
+
+### React 中的服务器端渲染 API
+
+#### renderToString  
+
+`renderToString` 作为一个 API 是同步阻塞的，这意味着它在执行过程中不能被中断或暂停。如果来自根组件的组件树非常深层，则可能需要相当多的处理时间。由于服务器通常需要为多个客户端提供服务，因此除非存在某种类型的缓存机制来防止这种情况，否则 `renderToString`可能會被为每个客户端调用，并迅速阻塞事件循环并使系统过载。
+
+#### renderToPipeableStream  
+
+# 第7章：并发 React
+
+## 同步渲染的问题
+
+并发渲染使 React 可以根据更新的重要性紧迫性来优先级排序，从而确保关键更新不会被不那么重要的更新阻塞。这允许 React 在高负载下仍能保持响应式的 UI，从而带来更佳的用户体验。例如，当用户悬停在按钮上或单击按钮时，期望它立即显示该操作的反馈。如果 React 正在重新渲染一个长列表项，那么悬停或激活状态的反馈将被延迟，直到整个列表都被渲染。使用并发渲染，那些占用 CPU 资源的渲染任务可以被降级优先级，而更重要的任务（例如用户交互和动画）则可以优先执行。
+
+此外，借助并发渲染功能，React 能够进行时间切片：即可以将渲染过程分解成更小的块并增量处理它们。这允许 React 在多个帧上执行工作，并且如果需要中断工作，也可以做到。
+
+让我们从现在开始一起深入研究所有这些内容。
+
+## 重温Fiber  
+
+正如第4章所述，Fiber reconciliation 机制是 React 中实现并发渲染的核心机制。它在 React 16 中引入，相比于之前的栈式 reconciler，它代表了架构上的重大转变。Fiber reconciliation 机制的主要目标是改善 React 应用的响应速度和性能，尤其适用于大型复杂的 UI.
+
+Fiber reconciliation 机制通过将渲染过程分解成更小的、更易管理的工作单元（称为 Fiber）来实现这一点。这使 React 可以暂停、恢复和优先执行渲染任务，从而可以根据更新的重要性来延迟或安排更新。这改善了应用程序的响应性，并确保关键更新不会被不那么重要的任务阻塞。
+
+## 调度和延迟更新
+
+## 调度和延迟更新
+
+React 调度和延迟更新的能力对于保持应用程序的响应性至关重要。Fiber reconciliation 机制通过依赖调度程序和一些高效的 API 来实现此功能。这些 API 允许 React 在空闲期间执行工作并在最合适的时间安排更新。
+
+我们将在后续章节中更详细地介绍调度程序，但现在，可以简单地认为它是一个接收更新并根据浏览器提供的 setTimeout、MessageChannel 等 API 指示“你现在做这个”、“你稍后做那个”等操作的系统。
+
+考虑一个用户可以发送和接收消息的实时聊天应用程序。我们将有一个聊天组件来显示消息列表，以及一个消息输入组件供用户键入和提交消息。此外，聊天应用程序会实时从服务器接收新消息。在这种情况下，我们希望优先考虑用户交互（例如输入和提交消息）以保持响应迅速的体验，同时确保传入消息高效渲染而不阻塞 UI。
+
+为了使这个例子更具体一些，让我们创建一些组件。首先，显示消息列表的组件：
+
+```jsx
+const ChatApp = () => {
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    // Connect to the server and subscribe to incoming messages
+    const socket = new WebSocket("wss://your-websocket-server.com");
+    socket.onmessage = (event) => {
+      setMessages((prevMessages) => [...prevMessages, event.data]);
+    };
+    return () => {
+      socket.close();
+    };
+  }, []);
+
+  const sendMessage = (message) => {
+    // Send the message to the server
+  };
+
+  return (
+    <div>
+      <MessageList messages={messages} />
+      <MessageInput onSubmit={sendMessage} />
+    </div>
+  );
+};
+```
+
+在这个例子中，React 的并发渲染功能通过高效地管理消息列表和用户与消息输入的交互更新来发挥作用。当用户键入或提交消息时，React 会优先考虑文本输入更新，以确保流畅的用户体验。
+
+当新消息从服务器到达并需要渲染时，它们将以默认/未知的渲染通道渲染，该通道会同步且立即以阻塞方式更新 DOM：这会延迟任何用户输入。如果我们想要降低新消息列表的渲染优先级，我们可以像这样将对应的状态更新包装在来自 useTransition 钩子的 startTransition 函数中：
+
+```jsx
+const ChatApp = () => {
+  const [messages, setMessages] = useState([]);
+  const [isPending, startTransition] = useTransition();
+
+  useEffect(() => {
+    // Connect to the server and subscribe to incoming messages
+    const socket = new WebSocket("wss://your-websocket-server.com");
+    socket.onmessage = (event) => {
+      startTransition(() => {
+        setMessages((prevMessages) => [...prevMessages, event.data]);
+      });
+    };
+    return () => {
+      socket.close();
+    };
+  }, []);
+
+  const sendMessage = (message) => {
+    // Send the message to the server
+  };
+
+  return (
+    <div>
+      <MessageList messages={messages} />
+      <MessageInput onSubmit={sendMessage} />
+    </div>
+  );
+};
+```
+
+采用这种方式，我们向 React 发出信号，要求以较低优先级调度消息列表更新，并允许它们在不阻塞 UI 的情况下进行渲染，从而使聊天应用程序即使在高负载下也能高效运行。因此，用户输入永远不会被中断，并且传入消息的渲染优先级低于用户交互，因为它们对用户体验的影响较小。
+
+这个例子展示了 React 的并发渲染功能如何用于构建响应迅速的应用程序，这些应用程序可以处理复杂的交互和频繁的更新，同时不会影响性能或用户体验。我们将在本章后面更深入地探讨 useTransition。现在，让我们更深入地研究 React  schedules是如何调度更新的。
+
+## 更加深入
+
+在 React 中，调度、优先级划分和延迟更新的过程对于维护响应式用户界面至关重要。此过程可确保高优先级任务被及时处理，而低优先级任务可以延迟执行，从而即使在高负载下也能让 UI 保持流畅。为了更深入地探讨这个话题，我们将研究几个核心概念：调度程序（scheduler）、任务的优先级以及延迟更新的机制。
+
+### 调度程序
+
+调度程序是 React 架构的核心部分，它是一个独立的包，提供与 Fiber reconciler 独立的计时相关实用程序。React 在 reconciler 中使用此调度程序。调度程序和 reconciler 通过使用渲染通道（render lanes）使任务能够通过根据紧迫性进行优先级划分和组织来协作。我们稍后将深入探讨渲染通道。调度程序在 React 中的主要作用是管理主线程的让步，主要是通过调度微任务来确保流畅执行。
+
+为了更详细地理解这一点，让我们来看一下 React 在撰写本文时的一段源代码
+
+
+
+微任务是 JavaScript 事件循环管理中的一个概念，代表由微任务队列管理的一类任务。为了理解微任务，首先需要对 JavaScript 事件循环和与其相关的任务队列有一个基本的认识：
+
+## 渲染通道
+
+渲染通道是React调度系统的重要组成部分，它确保了任务的高效渲染和优先级排列。通道是一个工作单元，代表了一个优先级水平，并且可以在React的渲染周期中被处理。渲染通道的概念是在React 18中引入的，取代了先前使用到期时间的调度机制。让我们深入了解渲染通道的细节，它们的工作原理以及作为位掩码的基础表示。
+
+首先，渲染通道是React用来组织和优先处理在渲染过程中需要进行的更新的轻量级抽象。例如，当您调用setState时，该更新会放入一个通道中。我们可以根据更新的上下文理解不同的优先级，如下所示：
+
+- 如果在点击处理程序内部调用setState，则放入同步通道（最高优先级）并在微任务中进行调度。
+- 如果在startTransition的过渡内部调用setState，则放入过渡通道（较低优先级）并在微任务中进行调度。
+
+每个通道对应于一个特定的优先级水平，高优先级通道在低优先级通道之前处理。React中一些通道的示例包括：
+
+- SyncHydrationLane：在水合过程中用户点击React应用时，点击事件被放入此通道。
+- SyncLane：当用户点击React应用时，点击事件被放入此通道。
+- InputContinuousHydrationLane：在水合期间，鼠标悬停事件、滚动事件和其他连续事件被放入此通道。
+- InputContinuousLane：与前述相同，但适用于React应用被水合后的情况。
+- DefaultLane：来自网络的任何更新、像setTimeout这样的计时器以及没有推断出优先级的初始渲染都被放入此通道。
+- TransitionHydrationLane：在水合过程中，来自startTransition的任何过渡都被放入此通道。
+- TransitionLanes（1-15）：在水合后，来自startTransition的任何过渡都被放入这些通道。
+- RetryLanes（1-4）：任何Suspense重试都被放入这些通道。
+
+值得注意的是，这些通道反映了写作时React内部的实现，并可能会发生变化。重申一下，本书的重点是理解React的工作机制，而不是过于执着于具体的实现细节，因此通道的名称可能并不是特别重要。更为重要的是我们对机制的理解——也就是React如何使用这个概念以及我们如何将其应用到我们的工作中。
+
+## useTransition  
+
+useTransition是一个强大的React Hook，允许你在组件中管理状态更新的优先级，并防止由于高优先级更新导致UI不响应。当处理可能视觉上具有破坏性的更新时特别有用，例如加载新数据或在页面之间导航。
+
+它基本上将你包装在其返回的startTransition函数中的任何更新放入过渡通道，这比我们之前看到的Sync通道的优先级低，允许你控制更新的时机，并保持流畅的用户体验，即使其他高优先级的更新正在竞争主线程。
+
+useTransition是一个Hook，这意味着你只能在函数组件内部使用它。它返回一个包含两个元素的数组：
+
+- isPending：一个布尔值，指示是否正在进行过渡。关于useTransition工作方式的一个有趣部分是，当你调用startTransition时，它首先会在这个属性上安排一个同步的setState({ isPending: false })，这意味着依赖于isPending的更新需要快速完成，否则就违背了useTransition的目的。
+
+- startTransition：一个函数，你可以用它来包装应该被延迟或赋予较低优先级的更新。
+
+值得一提的是，在这里可能还有一种startTransition API可用，它不是作为Hook，而是作为一个常规函数。启动非紧急过渡的第二种方法是直接从React导入startTransition函数。这种方法不提供对isPending标志的访问，但是当你不能使用像useTransition这样的Hook时，仍然希望向React发出低优先级更新的信号时，它是可用的。
+
+## useDeferredValue  
+
+useDeferredValue是一个React Hook，允许将某些UI更新推迟到以后的时间点，特别适用于应用程序处理大量负载或计算密集型任务的场景，从而有助于管理更新优先级并促进更平滑的过渡和改善用户体验。
+
+在初始渲染期间，返回的延迟值与提供的值相同。在后续更新中，useDeferredValue通过在更新到新值之前保留旧值更长时间来帮助保持流畅的用户体验，特别是在具有计算密集型操作的情况下。这并不涉及使用旧值和新值进行多次重新渲染，而是对新值进行控制性更新。
+
+这种机制类似于一种“陈旧但可重新验证”的策略，即保留陈旧值以保持UI的响应性，同时等待新值的到来。
+
+通过查看React的提交历史，我们可以看到useDeferredValue的第一个实现大致如下：
+
+
+
+让我们稍微聊一下这段代码在做什么。首先，它使用传递给它的初始值设置了一个状态（newValue）。然后，函数利用useEffect钩子来观察这个值的变化。当检测到变化时，会调用startTransition函数，这对于推迟更新至关重要。
+
+在startTransition中，使用setNewValue将状态更新为新值。使用startTransition表示给React一个信号，表明这个更新不是紧急的，允许React首先处理其他更关键的更新。这几乎正是useDeferredValue今天的工作方式，对我们对它的心理模型应该有所帮助。
+
+useDeferredValue是React并发特性的一部分，它通过允许推迟某些状态更新来实现可中断性。当带有延迟值的组件重新渲染时，React会在一定时间内保持显示旧值，允许高优先级的更新在低优先级的更新之前被处理。这将渲染工作分成了较小的块，可以随着时间的推移分散进行，提高了响应性，并确保高优先级的更新（如用户交互）不会被低优先级的更新延迟，从而提升了积极的用户体验。
+
+### useDeferredValue 的目的
+
+useDeferredValue的主要目的是允许你推迟对不太关键的更新的渲染。当你想要优先处理更重要的更新，例如用户交互，而不是较不关键的更新，例如显示来自服务器的更新数据时，这特别有用。
+
+通过使用useDeferredValue，你可以提供更流畅的用户体验，并确保你的应用程序在处理重负载或复杂操作时保持响应性。
+
+要使用useDeferredValue，你需要从React包中导入它，并将一个值作为参数传递给它。然后，该钩子将返回该值的延迟版本，可以在你的组件中使用。
+
+这里是如何在一个简单应用程序中使用useDeferredValue的示例：
+
+```jsx
+import React, { memo, useState, useDeferredValue } from "react";
+
+function App() {
+  const [searchValue, setSearchValue] = useState("");
+  const deferredSearchValue = useDeferredValue(searchValue);
+  return (
+    <div>
+      <input
+        type="text"
+        value={searchValue}
+        onChange={(event) => setSearchValue(event.target.value)}
+      />
+      <SearchResults searchValue={deferredSearchValue} />
+    </div>
+  );
+}
+
+const SearchResults = memo(({ searchValue }) => {
+  // Perform the search and render the results
+})
+```
+
+### 什么时候使用useDeferredValue  
+
+在需要将某些更新优先于其他更新的情况下，useDeferredValue非常有用。一些常见的情景包括：
+
+- 搜索或筛选大型数据集
+- 渲染复杂的可视化或动画
+- 在后台更新来自服务器的数据
+- 处理可能影响用户交互的计算密集型操作
+
+让我们来看一个使用useDeferredValue特别有用的示例。假设我们有一个大型的项目列表，我们希望根据用户输入进行筛选。筛选大型列表可能会耗费大量计算资源，因此使用useDeferredValue可以帮助保持应用程序的响应性：
+
+### 什么时候不要使用useDeferredValue  
+
+虽然在某些情况下useDeferredValue可能会有益，但重要的是要认识到其中的权衡。主要是，通过推迟更新，有可能显示给用户的数据略微过时。虽然这通常对于较不关键的更新是可以接受的，但重要的是要考虑将过时数据显示给用户的影响。
+
+在决定是否使用useDeferredValue时，一个好问题是：“这个更新是用户输入吗？”React之所以称为React，是有原因的：它使我们的网络应用能够对事物做出反应。任何会导致用户期望得到反应的东西都不应该被推迟。其他一切都应该被推迟。
+
+虽然使用useDeferredValue可以极大地提升应用程序在负载下的响应性，但它不应被视为解决所有问题的灵丹妙药。永远记住，提高性能的最佳方法是编写高效的代码，避免不必要的计算。
+
+## 并发渲染存在的问题
+
+并发渲染虽然允许实现高性能和响应式用户交互，但也给开发者带来了新的问题需要考虑。主要问题在于很难确定更新的处理顺序，这可能导致意外行为和错误。其中一个问题是称为"tearing"的bug，其中UI由于更新的处理顺序不一致而变得不一致。当组件依赖于在其仍在渲染时更新的某些值时，就会出现这种情况，导致应用程序以不一致的数据进行渲染。让我们稍微深入了解一下这个问题。
+
+### 撕裂（Tearing）
+
+撕裂是一种bug，当组件依赖于在应用程序仍在渲染时更新的某些状态时会发生。为了理解这一点，让我们将同步渲染与并发渲染进行对比。
+
+在同步世界中，React会沿着组件树向下遍历，并依次从顶部到底部渲染它们。这确保了应用程序在整个渲染过程中的状态是一致的，因为每个组件都是使用最新的状态进行渲染的。
+
+考虑以下示例：
+
+
+
+**useSyncExternalStore**  
