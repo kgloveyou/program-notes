@@ -107,3 +107,14 @@ https://www.cnblogs.com/fozero/p/17717323.html
 ```javascript
 <BrowserRouter basename={window.__POWERED_BY_QIANKUN__ ? '/child-one' : '/'}>
 ```
+
+# 路由切换问题（※）
+
+主应用切换至子应用，然后子应用之前相互切换时会出现切换不过去的问题，原因是子应用的路由重定向导致
+
+```jsx
+{/* 子应用一定不能写，否则会出现路由跳转bug */}
+{/* <Redirect from="*" to="/"></Redirect> */}
+```
+
+https://blog.csdn.net/Mine____/article/details/118380815
