@@ -1,3 +1,7 @@
+https://gpingfeng.github.io/ahooks-analysis/guide/blog/closure
+
+https://www.cnblogs.com/gopal/p/16573868.html
+
 ## React 的[闭包](https://so.csdn.net/so/search?q=%E9%97%AD%E5%8C%85&spm=1001.2101.3001.7020)问题，举个例子
 
 ```javascript
