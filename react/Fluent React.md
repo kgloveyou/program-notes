@@ -664,6 +664,33 @@ Fiber 协调分两个阶段进行：渲染阶段和提交阶段。如图 4-1 所
 
 记忆化依赖于函数的纯净性，即对于给定的输入，函数会可靠地返回相同的输出。纯函数的示例：
 
+```js
+function add(num1, num2) {
+  return num1 + num2;
+}
+```
+
+当输入参数为 1 和 2 时，此函数 `add` 总会返回 3，因此可以安全地进行记忆化。如果该函数依赖于某些副作用（例如网络通信），则将无法进行记忆化。例如，考虑以下情况：
+
+```js
+async function addToNumberOfTheDay(num) {
+  const todaysNumber = await fetch("https://number-api.com/today")
+    .then((r) => r.json())
+    .then((data) => data.number);
+  return num + todaysNumber;
+}
+```
+
+即使输入相同，给定输入 2 的函数每天都会返回不同的结果，因此该函数不能进行记忆化 (memoization)。这是一个简单的例子，可以帮助我们粗略理解记忆化的基本原理。
+
+记忆化对于处理代价高昂的计算或渲染大型项目列表特别有用。考虑以下函数：
+
+
+
+在 React 中，可以使用 `React.memo`组件对函数组件进行记忆化 (memoization)。这个函数会返回一个新的组件，该组件仅在其属性更改时才重新渲染。根据第四章的学习，我们现在应该知道“重新渲染”意味着重新调用函数组件。如果用 `React.memo` 包装，那么在协调过程中，只要组件的属性没有改变，就不会再次调用该函数。通过记忆化函数组件，我们可以防止不必要的重新渲染，从而可以提高 React 应用的整体性能。
+
+我们已经知道，React组件是在调和过程中被调用的函数，这是在第4章中讨论过的。React递归地使用组件的props调用函数组件，以创建一个vDOM树，然后将其用作两个进行调和的Fiber树的基础。有时，渲染（即调用组件函数）可能会因为函数组件内部的强烈计算，或者将其应用到DOM上时的强烈计算而花费很长时间，如第4章所述。这会减慢我们的应用程序，并呈现出延迟的用户体验。记忆化是一种通过存储昂贵计算的结果，并在相同的输入传递给函数或相同的props传递给组件时返回它们的方法，从而避免这种情况。
+
 ### 仍然会重新渲染的记忆化组件
 
 React.memo 通过对组件的 props 进行浅比较来判断它们是否发生变化。问题在于，虽然标量类型可以在 JavaScript 中进行相当准确的比较，但非标量类型则不能。为了进行高质量的讨论，让我们简要分解一下标量类型和非标量类型是什么，以及它们在比较操作中的行为。
@@ -680,7 +707,58 @@ React.memo 通过对组件的 props 进行浅比较来判断它们是否发生�
 
 
 
-React.memo 经常被另一种非标量类型——函数——绕过。考虑以下情况：
+这就是为什么使用React.memo可能会有些棘手。考虑一个名为List的函数组件，它接受一个作为prop的项目数组并将它们渲染出来：
+
+```jsx
+const List = React.memo(function List({ items }) {
+  return (
+    <ul>
+      {items.map((item) => (
+        <li key={item}>{item}</li>
+      ))}
+    </ul>
+  );
+});
+```
+
+现在，想象一下在父组件中使用此组件，并且每次父组件渲染时都传递一个新的数组实例：
+
+```jsx
+function ParentComponent({ allFruits }) {
+  const [count, setCount] = React.useState(0);
+  const favoriteFruits = allFruits.filter((fruit) => fruit.isFavorite);
+  return (
+    <div>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <List items={favoriteFruits} />
+    </div>
+  );
+}
+```
+
+每当单击“增加”按钮时，`ParentComponent` 都会重新渲染。即使传递给 `List` 的项目值没有改变，每次也会创建一个新的数组实例，其中包含 `['apple', 'banana', 'cherry']`。由于 `React.memo` 执行的是 props 的浅比较，它会将这个新的数组实例视为与上一次渲染的数组不同的 prop，从而导致 `List` 组件不必要地重新渲染。
+
+为了解决这个问题，我们可以使用 `useMemo` 钩子对数组进行记忆化：
+
+```jsx
+function ParentComponent({ allFruits }) {
+  const [count, setCount] = React.useState(0);
+  const favoriteFruits = React.useMemo(
+    () => allFruits.filter((fruit) => fruit.isFavorite),
+    []
+  );
+  return (
+    <div>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+      <List items={favoriteFruits} />
+    </div>
+  );
+}
+```
+
+React.memo经常会被另一个非标量类型绕过，那就是函数。考虑以下情况：
+
+
 
 ## Memoization with useMemo  
 
