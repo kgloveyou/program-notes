@@ -15,6 +15,42 @@ https://github.com/PacktPublishing/Learn-Three.js-Fourth-edition
 除了这些基于文本的编辑器，你可以使用它们来编辑和试验本书的源代码，Three.js 目前还提供了一个在线编辑器。
 使用此编辑器（你可以在 http://threejs.org/editor/ 找到），你可以使用图形化方式创建 Three.js 场景。
 
+**运行示例代码**
+
+```bash
+$ npm run serve
+```
+
+**提示**
+
+这本书中使用的设置只是开发 web 应用程序的众多方法之一。或者，您可以将 Three.js（和其他库）直接包含在您的 HTML 文件中，或者使用类似于 Three.js 网站上的示例的 import-maps 方法。所有这些方法都各有优劣势。在这本书中，我们选择了一种便于试验源代码并直接在浏览器中获得反馈的方法，这种方法与通常构建此类应用程序的方式非常相似。
+
+## 探索 Three.js 应用程序的 HTML 结构
+
+## 渲染和查看 3D 对象
+
+### 设置场景
+
+### 添加灯光
+
+### 添加一个动画循环
+
+`requestAnimationFrame`  
+
+#### requestAnimationFrame  介绍
+
+```js
+function animate() {
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
+}
+animate();
+```
+
+在为这个函数添加额外功能之前，我们将引入一个小型的辅助库，名为 stats.js，它提供了有关动画运行帧率的信息。这个库与 Three.js 的作者相同，它会渲染一个小图表，显示场景渲染的速率信息。
+
+
+
 ### 使用 lil-gui 控制属性并使实验更容易
 
 ```js
