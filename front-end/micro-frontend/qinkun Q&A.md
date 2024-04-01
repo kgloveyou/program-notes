@@ -118,3 +118,25 @@ https://www.cnblogs.com/fozero/p/17717323.html
 ```
 
 https://blog.csdn.net/Mine____/article/details/118380815
+
+# 嵌入子应用后，主应用 title 被修改
+
+https://juejin.cn/post/7255473856235175996
+
+主应用嵌入子应用后，主应用的 document.title 变成了子应用的 document.title
+
+可以在 入口文件 app.js 中监听并防止修改
+
+```ts
+/**
+ * 禁止所有子应用修改页面的标题
+ */
+try {
+  document.title = "AIStudio";
+  Object.defineProperty(document, "title", {
+    get: () => "AIStudio",
+    set: () => {},
+  });
+} catch (e) {}
+```
+

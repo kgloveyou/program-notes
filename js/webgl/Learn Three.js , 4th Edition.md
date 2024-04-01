@@ -4,6 +4,17 @@ Three.js r147
 
 https://github.com/PacktPublishing/Learn-Three.js-Fourth-edition
 
+**代码运行步骤**
+
+```bash
+$ cd source/
+$ npm install
+$ npm build
+$ npm run serve
+```
+
+
+
 # 1、使用 Three.js 创建你的第一个 3D 场景
 
 **提示**
@@ -49,7 +60,9 @@ animate();
 
 在为这个函数添加额外功能之前，我们将引入一个小型的辅助库，名为 stats.js，它提供了有关动画运行帧率的信息。这个库与 Three.js 的作者相同，它会渲染一个小图表，显示场景渲染的速率信息。
 
+#### Enabling orbit controls
 
+`THREE.OrbitControls`  
 
 ### 使用 lil-gui 控制属性并使实验更容易
 
@@ -76,6 +89,67 @@ gui.add(props, 'torusSpeed', -0.2, 0.2, 0.01)
 `AxesHelper、GridHelper、PolarGridHelper`
 
 # 2、构成 Three.js 应用程序的基本组件
+
+## 创建一个场景
+
+在 Three.js 中，**THREE.Scene** 是灯光和要渲染的网格物体的主要容器。**THREE.Scene** 本身并没有很多选项和功能。
+
+**THREE.Scene** 是一个有时也称为场景图的结构。场景图可以包含图形场景的所有必要信息。在 Three.js 中，这意味着 **THREE.Scene** 包含了渲染所需的所有对象。值得注意的是，正如名称所暗示的那样，场景图不仅仅是一个对象数组；场景图由树形结构中的一组节点组成。正如我们在第 8 章“创建和加载高级网格和几何体”中将看到的，Three.js 提供了用于创建不同网格或灯光组的对象。用于创建场景图的主要对象是 **THREE.Group**。正如名称所暗示的那样，这个对象允许你将对象分组在一起。**THREE.Group** 继承自 Three.js 中另一个名为 **THREE.Object3D** 的基类，该基类提供了一组用于添加和修改子对象的标准函数。**THREE.Mesh** 和 **THREE.Scene** 也都继承自 **THREE.Object3D**，因此你也可以使用它们来创建嵌套结构。但是，使用 **THREE.Group** 来构建场景图更符合约定，并且在语义上也更正确。
+
+
+
+如果你使用 `THREE.Scene.getObjectByName(name)` 函数，你可以直接检索特定对象，例如，改变其位置，而无需将JavaScript对象设为全局变量。
+
+
+
+Three.js提供了其他有关THREE.Scene的有用函数，与场景的子对象相关：
+- add：我们已经看到了这个函数，它将提供的对象添加到场景中。如果之前已经添加到不同的THREE.Object3D中，它将从该对象中移除。
+- attach：这类似于add，但如果使用它，对该对象应用的任何旋转或平移都将被保留。
+- getObjectById：当您将对象添加到场景中时，它会获得一个ID。第一个对象获得ID为1，第二个为2，依此类推。使用此函数，您可以根据该ID获取子对象。
+- getObjectByName：根据其name属性返回对象。名称是您可以在对象上设置的内容 - 这与id属性形成对比，后者是由Three.js分配的。
+- remove：从场景中移除此对象。
+- clear：从场景中移除所有子对象。
+请注意，前述函数实际上来自THREE.Scene扩展的基础对象：THREE.Object3D。
+在整本书中，如果我们想要操作场景的子对象（或者在稍后我们将探索的THREE.Group中），我们将使用这些函数。
+
+### 改变背景
+
+我们已经看到，可以通过设置WebGLRenderer的clearColor来更改背景颜色，例如：renderer.setClearColor(backgroundColor)。您也可以使用THREE.Scene对象来更改背景。为此，您有三个选项：
+• 选项1：您可以使用纯色。
+• 选项2：您可以使用纹理，这基本上是一张图片，拉伸以填满整个屏幕。（有关纹理的更多信息，请参见第10章，加载和使用纹理。）
+• 选项3：您可以使用环境贴图。这也是一种纹理，但它完全包围了摄像机，并且当您改变摄像机方向时它会移动。
+请注意，这设置了我们要渲染到的HTML画布的背景颜色，而不是HTML页面的背景颜色。如果您想要一个透明的画布，您需要将渲染器的alpha属性设置为true：
+
+```js
+new THREE.WebGLRenderer({ alpha: true }}
+```
+
+### 更新场景中所有的材质
+
+在 Three.js 中，**THREE.Scene** 有两个属性会影响场景中网格物体的材质。第一个属性是 `overrideMaterial`。首先，让我们看一下它是如何工作的。在章节代码页面的 `chapter-02/basic-scene.html` 中，你可以点击 “切换覆盖材质” 按钮。这会将场景中所有网格物体的材质更改为 `THREE.MeshNormalMaterial` 材质：
+
+承接上文，正如您在前面的插图中看到的，所有物体（包括地面）现在都使用相同的材质 - 在本例中为 `THREE.MeshNormalMaterial`。这种材质根据网格的面相对于摄像机的方向 (法向量) 来为每个面染色。这可以通过代码轻松实现，只需调用 `scene.overrideMaterial = new THREE.MeshNormalMaterial();` 即可。
+
+除了将完整的材质应用于场景之外，Three.js 还提供了一种方式将每个网格材质的环境映射属性设置为相同的值。环境映射模拟网格所处的环境（例如房间、室外或洞穴）。环境映射可以用于在网格上创建反射，使它们看起来更真实。
+
+我们已经在上一节关于背景的讨论中看到了如何加载环境映射。如果我们想要所有材质都使用环境映射来实现更动态的反射和阴影，我们可以将加载好的环境映射分配给场景的 `environment` 属性：
+
+```js
+textureLoader.load("/assets/equi.jpeg", (loaded) => {
+  loaded.mapping = THREE.EquirectangularReflectionMapping;
+  scene.environment = loaded;
+});
+```
+
+为了演示上述代码，您可以参考 chapter-02/basic-scene.html 示例中的 “切换环境” 按钮。现在如果您放大观察立方体，可以看到它们的表面会反射部分环境，不再是纯色了。
+
+既然我们已经讨论了用于渲染所有对象的的基本容器，那么在下一节中，我们将仔细研究可以添加到场景中的对象 (结合了 THREE.Geometry 和材质的 THREE.Mesh)。
+
+## How geometries and meshes are related
+
+### 几何体的属性和函数
+
+###   
 
 # 6、探索高级几何
 
