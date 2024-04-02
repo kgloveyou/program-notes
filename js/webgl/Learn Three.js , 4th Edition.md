@@ -149,6 +149,8 @@ textureLoader.load("/assets/equi.jpeg", (loaded) => {
 
 ### 几何体的属性和函数
 
+
+
 ###   
 
 # 6、探索高级几何
