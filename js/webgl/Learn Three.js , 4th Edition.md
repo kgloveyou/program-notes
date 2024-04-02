@@ -149,9 +149,105 @@ textureLoader.load("/assets/equi.jpeg", (loaded) => {
 
 ### 几何体的属性和函数
 
+### 网格的属性和函数
+
+  我们已经学习到，要创建一个网格，我们需要一个几何体和一个或多个材质。一旦我们有了一个网格，我们将其添加到场景中，然后进行渲染。您可以使用一些属性来更改网格在场景中的位置和外观方式。在我们的第一个示例中，我们将查看以下一组属性和函数：
+
+- position：确定对象相对于其父对象位置的位置。大多数情况下，对象的父对象是一个THREE.Scene对象或一个THREE.Group对象。
+- rotation：使用此属性，您可以设置对象围绕其任何轴的旋转。Three.js还提供了围绕单个轴旋转的特定函数：rotateX()、rotateY()和rotateZ()。
+- scale：此属性允许您沿着x轴、y轴和z轴缩放对象。
+- translateX() / translateY() 和 translateZ()：此属性沿着相应的轴移动对象指定的量。
+- lookAt()：此属性将对象指向空间中的特定向量。这是手动设置旋转的替代方法。
+- visible：此属性确定是否应该渲染此网格。
+- castShadow：此属性确定当光线照射到网格时，是否应该投射阴影。默认情况下，网格不会投射阴影。
+
+当我们旋转一个对象时，我们是围绕一个轴旋转的。在一个3D场景中，有多个空间具有您可以围绕其旋转的轴。rotateN() 函数在局部空间中围绕轴旋转对象。这意味着对象围绕其父对象的轴旋转。因此，当您将一个对象添加到场景中时，rotateN() 函数将围绕场景的主轴旋转该对象。当它是一个嵌套组的一部分时，这些函数将围绕其父对象的轴旋转对象，这通常是您要寻找的行为。Three.js 还有一个特定的 rotateOnWorldAxis 函数，它允许您围绕主 THREE.Scene 的轴旋转对象，而不考虑对象的实际父对象。最后，您还可以通过调用 rotateOnAxis 函数强制对象围绕自己的轴旋转（这称为对象空间）。
+
+#### 使用position属性设置网格的位置
+
+我们已经多次见过这个属性，所以让我们快速讨论一下。使用这个属性，您可以设置对象相对于其父对象的x、y和z坐标。
+
+#### 使用rotation属性定义网格的旋转
+
+使用此属性，您可以设置对象围绕其轴之一的旋转。您可以以与设置位置相同的方式设置此值。一个完整的旋转，您可能还记得数学课上讲过的，是2π。在Three.js中，您可以以几种不同的方式配置这个值：
+
+```js
+cube.rotation.x = 0.5 * Math.PI;
+cube.rotation.set(0.5 * Math.PI, 0, 0);
+cube.rotation = new THREE.Vector3(0.5 * Math.PI, 0, 0);
+```
+
+如果您想使用度数（从0到360），我们将不得不将其转换为弧度。这可以很容易地完成如下：
+
+```js
+const degrees = 45;
+const inRadians = degrees * (Math.PI / 180);
+```
+
+在前面的代码块中，我们自己完成了转换。Three.js还提供了MathUtils类，该类提供了许多有用的转换，包括与我们在前面的代码块中所做的相同的转换。您可以使用`chapter-2/meshproperties`  示例来尝试这个属性。
+
+#### 使用translate属性更改位置
+
+使用translate属性，您还可以更改对象的位置，但不是定义您希望对象处于的绝对位置，而是定义对象应该移动的距离，相对于其当前位置。例如，我们有一个球体被添加到一个场景中，并且其位置被设置为(1, 2, 3)。接下来，我们沿着它的x轴进行平移：translateX(4)。现在它的位置将是(5, 2, 3)。如果我们想要将对象恢复到其原始位置，我们使用translateX(-4)。
+
+## 在不同场景中使用不同的相机
+
+在Three.js中有两种不同的相机类型：正交相机（orthographic camera）和透视相机（perspective camera）。请注意，Three.js还提供了一些非常特定的相机，用于创建可以使用3D眼镜或VR设备查看的场景。在本书中，我们不会详细介绍这些相机，因为它们的工作方式与本章中解释的相机完全相同。如果您对这些相机感兴趣，Three.js提供了一些标准示例：
+- 红蓝立体效果：https://threejs.org/examples/#webgl_effects_anaglyph
+- 视差屏障：https://threejs.org/examples/#webgl_effects_parallaxbarrier
+- 立体效果：https://threejs.org/examples/#webgl_effects_stereo
+
+如果您正在寻找简单的VR相机，您可以使用THREE.StereoCamera创建渲染在两侧的3D场景（标准立体效果），使用平行障碍（就像3DS提供的那样），或者提供红蓝立体效果，其中不同的视图以不同的颜色渲染。此外，Three.js对WebVR标准有一些实验性的支持，该标准受到许多浏览器的支持（更多信息，请参见https://webvr.info/developers/）。要使用这个，不需要做太多的改变。您只需设置renderer.vr.enabled = true，Three.js将处理其余部分。Three.js网站上有一些示例，展示了这个属性以及Three.js支持WebVR的一些其他特性：https://threejs.org/examples/。
+现在，我们将专注于标准的透视和正交相机。解释这些相机之间的区别最好的方法是看一些示例。
+
+### 正交相机与透视相机
+
+#### 透视相机属性
+
+#### 正交相机属性
+
+### Looking at specific points
+
+ 到目前为止，您已经看到了如何创建相机以及各种参数的含义。在Chapter 1, Creating Your First 3D Scene with Three.js  ，您还看到需要将相机定位在场景中的某个位置，并且从该相机的视角进行渲染。通常，相机指向场景的中心：位置为(0, 0, 0)。然而，我们可以很容易地改变相机的观察目标，如下所示：
+
+```js
+camera.lookAt(new THREE.Vector3(x, y, z));
+```
+
+当您使用lookAt函数时，您将相机指向特定位置。您也可以使用这个函数使相机在场景中跟随一个对象。由于每个THREE.Mesh对象都有一个位置，该位置是一个THREE.Vector3对象，因此您可以使用lookAt函数指向场景中的特定网格。您只需要使用这个：camera.lookAt(mesh.position)。如果您在渲染循环中调用这个函数，您将使相机跟随一个对象在场景中移动。
+
+### Debugging what a camera looks at  
+
+# 3、在Three.js中使用光源
+
+**注意**
+
+WebGL本身并没有内置对光照的支持。如果没有Three.js，您将不得不编写特定的WebGL着色器程序来模拟这些类型的光照，这相当困难。您可以在https://developer.mozilla.org/en-US/docs/Web/WebGL/Lighting_in_WebGL找到一个很好的介绍，介绍了从头开始在WebGL中模拟光照的内容。
+
+## Three.js提供了哪些类型的光源？
+
+在Three.js中提供了几种不同的光源，它们都具有特定的行为和用途。在本章中，我们将讨论以下一组光源：
+
+- THREE.AmbientLight：这是一种基本的光源，其颜色被添加到场景中物体的当前颜色中。
+- THREE.PointLight：这是空间中的一个单一点，从该点向所有方向发光。这种光源可以用于创建阴影。
+- THREE.SpotLight：这种光源具有类似于台灯、天花板聚光灯或手电筒的锥形效果。这种光源可以投射阴影。
+- THREE.DirectionalLight：也称为无限光。这种光源的光线可以被看作是平行的，类似于太阳的光线。这种光源也可以用于创建阴影。
+- THREE.HemisphereLight：这是一种特殊的光源，可以通过模拟反射表面和微弱的照亮天空来创建更自然的室外照明。这种光源也不提供任何与阴影相关的功能。
+- THREE.RectAreaLight：使用这种光源，您可以指定一个区域来发光，而不是在空间中的单一点。THREE.RectAreaLight不投射任何阴影。
+- THREE.LightProbe：这是一种特殊类型的光源，根据使用的环境贴图，创建一个动态环境光源来照亮场景。
+- THREE.LensFlare：这不是一个光源，但是使用THREE.LensFlare，您可以在场景中的光源上添加镜头眩光效果。
+
+本章分为两个主要部分。首先，我们将查看基本光源：THREE.AmbientLight、THREE.PointLight、THREE.SpotLight和THREE.DirectionalLight。所有这些光源都扩展了基本的THREE.Light对象，提供了共享的功能。在这里提到的光源是简单的光源，需要很少的设置，并且可以用来重新创建大多数所需的照明场景。在第二部分中，我们将查看几种特殊用途的光源和效果：THREE.HemisphereLight、THREE.RectAreaLight、THREE.LightProbe和THREE.LensFlare。您可能只在非常特殊的情况下需要这些光源。
+
+## 使用基本光源
+
+### THREE.AmbientLight  
+
+当您创建一个THREE.AmbientLight时，颜色是全局应用的。这种光源没有特定的方向，THREE.AmbientLight不会产生任何阴影。您通常不会将THREE.AmbientLight作为场景中唯一的光源，因为它以相同的方式将其颜色应用于场景中的所有对象，而不考虑网格的形状。您可以将它与其他光源一起使用，比如THREE.SpotLight或THREE.DirectionalLight，以软化阴影或向场景中添加一些额外的颜色。理解这一点最简单的方法是查看chapter-
+03  文件夹中的ambient-light.html示例。在这个示例中，您可以获得一个简单的用户界面，用于修改这个场景中可用的THREE.AmbientLight对象。
+在以下的截图中，您可以看到我们使用了一个简单的瀑布模型，并且可以配置使用的THREE.AmbientLight对象的颜色和强度属性。在第一个截图中，您可以看到当我们将光的颜色设置为红色时发生了什么：
 
 
-###   
 
 # 6、探索高级几何
 
