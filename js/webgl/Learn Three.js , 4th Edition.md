@@ -355,7 +355,27 @@ Three.js还提供了另一种LightProbe：THREE.HemisphereLightProbe。这种Lig
 
 # 4、使用Three.js材质
 
+到目前为止，我们还没有详细讨论过材质。在本章中，我们将深入研究Three.js提供的所有材质，您将学习如何使用这些材质来创建漂亮的3D对象。本章中我们将探讨的材质如下所示：
+- MeshBasicMaterial：这是一种基本材质，您可以使用它来给几何体赋予简单的颜色或显示几何体的线框。这种材质不受光源影响。
+- MeshDepthMaterial：这是一种根据相机到物体的距离确定如何着色的材质。
+- MeshNormalMaterial：这是一种简单的材质，它基于面的法向量确定颜色。
+- MeshLambertMaterial：这是一种考虑了光照效果的材质，用于创建暗淡、不发光的物体。
+- MeshPhongMaterial：这是一种考虑了光照效果的材质，可用于创建发光的物体。
+- MeshStandardMaterial：这是一种使用物理渲染的材质来渲染物体。使用物理渲染，会使用一个物理上正确的模型来确定光线与表面的交互方式。这使您能够创建更准确和逼真的对象。
+- MeshPhysicalMaterial：这是MeshStandardMaterial的扩展，允许更多地控制反射。
+- MeshToonMaterial：这是MeshPhongMaterial的扩展，尝试使对象看起来是手绘的。
+- ShadowMaterial：这是一种特殊的材质，可以接收阴影，但在其他方面呈现为透明。
+- ShaderMaterial：这种材质允许您指定着色器程序，直接控制顶点的位置和像素的颜色。
+- LineBasicMaterial：这是一种可以用在THREE.Line几何体上的材质，用于创建彩色线条。
+- LineDashMaterial：与LineBasicMaterial相同，但这种材质还允许您创建虚线效果。
 
+在Three.js的源代码中，您还可以找到THREE.SpriteMaterial和THREE.PointsMaterial。这些是您在样式化单个点时可以使用的材质。我们不会在本章中讨论它们，但我们将在第7章《Points and Sprites》中探讨它们。
+
+## 理解常见的材质属性
+
+### 基本属性
+
+106
 
 # 6、探索高级几何
 
