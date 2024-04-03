@@ -249,6 +249,114 @@ WebGL本身并没有内置对光照的支持。如果没有Three.js，您将不�
 
 
 
+- THREE.PointLight：从一个特定点向所有方向发出光线。
+- THREE.SpotLight：从一个特定点向锥形状发出光线。
+- THREE.DirectionalLight：不是从单一点发出光线，而是从一个二维平面发出光线，这些光线是彼此平行的。
+
+### THREE.SpotLight
+
+THREE.SpotLight是您经常会使用的灯光之一（特别是如果您想要使用阴影的话）。THREE.SpotLight是一种具有锥形效果的光源。您可以将其与手电筒或灯笼进行比较。这种光源有一个方向和一个产生光线的角度。  
+
+
+
+我将用几条提示来结束本节，以防您在阴影方面遇到问题。
+
+如果阴影看起来很方块，您可以增加shadow.mapSize.width和shadow.mapSize.Height属性，并确保用于计算阴影的区域紧密地包裹着您的对象。您可以使用shadow.camera.near、shadow.camera.far和shadow.camera.fov属性来配置这个区域。
+请记住，您不仅需要告诉光源投射阴影，还需要告诉每个几何体是否接收和/或投射阴影，方法是设置castShadow和receiveShadow属性。
+
+如果您想要更柔和的阴影，您可以在THREE.WebGLRenderer上设置不同的shadowMapType值。默认情况下，该属性设置为THREE.PCFShadowMap；如果您将该属性设置为PCFSoftShadowMap，您将获得更柔和的阴影。
+
+**注意**
+
+Shadow bias 
+如果您在场景中使用薄物体，渲染阴影时可能会出现奇怪的伪影。您可以使用shadow.bias属性来轻微偏移阴影，这通常可以解决这些问题。
+
+### THREE.PointLight
+
+### THREE.DirectionalLight 
+
+### 使用THREE.Color对象
+
+## 使用特殊光源
+
+###  THREE.HemisphereLight  
+
+使用THREE.HemisphereLight，我们可以创建更自然的室外照明。如果没有这种光源，我们可以通过创建THREE.DirectionalLight来模拟太阳，并可能添加另一个THREE.AmbientLight来为场景提供一些通用的颜色。然而，这样做看起来不够自然。当您在户外时，并不是所有的光都直接来自上方：大部分光线都是被大气散射并被地面和其他物体反射的。Three.js中的THREE.HemisphereLight就是为这种情况创建的。这是获得更自然的室外照明的简单方法。
+
+### THREE.RectAreaLight  
+
+### THREE.LightProbe  
+
+在前一章中，我们简要介绍了什么是立方体贴图。使用立方体贴图，您可以将模型放置在一个环境中显示。在前一章中，我们使用立方体贴图创建了一个随着相机视角旋转的背景：
+
+正如我们将在下一章中看到的那样，我们可以使用来自立方体贴图的信息在我们的材质上显示反射。通常情况下，这些环境贴图不会为您的场景提供任何光线。然而，通过THREE.LightProbe，我们可以从立方体贴图中提取光照级别信息，并将其用于照亮我们的模型。因此，您将获得的效果有点像THREE.AmbientLight，但它会根据物体在场景中的位置和立方体贴图的信息来影响物体。
+
+在前面的示例中，我们有一个模型位于类似洞穴的环境中。如果您围绕相机旋转，您会看到根据环境的光照，我们的模型稍微有所不同的照明。在前面的截图中，我们看到的是物体的背面，在洞穴的更深处，因此该模型在那一侧较暗。如果我们完全旋转相机，并将洞穴的入口设置在背后，我们会看到模型更明亮，接收到更多的光线：
+
+这是一个非常巧妙的技巧，使您的物体看起来更加栩栩如生，而不是单调平淡，使用THREE.LightProbe，您的模型将以非均匀的方式接收光线，这样看起来效果更好。
+
+```js
+const loadCubeMap = (renderer, scene) => {
+  const base = 'drachenfels'
+  const ext = 'png'
+  const urls = [
+    '/assets/panorama/' + base + '/posx.' + ext,
+    '/assets/panorama/' + base + '/negx.' + ext,
+    '/assets/panorama/' + base + '/posy.' + ext,
+    '/assets/panorama/' + base + '/negy.' + ext,
+    '/assets/panorama/' + base + '/posz.' + ext,
+    '/assets/panorama/' + base + '/negz.' + ext
+  ]
+
+  new THREE.CubeTextureLoader().load(urls, function (cubeTexture) {
+    cubeTexture.encoding = THREE.sRGBEncoding
+    scene.background = cubeTexture
+    const lp = LightProbeGenerator.fromCubeTexture(cubeTexture)
+    lp.intensity = 15
+    scene.add(lp)
+  })
+}
+
+initScene(props)(({ scene, camera, renderer, orbitControls }) => {
+  camera.position.set(-7, 2, 5)
+  orbitControls.update()
+
+  loadIsland(scene)
+
+  loadCubeMap(renderer, scene)
+
+  const lightProbe = new THREE.LightProbe()
+  scene.add(lightProbe)
+
+  function animate() {
+    requestAnimationFrame(animate)
+    renderer.render(scene, camera)
+    stats.update()
+
+    orbitControls.update()
+  }
+
+  animate()
+})
+```
+
+在上面的代码片段中，我们做了两件主要的事情。首先，我们使用THREE.CubeTextureLoader来加载立方体贴图。正如我们将在下一章中看到的，立方体贴图由六个图像组成，代表立方体的六个面，这些图像共同组成了我们的环境。一旦加载完成，我们将其设置为场景的背景（请注意，这对于THREE.LightProbe的工作是不需要的）。
+现在我们有了这个立方体贴图，我们可以从中生成一个THREE.LightProbe。这通过将cubeTexture传递给LightProbeGenerator来完成。结果是一个THREE.LightProbe，我们将其添加到场景中，就像添加任何其他光源一样。与THREE.AmbientLight一样，您可以通过设置intensity属性来控制这个光源对网格照明的贡献程度。
+
+**注意：**
+
+Three.js还提供了另一种LightProbe：THREE.HemisphereLightProbe。这种LightProbe与普通的THREE.HemisphereLight几乎相同，但在内部使用了一个LightProbe。
+
+本章的最后一个对象不是光源，而是经常在电影中出现的对相机的把戏：THREE.LensFlare。
+
+### THREE.LensFlare  
+
+您可能已经熟悉了镜头光晕。例如，当您直接拍摄太阳或其他明亮光源时，它们会出现。在大多数情况下，您希望避免这种情况，但对于游戏和3D生成的图像，它提供了一个很好的效果，使场景看起来更加真实。Three.js也支持镜头光晕，并且非常容易将它们添加到您的场景中。在本节中，我们将向场景添加一个镜头光晕，并创建以下截图中显示的输出；您可以通过打开lens-flare.html来自行查看：
+
+# 4、使用Three.js材质
+
+
+
 # 6、探索高级几何
 
 ## 可用于调试的几何图形
