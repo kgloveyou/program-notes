@@ -14,6 +14,101 @@
 
 #### Render engine  
 
+对于Vue 3，采用了新的渲染引擎，使用了一种新的算法来处理shadow  DOM。这个新的渲染引擎完全暴露在框架的核心中，默认情况下无需由框架执行。这使得可以实现全新的渲染函数的新实现，这些函数可以被注入到框架中，替换原始的渲染引擎。
+在这个新版本的Vue中，从头开始编写了一个新的模板编译器。这个新编译器使用了一种新的缓存操纵技术和管理渲染元素的方法，同时还应用了一种新的hoisted方法来创建VNodes。
+对于缓存操纵，应用了一种新方法来控制元素的位置，其中元素可以是具有计算数据的动态元素或对可以被突变的函数的响应。
+
+Vue核心团队制作了一个explorer，可以看到新模板编译器如何渲染最终的渲染函数。您可以在 https://vue-nexttemplate-explorer.netlify.app/ 上查看。
+
+### API 变化
+
+#### 一些轻微的变动
+
+Vue 3 中存在一些轻微的变动需要提及。这些变动与我们之前用于编写代码的某种方法有关，而在使用 Vue 3 时已被替换。这并不是一个艰巨的任务，但你需要了解它们。
+
+##### Goodbye filters, hello filters! The Vue filters API  
+
+在Vue 2中使用过滤器的方式在Vue 3中已不再可用。Vue过滤器已从API中移除。这一变动旨在简化渲染过程并提高速度。所有过滤器最终都是接收一个字符串并返回一个字符串的函数。在Vue 2中，我们通常像这样使用过滤器：
+```
+{{ textString | filter }}
+```
+而在Vue 3中，我们只需传递一个操作字符串的函数即可：
+```
+{{ filter(textString) }}
+```
+
+##### 公交车刚刚离开车站！事件总线 API（The bus just left the station! The event bus API  ）
+
+在Vue 2中，我们能够利用全局的Vue对象的力量创建一个新的Vue实例，并将此实例用作事件总线，可以在组件和函数之间传输消息而无需任何麻烦。我们只需要发布和订阅事件总线，一切都是完美的。
+这是在组件之间传递数据的一个好方法，但对于Vue框架和组件来说，这是一个反模式的方法。在Vue中，在组件之间传递数据的正确方式是通过父子通信或状态管理，也称为状态驱动架构。
+在Vue 3中，$on、$off和$once实例方法被移除了。现在要使用事件总线策略，建议使用第三方插件或框架，例如mitt（https://github.com/developit/mitt）。
+
+##### No more global Vue – the mounting API  
+
+在Vue 2中，我们习惯于导入Vue，并在挂载应用程序之前，使用全局Vue实例来添加插件、过滤器、组件、路由器和存储。这是一种很好的技术，我们可以将任何内容添加到Vue实例中，而无需直接附加到已挂载的应用程序上。它的工作方式如下：
+```javascript
+import Vue from 'vue';
+import Vuex from 'vuex';
+import App from './App.vue';
+Vue.use(Vuex);
+const store = new Vuex.store({});
+new Vue({
+  store,
+  render: (h) => h(App),
+}).$mount('#app');
+```
+现在，在Vue 3中，这种做法不再可行。我们需要直接将每个组件、插件、存储和路由器附加到已挂载的实例上：
+```javascript
+import { createApp } from 'vue';
+import { createStore } from 'vuex';
+import App from './App.vue';
+const store = createStore({});
+createApp(App)
+  .use(store)
+  .mount('#app');
+```
+使用这种方法，我们可以在同一个全局应用程序中创建不同的Vue应用程序，而不会相互干扰。
+
+##### v-model, v-model, v-model – multiple v-model  
+
+#### 组合式 API  
+
+这是Vue 3 中最受期待的功能之一。组合式 API 是一种新的创建Vue组件的方式，具有优化的代码编写方式，并在组件中提供完整的 TypeScript 类型检查支持。这种方法以更简单、更高效的方式组织代码。
+
+在这种声明Vue组件的新方式中，你只需要一个setup属性，它将被执行并返回组件执行所需的一切，就像这个例子：
+
+```html
+<template>
+  <p @click="increaseCounter">{{ state.count }}</p>
+</template>
+
+<script>
+import { reactive, ref } from 'vue';
+
+export default {
+  setup() {
+    const state = reactive({
+      count: ref(0)
+    });
+
+    const increaseCounter = () => {
+      state.count += 1;
+    }
+
+    return { state, increaseCounter }
+  }
+}
+</script>
+```
+
+你将从Vue核心导入`reactivity`  API以在对象类型数据属性中启用它，例如这里的`state`。`ref` API使基本类型值（如数字）具有响应性，比如`count`。
+
+最后，函数可以在setup函数内部声明，并在返回的对象中传递下来。然后，所有内容都可以在`<template>`部分中访问。
+
+现在，让我们继续一些示例。
+
+
+
 ## Using the reactivity and observable API outside the scope of Vue  
 
 `reactivity` 和 `watch` APIs.  
