@@ -370,4 +370,35 @@ type NonZeroNums = Exclude<number, 0>; // Type is still just number
 
 ## 项目 9: 优先使用类型声明而非类型断言
 
-40
+您可能会遇到非空断言，它如此常用，以至于拥有特殊的语法：
+
+```typescript
+const elNull = document.getElementById('foo'); // Type is HTMLElement | null
+const el = document.getElementById('foo')!; // Type is HTMLElement
+```
+
+当作为前缀时，! 表示布尔值的逻辑非操作。但是作为后缀时，! 被解释为断言该值非空。您应该像对待任何其他断言一样对待 !：它会在编译过程中被擦除，因此只有在您拥有类型检查器所缺少的信息并且可以确保该值非空的情况下才应该使用它。如果您无法确保，则应该使用条件语句来检查`null`  情况。
+
+
+
+```typescript
+interface Person { name: string; }
+const body = document.body;
+const el = body as Person;
+// ~~~~~~~~~~~~~~ Conversion of type 'HTMLElement' to type 'Person'
+// may be a mistake because neither type sufficiently
+// overlaps with the other. If this was intentional,
+// convert the expression to 'unknown' first
+```
+
+错误信息提示了一种解决方法，即使用`unknown`  类型 (Item 42)。所有类型都是未知类型的子类型，因此涉及未知类型的断言始终有效。这使您可以转换任意类型的值，但至少明确表示您正在执行可疑的操作！
+
+```typescript
+const el = document.body as unknown as Person; // OK
+```
+
+### 注意事项：
+
+- 优先使用类型声明 (`: Type`) 而不是类型断言 (`as Type`)。
+- 了解如何标注箭头函数的返回类型。
+- 当您了解类型系统所不知道的类型信息时，请使用类型断言和非空断言。
