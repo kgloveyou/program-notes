@@ -402,3 +402,215 @@ const el = document.body as unknown as Person; // OK
 - 优先使用类型声明 (`: Type`) 而不是类型断言 (`as Type`)。
 - 了解如何标注箭头函数的返回类型。
 - 当您了解类型系统所不知道的类型信息时，请使用类型断言和非空断言。
+
+## 第十条：避免使用对象包装类型 (String, Number, Boolean, Symbol, BigInt)
+
+除了对象之外，JavaScript 还有七种原始值类型：strings、numbers  、booleans、null、undefined、symbol  和bigint  。前五种类型从一开始就存在。符号原始值是在 ES2015 中添加的，而大整数正在被最终确定中。
+
+原始值与对象的区别在于原始值是不可变的，并且没有方法。你可能会反驳说字符串确实有方法：
+```javascript
+'primitive'.charAt(3)
+```
+输出："m"
+
+但事实并非完全如此。实际上，这里有一些令人惊讶和微妙的事情。虽然字符串原始值没有方法，但 JavaScript 还定义了一个 String 对象类型，该类型具有方法。JavaScript 自由地在这些类型之间进行转换。当你在字符串原始值上访问像 charAt 这样的方法时，JavaScript 将其包装在一个 String 对象中，调用方法，然后将对象丢弃。
+
+**记住以下几点**：
+
+- 了解对象包装类型如何用于在原始值上提供方法。避免实例化它们或直接使用它们。
+- 避免使用 TypeScript 对象包装类型。而是使用原始类型：string 而不是 String，number 而不是 Number，boolean 而不是 Boolean，symbol 而不是 Symbol，bigint 而不是 BigInt。
+
+## 条目 11：认识到过量属性检查的限制
+
+**记住以下几点**：
+
+- 当你将对象字面量赋给一个变量或将其作为参数传递给函数时，它会经历过量属性检查。
+- 过量属性检查是发现错误的有效方式，但它与 TypeScript 类型检查器通常进行的结构可赋性检查是不同的。混淆这些过程会让你更难以建立可赋值性的心理模型。
+- 注意过量属性检查的限制：引入一个中间变量会移除这些检查。
+
+## 条目 12：尽可能将类型应用于整个函数表达式
+
+JavaScript（以及TypeScript）区分函数语句和函数表达式：
+```typescript
+function rollDice1(sides: number): number { /* ... */ } // 语句
+const rollDice2 = function(sides: number): number { /* ... */ }; // 表达式
+const rollDice3 = (sides: number): number => { /* ... */ }; // 也是表达式
+```
+在TypeScript中，函数表达式的一个优点是你可以一次性为整个函数应用类型声明，而不是单独指定参数和返回类型的类型：
+
+```typescript
+type DiceRollFn = (sides: number) => number;
+const rollDice: DiceRollFn = sides => { /* ... */ };
+```
+
+如果你在编辑器中悬停在 `sides` 上，你会看到 TypeScript 知道它的类型是 `number`。在这样一个简单的例子中，函数类型并没有提供太多价值，但这个技术确实开启了许多可能性。
+
+一种方法是减少重复。例如，如果你想写几个用于对数字进行算术运算的函数，你可以这样写：
+
+```typescript
+function add(a: number, b: number) { return a + b; }
+function sub(a: number, b: number) { return a - b; }
+function mul(a: number, b: number) { return a * b; }
+function div(a: number, b: number) { return a / b; }
+```
+或者将重复的函数签名合并为单个函数类型：
+```typescript
+type BinaryFn = (a: number, b: number) => number;
+const add: BinaryFn = (a, b) => a + b;
+const sub: BinaryFn = (a, b) => a - b;
+const mul: BinaryFn = (a, b) => a * b;
+const div: BinaryFn = (a, b) => a / b;
+```
+这样的写法比之前少了更多的类型注解，并且它们被与函数实现分开。这使得逻辑更加清晰。你还获得了一个检查，即所有函数表达式的返回类型都是数字。
+
+常见的函数签名通常由库提供类型。例如，ReactJS 提供了 MouseEventHandler 类型，你可以将其应用于整个函数，而不是将 MouseEvent 指定为函数参数的类型。如果你是一个库的作者，考虑为常见的回调提供类型声明。
+
+除了更简洁外，将整个函数表达式进行类型注解而不是其参数使你获得了更好的安全性。当你编写具有与另一个函数相同类型签名的函数，或者编写多个具有相同类型签名的函数时，考虑是否可以将类型声明应用于整个函数，而不是重复参数和返回值的类型。
+
+**记住以下几点**：
+
+- 考虑将类型注解应用于整个函数表达式，而不是它们的参数和返回类型。
+- 如果你反复编写相同的类型签名，请提取一个函数类型或查找现有的函数类型。如果你是一个库的作者，请为常见的回调提供类型。
+- 使用 `typeof fn` 来匹配另一个函数的签名。
+
+## 条目 13：了解 type 和 interface 之间的区别
+
+一个接口可以扩展一个类型（稍后会解释一些注意事项），而一个类型也可以扩展一个接口：
+```typescript
+interface IStateWithPop extends TState {
+  population: number;
+}
+type TStateWithPop = TState & { population: number; };
+```
+再次强调，这些类型是相同的。注意事项是，一个接口不能扩展一个复杂类型，比如联合类型。如果你想要这样做，你需要使用类型和 & 运算符。
+
+
+
+然而，接口确实具有一些类型所没有的能力。其中之一是接口可以被增强。回到 State 的例子，你可以通过另一种方式添加 population 字段：
+
+```typescript
+interface IState {
+  name: string;
+  capital: string;
+}
+interface IState {
+  population: number;
+}
+const wyoming: IState = {
+  name: 'Wyoming',
+  capital: 'Cheyenne',
+  population: 500_000
+}; // OK
+```
+这被称为“声明合并”，如果你以前从未见过它，这可能会让你感到惊讶。这主要用于类型声明文件（第 6 章），如果你正在编写这样的文件，你应该遵循惯例并使用接口来支持它。其思想是你的类型声明中可能存在用户需要填充的空白，这就是他们如何填充这些空白的方式。
+
+TypeScript使用合并来获取不同版本JavaScript标准库的不同类型。例如，Array接口在lib.es5.d.ts中定义。默认情况下，这是你所获得的全部内容。但是，如果你将ES2015添加到tsconfig.json文件的lib条目中，TypeScript还将包括lib.es2015.d.ts。这将包括另一个Array接口，其中包含ES2015中添加的额外方法，例如find。它们通过合并添加到其他Array接口中。其结果是你得到了一个具有完全正确方法的单一Array类型。
+
+合并不仅在声明中受支持，而且在常规代码中也受支持，你应该意识到这种可能性。如果确保没有人对你的类型进行增强是至关重要的，那么就使用type。
+
+回到条目开头的问题，你应该使用type还是interface？对于复杂类型，你别无选择：你需要使用类型别名。但是对于可以以两种方式表示的更简单的对象类型，应该如何选择？为了回答这个问题，你应该考虑一致性和增强。你是否在一个一致使用接口的代码库中工作？那就坚持使用接口。它是否使用类型？那就使用类型。
+
+对于没有已建立样式的项目，你应该考虑增强。你是否为API发布了类型声明？那么当API发生变化时，能够通过接口合并新字段对你的用户来说可能会很有帮助。所以使用接口。但是对于在项目内部使用的类型，声明合并可能是一个错误。所以更喜欢类型。
+
+## 条目14：使用类型操作和泛型来避免重复自己
+
+你也可以反过来进行。假设你有一个类型 State，它表示整个应用程序的状态，另一个类型 TopNavState，它只表示一个部分。
+```typescript
+interface State {
+  userId: string;
+  pageTitle: string;
+  recentFiles: string[];
+  pageContents: string;
+}
+
+interface TopNavState {
+  userId: string;
+  pageTitle: string;
+  recentFiles: string[];
+}
+```
+与其通过扩展 TopNavState 来构建 State，你更希望将 TopNavState 定义为 State 中字段的一个子集。这样，你就可以保持一个单一的接口来定义整个应用程序的状态。
+
+映射类型是类型系统中对数组字段进行循环的等效操作。这个特定模式非常常见，它已经成为标准库的一部分，被称为Pick：
+```typescript
+type Pick<T, K extends keyof T> = { [k in K]: T[k] };
+```
+（这个定义不是完全的，你会看到原因。）你可以这样使用它：
+```typescript
+type TopNavState = Pick<State, 'userId' | 'pageTitle' | 'recentFiles'>;
+```
+
+Pick 是一个泛型类型的例子。延续去除代码重复的类比，使用 Pick 相当于调用一个函数。Pick 接受两个类型参数 T 和 K，并返回一个新的类型，就像一个函数可能接受两个值并返回一个值一样。
+
+另一种重复可能出现在带标记的联合类型中。如果你只想要一个标记的类型，该怎么办？
+```typescript
+interface SaveAction {
+  type: 'save';
+  // ...
+}
+interface LoadAction {
+  type: 'load';
+  // ...
+}
+type Action = SaveAction | LoadAction;
+type ActionType = 'save' | 'load'; // 重复的类型！
+```
+你可以通过对 Action 联合类型进行索引来定义 ActionType，避免重复自己：
+```typescript
+type ActionType = Action['type']; // 类型是 "save" | "load"
+```
+当你向 Action 联合类型添加更多类型时，ActionType 将自动包含它们。这种类型与使用 Pick 得到的类型是不同的，后者会给你一个带有 type 属性的接口：
+```typescript
+type ActionRec = Pick<Action, 'type'>; // {type: "save" | "load"}
+```
+
+如果你正在定义一个可以初始化并稍后更新的类，那么update方法的参数类型将可选地包含与构造函数中的大部分相同的参数：
+```typescript
+interface Options {
+  width: number;
+  height: number;
+  color: string;
+  label: string;
+}
+
+interface OptionsUpdate {
+  width?: number;
+  height?: number;
+  color?: string;
+  label?: string;
+}
+
+class UIWidget {
+  constructor(init: Options) { /* ... */ }
+  update(options: OptionsUpdate) { /* ... */ }
+}
+```
+你可以使用一个映射类型和keyof从Options构造OptionsUpdate：
+```typescript
+type OptionsUpdate = {[k in keyof Options]?: Options[k]};
+```
+keyof接受一个类型，并给出其键的类型的联合：
+
+```ts
+type OptionsKeys = keyof Options;
+// Type is "width" | "height" | "color" | "label"
+```
+
+映射类型 ([k in keyof Options]) 迭代这些键，并查找Options中相应的值类型。? 使每个属性变为可选的。这种模式也非常常见，并被规范库确定为 Partial：
+```typescript
+class UIWidget {
+  constructor(init: Options) { /* ... */ }
+  update(options: Partial<Options>) { /* ... */ }
+}
+```
+
+
+
+重复和复制粘贴编码在类型空间中和值空间中一样糟糕。用于避免在类型空间中重复的构造可能不太熟悉，但学习它们是值得的。不要重复自己！
+要记住的事情：
+
+- DRY（不要重复自己）原则适用于类型，就像它适用于逻辑一样。
+- 给类型命名，而不是重复它们。使用extends来避免在接口中重复字段。
+- 建立对TypeScript提供的工具的理解，以在类型之间进行映射。这些工具包括keyof、typeof、索引和映射类型。
+- 泛型类型是类型的函数等效物。使用它们来在类型之间进行映射，而不是重复类型。使用extends来约束泛型类型。
+- 熟悉标准库中定义的泛型类型，如Pick、Partial和ReturnType。
