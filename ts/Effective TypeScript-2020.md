@@ -614,3 +614,159 @@ class UIWidget {
 - 建立对TypeScript提供的工具的理解，以在类型之间进行映射。这些工具包括keyof、typeof、索引和映射类型。
 - 泛型类型是类型的函数等效物。使用它们来在类型之间进行映射，而不是重复类型。使用extends来约束泛型类型。
 - 熟悉标准库中定义的泛型类型，如Pick、Partial和ReturnType。
+
+## 条目 15：使用索引签名处理动态数据
+
+TypeScript允许你通过在类型上指定索引签名来表示这种灵活的映射：
+```typescript
+type Rocket = {[property: string]: string};
+const rocket: Rocket = {
+  name: 'Falcon 9',
+  variant: 'v1.0',
+  thrust: '4,940 kN',
+}; // OK
+```
+`[property: string]: string` 就是索引签名。它指定了三件事情：
+
+你应该使用索引签名来处理什么？典型的情况是真正动态的数据。例如，这可能来自于一个CSV文件，其中你有一个标题行，并想将数据行表示为将列名映射到值的对象：
+
+```typescript
+function parseCSV(input: string): { [columnName: string]: string }[] {
+  const lines = input.split("\n");
+  const [header, ...rows] = lines;
+  return rows.map((rowStr) => {
+    const row: { [columnName: string]: string } = {};
+    rowStr.split(",").forEach((cell, i) => {
+      row[header[i]] = cell;
+    });
+    return row;
+  });
+}
+```
+
+在这种一般的情况下，事先无法知道列名是什么，因此索引签名是合适的。
+
+如果使用索引签名的问题在于string类型过于宽泛，那么有几种替代方案。
+
+一种方法是使用Record。这是一种泛型类型，它可以让你在键的类型上具有更大的灵活性。特别是，你可以传入string的子集：
+```typescript
+type Vec3D = Record<'x' | 'y' | 'z', number>;
+// 类型 Vec3D = {
+//   x: number;
+//   y: number;
+//   z: number;
+// }
+```
+另一种方法是使用映射（mapped）类型。这使你可以为不同的键使用不同的类型：
+```typescript
+type Vec3D = {[k in 'x' | 'y' | 'z']: number};
+// 与上面相同
+type ABC = {[k in 'a' | 'b' | 'c']: k extends 'b' ? string : number};
+// 类型 ABC = {
+//   a: number;
+//   b: string;
+//   c: number;
+// }
+```
+
+要记住的事情：
+- 当对象的属性在运行时无法确定时，例如，如果你从CSV文件中加载它们时，请使用索引签名。
+- 考虑将undefined添加到索引签名的值类型中，以更安全地访问。
+- 在可能的情况下，更倾向于使用更精确的类型而不是索引签名：interfaces、Records或映射（mapped）类型。
+
+## 条目 16：优先使用数组、元组和ArrayLike，而不是数字索引签名
+
+JavaScript是一种以奇特闻名的语言。其中一些最臭名昭著的怪异之处涉及隐式类型转换：
+
+如果类型不能说服你，也许性能可以：在大多数浏览器和JavaScript引擎中，对数组的for-in循环比for-of或C风格的for循环慢几个数量级。
+
+这里的一般模式是，数字索引签名意味着你放入的内容必须是一个数字（除了for-in循环是一个明显的例外），但你取出的内容却是一个字符串。
+
+如果这听起来让人困惑，那是因为确实如此！一般来说，没有太多理由将number作为类型的索引签名，而不是string。如果你想指定一个将使用数字索引的内容，你可能想使用数组或元组类型。使用number作为索引类型可能会让人误解，即数字属性是JavaScript中的一种特性，无论是对你自己还是对你代码的读者来说。
+
+如果你反对接受一个Array类型，因为它们有许多其他属性（来自它们的原型），你可能不会使用，比如push和concat，那么这很好 - 你在进行结构化思考！（如果你需要恢复记忆，可以参考条目 4。）
+
+如果你真的想要接受任意长度的元组或任何类数组的构造，TypeScript 有一个名为ArrayLike的类型可以使用：
+```typescript
+function checkedAccess<T>(xs: ArrayLike<T>, i: number): T {
+  if (i < xs.length) {
+    return xs[i];
+  }
+  throw new Error(`Attempt to access ${i} which is past end of array.`)
+}
+```
+这只有一个长度和数字索引签名。在这种情况下很少见，但你应该使用它。但请记住，键仍然是字符串！
+```typescript
+const tupleLike: ArrayLike<string> = {
+  '0': 'A',
+  '1': 'B',
+  length: 2,
+}; // OK
+```
+
+要记住的事情：
+- 了解数组是对象，因此它们的键是字符串，而不是数字。将数字作为索引签名是一种纯粹的TypeScript构造，旨在帮助捕获错误。
+- 优先使用数组、元组或ArrayLike类型，而不是自己使用数字作为索引签名。
+
+## 条目 17：使用readonly来避免与Mutation相关的错误
+
+要记住的事情：
+- 如果你的函数不修改其参数，则声明它们为readonly。这样可以使其合约更清晰，并防止在其实现中意外发生变异。
+- 使用readonly来防止变异错误，并找出代码中发生变异的地方。
+- 理解const和readonly之间的区别。
+- 理解readonly是浅层的。
+
+## Item 18: Use Mapped Types to Keep Values in Sync  
+
+# 第3章 类型推断（Type Inference）
+
+# 第8章 迁移到 TypeScript
+
+本章提供了一些关于将JavaScript项目迁移到TypeScript的建议，以免失去理智并放弃这一努力。
+
+将大型项目迁移到TypeScript可能并不容易，但它确实提供了巨大的潜在好处。一项2017年的研究发现，在GitHub上的JavaScript项目中修复的15%的错误可以通过TypeScript来预防。更令人印象深刻的是，AirBnb对六个月的事故分析发现，其中38%的事故可以通过TypeScript来预防。如果你正在组织中倡导使用TypeScript，这样的统计数据会很有帮助！进行一些实验并找到早期采用者也是如此。条目 59 讨论了在开始迁移之前如何尝试使用TypeScript。
+
+由于本章主要涉及JavaScript，许多代码示例要么是纯JavaScript（不需要通过类型检查器），要么使用了更宽松的设置进行了检查（例如，关闭了 noImplicitAny）。
+
+## 条目 58：编写现代JavaScript
+
+### 使用 ECMAScript 模块
+
+### 使用 Classes 而不是 Prototypes  
+
+### 使用 let/const  而不是 var  
+
+### 使用for-of或者Array方法而不是 for(;;)  
+
+在经典的 JavaScript 中，你使用 C 风格的 for 循环来遍历数组：
+```javascript
+for (var i = 0; i < array.length; i++) {
+  const el = array[i];
+  // ...
+}
+```
+在现代 JavaScript 中，你可以使用 for-of 循环代替：
+```javascript
+for (const el of array) {
+  // ...
+}
+```
+这样做不太容易出错，也不需要引入索引变量。如果你需要索引变量，可以使用 forEach：
+```javascript
+array.forEach((el, i) => {
+  // ...
+});
+```
+避免使用 for-in 循环来遍历数组，因为它有很多意想不到的问题（参见条目 16）。
+
+### Use Compact Object Literals and Destructuring Assignment  
+
+### 使用默认函数参数
+
+### 使用 async/await 替代原始的 Promise 或回调
+
+### 在 TypeScript 中不要使用"use strict"
+
+在 TypeScript 输出的 JavaScript 中包含'use strict'是有一定价值的。如果设置了 alwaysStrict 或 strict 编译器选项，TypeScript 将以严格模式解析您的代码，并为您在 JavaScript 输出中放置'use strict'。
+
+简而言之，在 TypeScript 中不要编写'use strict'。而是使用 alwaysStrict。
