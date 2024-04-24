@@ -156,4 +156,172 @@ transform: scale(-1, 1);
 ```
 这会产生一个像镜子靠在元素一侧的效果，或者像您翻转了元素并从其背面看过去。多有趣啊！
 
-325
+### Translate
+
+```css
+transform: translateY(-.5em);
+```
+
+### Skew  
+
+
+
+**提示**：访问 http://westciv.com/tools/transforms/index.html 来使用一个在线工具，可视化 CSS 变换。
+
+### Origin  
+
+通常情况下，当您对一个元素应用变换时，Web 浏览器会将元素的中心作为变换点。然而，CSS 允许您更改这个变换点，使用 transform-origin 属性。它的工作方式类似于 background-position 属性（见第 236 页）；您可以提供关键字值、像素的绝对值，以及 ems 和百分比的相对值。
+
+### 3D变换
+
+CSS 还提供了一种更复杂的变换类型。
+3D 变换可以让您在显示器、平板电脑或手机的平面屏幕上模拟三维空间。
+要了解关于3D变换的简短介绍，请访问 http://coding.smashingmagazine.com/2012/01/06/adventures-in-thethird-dimension-css-3-d-transforms/ ，如果您需要更详细的解释和大量示例，请查看 http://desandro.github.io/3dtransforms/ 。要查看一些3D变换的精彩示例，请访问以下网站：
+
+- 苹果的“Morphing Power Cubes”页面（www.webkit.org/blog-files/3d-transforms/morphing-cubes.html），这是3D变换威力的最初示例之一，演示了一个旋转的立方体，您可以将其变成旋转的一组瓷砖。
+
+- 这是一个3D“翻转”效果的示例：http://davidwalsh.name/css-flip —— 一个动画效果，看起来像是翻转一张卡片以显示其背面。
+
+## Transitions
+
+虽然变换可以很有趣（特别是旋转函数），但当与 CSS 过渡结合使用时，它们确实可以使您的页面生动起来。过渡简单地是从一组 CSS 属性到另一组 CSS 属性在特定时间内的动画。例如，您可以使横幅在两秒内旋转 360 度。
+
+### Adding a Transition  
+
+```css
+.navButton {
+    background-color: orange;
+    transition-property: background-color;
+    transition-duration: 1s;
+}
+
+.navButton:hover {
+    background-color: blue;
+}
+```
+
+```css
+transition-timing-function: ease-in-out;
+```
+
+### 延迟过渡的开始
+
+```css
+transition-delay: .5s;
+```
+
+**提示**
+
+通常情况下，你会将过渡属性放在起始样式中（例如，.navButton 在第331页），而不是最终样式（.navButton:hover）。然而，这里有一个用于 CSS 下拉菜单的技巧（见第296页上的框）。在 CSS 中，下拉菜单的一个问题是，如果你意外地将鼠标移出菜单，菜单通常会很快消失。然而，你可以通过使用 transition-delay 属性来使菜单出现很快，但消失很慢。为此，你可以将以下代码添加到原始样式中：
+
+```css
+transition-delay: 1s;
+```
+然后在 :hover 样式中去掉延迟：
+```css
+transition-delay: 0;
+```
+这看起来有些反直觉，但这段代码基本上使 :hover 过渡立即发生，没有延迟。但是返回到正常样式（菜单消失）需要1秒钟。在这段时间内，访问者有足够的时间将他的错误鼠标移到菜单上，使其不会消失。
+
+### Transition Shorthand  
+
+```css
+transition: all 1s ease-in .5s;
+```
+
+### 实现更流畅的动画
+
+在网页中同时对许多不同的属性进行动画化可能会影响浏览器的性能。无论您是使用 CSS 过渡还是 CSS 动画，浏览器都需要做大量工作来动画化 CSS 属性的变化。同时进行的太多动画和过渡可能会使浏览器变得很慢，甚至崩溃。这在移动设备和平板电脑上尤为明显，因为它们的CPU比台式机和笔记本电脑的CPU慢得多。
+
+然而，有四种属性可以在不消耗太多CPU资源的情况下进行动画：opacity（不透明度）（见第671页），以及 transform 属性的 translate、scale 和 rotate 选项（见第319页）。这四种属性比其他 CSS 属性更有效地处理，因此您使用它们创建的任何过渡或动画都会更加流畅。关于技术细节，可以参考：http://www.html5rocks.com/en/tutorials/speed/high-performance-animations/。
+
+此外，您还可以强制浏览器将动画移动到计算机的 GPU（图形处理单元）。GPU 是非常快速的计算机，它们可以比计算机的 CPU 更快地执行特定类型的计算。您可以通过在样式中添加 3D 变换属性来欺骗浏览器将样式交给 GPU 处理。例如，如果您计划在访问者将鼠标悬停在元素上时，为元素的背景色添加动画效果，您可以使用原始背景色创建样式，如下所示：
+
+```css
+.highlight {
+    background-color: rgb(231, 0, 23);
+    transition: background-color 1s;
+    transform: translateZ(0);
+}
+
+.highlight:hover {
+    background-color: rgb(0, 0, 255);
+}
+```
+
+transform: translateZ(0) 这一行在视觉上并没有任何作用。它告诉浏览器沿着三维 Z 轴移动元素 0 像素；换句话说，根本不移动它。然而，由于它使用了一个 3D 变换，浏览器将此样式交给 GPU 处理。结果是，由于 GPU 的更强大的性能，动画可能会显得更流畅。
+
+但是，在您开始在每个样式上都添加 transform: translateZ(0) 之前，请注意 GPU 只能处理有限数量的内容，过多的可视效果会使浏览器变得极慢。
+
+此外，过多的动画和过渡可能会对页面的性能产生非常负面的影响，尤其是在移动设备上。请确保在多个浏览器和移动电话上测试所有的过渡和动画效果，以确保您的页面正常运行。
+
+## 动画
+
+CSS提供了另一种更丰富的机制来创建动画。使用CSS过渡，您只能从一组CSS属性过渡到另一组。CSS动画可以让您从一组属性过渡到另一组属性，然后再到另一组属性，以此类推。此外，您可以使动画重复播放，在访问者将鼠标悬停在动画上时暂停，甚至在动画达到结束时反向播放。
+
+### 定义关键帧
+
+```css
+@keyframes animationName {
+    from {
+        /* list CSS properties here */
+    }
+
+    to {
+        /* list CSS properties here */
+    }
+}
+```
+
+**注意**：@keyframes 不是一个 CSS 属性，而是一个称为 at 规则（at rule）的东西。CSS 中的其他 at 规则包括 @import 语句，用于从另一个样式表加载外部样式表，以及 @media 用于定义不同媒体类型（如打印机或不同的屏幕尺寸和分辨率）的样式（见第465页）。
+
+```css
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+
+        to {
+          opacity: 1;
+        }
+      }
+```
+
+```css
+      @keyframes backgroundGlow {
+        from {
+          background-color: yellow;
+        }
+
+        50% {
+          background-color: blue;
+        }
+
+        to {
+          background-color: red;
+        }
+      }
+```
+
+```css
+      @keyframes glow {
+        from {
+          background-color: yellow;
+        }
+
+        25%,
+        75% {
+          background-color: blue;
+        }
+
+        to {
+          background-color: red;
+        }
+      }
+```
+
+注意第5行中的 25% 和 75%。这意味着在动画进行到 25% 的时候，元素的背景颜色应该是蓝色。然而，在动画进行到 75% 的时候，背景颜色也应该是蓝色。换句话说，在 25% 到 75% 的时间段内，背景将保持为纯蓝色，最后才变为红色。如果这个动画持续了4秒，那么在动画的中间2秒中，元素的背景将保持为纯蓝色。
+
+### 应用一个动画
+
+344
