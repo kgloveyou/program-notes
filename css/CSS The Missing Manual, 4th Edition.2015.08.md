@@ -325,3 +325,25 @@ CSS提供了另一种更丰富的机制来创建动画。使用CSS过渡，您�
 ### 应用一个动画
 
 344
+
+### 暂停一个动画
+
+CSS还包含另一个动画属性——animation-play-state——用于控制动画的播放状态。它只接受两个关键字之一：running 或 paused。要暂停一个动画，只需将该声明应用到一个样式上：
+```css
+animation-play-state: paused;
+```
+然而，真正通过 CSS 应用它只有一种方式——伪类。与过渡一样，您需要某种触发器来暂停动画。一种方法是在访问者将鼠标悬停在动画上时暂停任何动画。下面是一个使用 .fade 类样式的示例：
+```css
+.fade {
+    animation: fadeOut 2s ease-in-out 2 alternate 5s forwards, glow 5s;
+}
+```
+这段代码在任何应用了 fade 类的元素上运行两个动画——fadeOut 和 glow。假设你想让访问者通过简单地将鼠标悬停在上面来暂停这个动画。您只需要再添加一个样式：
+```css
+.fade:hover {
+    animation-play-state: paused;
+}
+```
+
+## 教程
+
