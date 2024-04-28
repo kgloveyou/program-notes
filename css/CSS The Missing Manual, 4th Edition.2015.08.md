@@ -44,16 +44,21 @@ background-clip 属性限制了背景图像出现的区域。
 通常，放置在页面元素背景中的图像会以您创建的大小显示。然而，background-size 属性允许您控制背景图像的大小。您可以使用值或关键字来设置大小：
 
 • 提供一个高度和宽度值来设置图像的大小。您可以使用像素值这样的绝对值：
+
 ```css
 background-size: 100px 200px;
 ```
+
 这段代码将背景图像设置为100像素宽，200像素高。
 
 您还可以仅设置宽度或高度的值，并将另一个值设置为 auto：
+
 ```css
 background-size: 100px auto;
 ```
+
 在这种情况下，背景图像的宽度为100像素，浏览器会自动设置高度以保持图像的纵横比不变（以防止图像失真）。您也可以使用百分比值。如果您希望图像完全适应背景，则可以对两个设置都使用100%（见图8-11，左侧）：
+
 ```css
 background-size: 100% 100%;
 ```
@@ -78,16 +83,19 @@ background-size: cover;
 ```css
 background-size: 100% auto;
 ```
+
 这会强制网络浏览器调整图像大小，使其适应横幅缩小到较窄的尺寸。
 
 **为背景图像带来特效**
 
 如果您是像 Photoshop 这样的照片编辑软件的高级用户，您可能已经研究过混合模式，它可以让您转换两个图层在视觉上的交互方式。这里是它们的工作原理的示例：想象一下，您在一个元素的背景中放置了一张照片。您还为该元素设置了背景颜色。通常，任何没有透明度的图像都会覆盖在背景颜色之上。但是，如果您能够将图像和背景混合在一起会怎么样呢？例如，假设您想让背景颜色透过图像的白色部分显示出来。相对较新的 background-blend-mode 属性允许您做到这一点。您可以将该属性应用于具有背景颜色和图像的元素。该属性采用了 16 种不同的混合模式值之一，每种模式对混合物具有不同的效果。在另一个例子中，假设您有一张番茄的照片放在一个 div 的背景中，并且您希望橙色混合到照片中。您可以将背景颜色设置为橙色，然后设置混合模式如下：
+
 ```css
 background-image: url(tomato.png);
 background-color: orange;
 background-blend-mode: screen;
 ```
+
 您甚至可以在多个图像背景上使用混合模式（参见第249页）来创建一些非常有趣的视觉效果。
 要了解混合模式在 Photoshop 中的工作原理，请查看 www.youtube.com/watch?v=Bnl1CJV17q4 的视频。尽管此视频是关于 Photoshop，但它们与 CSS 的 background-blend-mode 属性具有相同的混合模式和相同的效果。
 要了解混合模式在 CSS 中的工作原理的视觉演示，请访问 http://sarasoueidan.com/blog/compositing-andblending-in-css/。（目前，Internet Explorer 的任何版本都不支持此属性。）
@@ -95,11 +103,13 @@ background-blend-mode: screen;
 ## Using Background Property Shorthand  
 
 以下样式在页面中央添加了一个图形，将图像调整为其大小的50%，只放置一个图像（不重复），将图像固定在位置（因此如果页面滚动，图像将保持固定），并将背景颜色设置为白色：
+
 ```css
 body {
     background: url(bullseye.gif) center center / 50% no-repeat fixed #FFF;
 }
 ```
+
 如果您指定了位置（例如，上面直接的代码示例中的 center center）和 background-size 属性（例如示例中的50%），则用斜杠（/）分隔它们。
 
 ## 使用多个背景图像
@@ -107,6 +117,7 @@ body {
 幸运的是，您可以向元素的背景中添加多个图像。在滚动示例中，您可以使用三个背景图像：一个用于滚动的顶部，一个用于滚动的底部，一个用于其文本区域。最后一个图像是一个无缝平铺的图像，因此当侧边栏变得更高时，图像会简单地平铺以适应空间。
 
 当像这样使用多个值时，第一个值（在本例中是 no-repeat）与 background-image 属性中列出的第一个图像（scrollTop.png）配对；第二个值与第二个列出的图像配对，依此类推。由于这可能会很快让人感到困惑，许多网页设计师使用速记方法来指定多个图像，如下所示：
+
 ```css
 background: url(scrollTop.jpg) center top no-repeat,
             url(scrollBottom.jpg) center bottom no-repeat,
@@ -125,11 +136,13 @@ figure {
   margin: 0 10px 10px 10px;
 }
 ```
+
 display: inline-block 属性（第192页）将每个图像/标题对视为块（具有高度和宽度的框），但同时也视为内联元素（因此这些块可以并排）。此外，设置为 top 的 vertical-align 属性确保每个 <figure> 标签与同一行中的所有其他 <figure> 标签顶部对齐。
 
 ## 教程：使用背景图像
 
 1. 返回文本编辑器和 styles.css 文件。定位您在第272页步骤7中添加的 .announcement 样式，并添加一个额外的属性：
+
 ```css
 .announcement {
     background: url(images/scroll_top.jpg) no-repeat center top,
@@ -138,6 +151,7 @@ display: inline-block 属性（第192页）将每个图像/标题对视为块（
     margin-top: 115px;
 }
 ```
+
 是的，这只是一个属性 - background 属性 - 但它包含了三个不同的图像。您列出这些图像的顺序很重要，因为它们会堆叠在一起。在这种情况下，第一个图像是滚动的顶部；它只出现一次（no-repeat），在顶部和中心。第二个图像是滚动的底部；它也只出现一次，但在 div 的底部。最后，滚动的中间部分 - scroll_middle.jpg - 将位于其他两个图像的下面（因为它在列表中出现在最后），并且沿着 y 轴（上下）重复，因此如果 <div> 变得更高，图像将简单地平铺以填充空间。 
 如果您预览页面，您会看到一些问题。首先，文本出现在卷起的滚动顶部和底部的顶部。稍微增加一点填充就可以解决这个问题。
 
@@ -146,14 +160,17 @@ display: inline-block 属性（第192页）将每个图像/标题对视为块（
 ## Transforms  
 
 缩放还提供了另一个视觉效果：可以将元素上下翻转和左右反转。虽然没人确定W3C使用了哪个数学分支来设计这个系统，但如果您在`scale`  属性中使用负数，您实际上就可以将元素翻转过来。例如，这是如何将元素上下翻转和左右反转的代码：
+
 ```css
 transform: scale(-1);
 ```
 
 这会产生图10-4中左侧所示的图像。您也可以只在一个轴上翻转元素。在图10-4中的中间图像中，图像仅在水平轴上翻转。沿着垂直轴翻转元素会产生中间图像：
+
 ```css
 transform: scale(-1, 1);
 ```
+
 这会产生一个像镜子靠在元素一侧的效果，或者像您翻转了元素并从其背面看过去。多有趣啊！
 
 ### Translate
@@ -217,10 +234,13 @@ transition-delay: .5s;
 ```css
 transition-delay: 1s;
 ```
+
 然后在 :hover 样式中去掉延迟：
+
 ```css
 transition-delay: 0;
 ```
+
 这看起来有些反直觉，但这段代码基本上使 :hover 过渡立即发生，没有延迟。但是返回到正常样式（菜单消失）需要1秒钟。在这段时间内，访问者有足够的时间将他的错误鼠标移到菜单上，使其不会消失。
 
 ### Transition Shorthand  
@@ -329,16 +349,21 @@ CSS提供了另一种更丰富的机制来创建动画。使用CSS过渡，您�
 ### 暂停一个动画
 
 CSS还包含另一个动画属性——animation-play-state——用于控制动画的播放状态。它只接受两个关键字之一：running 或 paused。要暂停一个动画，只需将该声明应用到一个样式上：
+
 ```css
 animation-play-state: paused;
 ```
+
 然而，真正通过 CSS 应用它只有一种方式——伪类。与过渡一样，您需要某种触发器来暂停动画。一种方法是在访问者将鼠标悬停在动画上时暂停任何动画。下面是一个使用 .fade 类样式的示例：
+
 ```css
 .fade {
     animation: fadeOut 2s ease-in-out 2 alternate 5s forwards, glow 5s;
 }
 ```
+
 这段代码在任何应用了 fade 类的元素上运行两个动画——fadeOut 和 glow。假设你想让访问者通过简单地将鼠标悬停在上面来暂停这个动画。您只需要再添加一个样式：
+
 ```css
 .fade:hover {
     animation-play-state: paused;
@@ -347,3 +372,112 @@ animation-play-state: paused;
 
 ## 教程
 
+# 第17 章 现代网页布局中使用 Flexbox
+
+## 介绍 Flexbox
+
+```css
+.container div:nth-of-type(1n+2) {
+    margin-left: 20px;
+}
+```
+
+这个 nth-of-type 选择器（第 66 页）简单地选择从第二个 div 开始的每个 div，并将其左边距设置为 20 像素（这个巧妙的技巧确保第一个 div 不会从容器边缘向右缩进 20 像素）。这导致了图 17-2 中的底部图片。
+
+从概念上讲，flexbox 相当简单。正如你所看到的，要实现这种效果并不需要太多的 CSS。最重要的是，你不必担心项目会从容器中溢出，就像使用浮动元素时那样（第 405 页），而且你可以轻松创建等高的列。唯一让 flexbox 变得困难的是理解大量的 flexbox 属性，并想象所有这些属性的几乎无限组合。
+
+## Flex 容器属性
+
+### Flex-Flow  
+
+**注意**：
+
+flex-flow 属性是另外两个与 flex 相关的 CSS 属性的简写：flex-direction 和 flex-wrap。例如
+
+等同于
+flex-direction: row;
+flex-wrap: wrap;
+因为 flex-flow 需要的代码更少，所以在本书中推荐使用这种方法。
+
+535
+
+```css
+flex-flow: row wrap;
+```
+
+等同于
+
+因为 flex-flow 需要的代码更少，所以在本书中推荐使用这种方法。
+
+```css
+flex-direction: row;
+flex-wrap: wrap;
+```
+
+因为 flex-flow 需要的代码更少，所以在本书中推荐使用这种方法。
+
+### Justify-content  
+
+justify-content 属性确定了浏览器应该如何在行内放置 flex 项目。该属性仅在 flex 项目具有设置的宽度，并且项目的总宽度小于 flex 容器的情况下才有效。如果你正在使用 flex 宽度（第 546 页）来设置 flex 项目，那么 justify-content 属性将不起作用。该属性有五个可能的值：
+
+flex-start  
+
+flex-end  
+
+center  
+
+space-between   
+
+space-around  
+
+### Align-items  
+
+• flex-start 将所有 flex 项目的顶部与容器的顶部对齐（图 17-6 中的＃1）。
+• flex-end 将所有 flex 项目的底部与容器的底部对齐（图 17-6 中的＃2）。
+• center 将所有 flex 项目的垂直中心与容器的垂直中心对齐（图 17-6 中的＃3）。
+• baseline 将每个 flex 中的第一个元素的基线与容器的基线对齐（图 17-6 中的＃4）。
+• stretch 是 flex 项目的正常行为。它将容器中的每个项目拉伸到相同的高度（图 17-6 中的＃5）。这是使用其他 CSS 技术特别难以实现的效果。
+
+### Align-content  
+
+你可以应用到 flex 容器上的最后一个属性是 align-content。该属性决定了浏览器如何放置跨越多行的 flex 项目。该属性仅在两个条件为真时起作用：首先，flex 容器必须启用换行（页面 532）；其次，flex 容器必须比 flex 项目的行更高。换句话说，容器内必须有比项目行的总高度更多的额外垂直空间。这种情况并不常见，但你可能会在某个时候需要它。
+
+## Flex Item 的属性
+
+### Order  属性  
+
+这种方法的问题在于，第一个侧边栏——可能包含了导航、笔记，甚至广告——出现在文件的源顺序中的第一位。这意味着当谷歌的搜索蜘蛛访问页面时，它们必须先通过大量的侧边栏内容，才能到达页面的核心部分——第二个 div 中的主要内容。此外，视觉障碍网民使用的屏幕阅读器也必须在到达主要文章之前，爬过这堆附属内容。
+
+有一些巧妙的方法可以解决这个问题，比如使用负边距值将列移动到新的顺序中，但它们都是一些需要精确的 CSS 的技巧。应该有更好的方法。确实有一个，感谢 flexbox。order 属性允许你为 flex 项目分配一个数值，该数值决定了该项目在行（或列）中的出现顺序。HTML 源顺序一点都不重要：你可以使 HTML 的最后一个块首先出现在行中，或者将第一个块放在最后（见图 17-8，底部）。
+
+### Align-self  
+
+align-self 属性与用于 flex 容器的 align-items 属性的工作方式相同。然而，align-items 应用于容器中的所有 flex 项目，而 align-self 应用于单个 flex 项目。你将该属性应用于项目（而不是容器），它会覆盖 align-items 属性的任何值。换句话说，你可以将容器内的所有 flex 项目对齐到容器顶部，但只有一个项目对齐到底部。
+align-self 的可能值与 align-items 相同（见第 537 页），产生相同的效果，但仅适用于单个 flex 项目（见图 17-9）。
+
+### Mini-Tutorial: Auto Margins for Flex Items  
+
+```css
+.logo {
+  margin-right: auto;
+}
+```
+
+对于 flex 项目，自动外边距告诉浏览器根据可用空间自动设置外边距大小。在这种情况下，logo 和三个导航按钮没有填满整个横幅，因此给 logo 设置一个自动右外边距告诉浏览器使用横幅内的任何空白空间，并将其放置在 “Our Company” 的右侧。这会将导航按钮推到横幅的另一侧。太神奇了！
+完成的横幅应该像图 17-10 中的底部图像一样。你也可以通过将自动值分配给第一个按钮的左外边距来实现相同的效果。这样会在第一个按钮的左侧添加所有可用的空间，从而将所有其他按钮推到右侧。
+
+### Flex  
+
+你已经学会了很多基本属性，但是 flex 属性是使 flexbox 具有灵活性的关键。这个属性是控制 flex 项目宽度的关键，它让你可以轻松地创建可以“伸缩”的列，即使容器的大小是未知的或动态的也能够自适应调整宽度。
+
+通过 flex 属性，你可以以更少的时间和更少的数学知识创建响应式的网页设计，就像你在第15章中所学到的那些设计一样。
+
+你提供给 flex 的第一个值是一个数字，表示该 flex 项目的相对宽度。(One value, unitless number: flex-grow)
+
+你可以为 flex 属性设置的第二个值也是一个数字，但它表示的是 flex-shrink 属性。
+
+最后一个值是 flex-basis 属性，它为 flex 项目设置了基础宽度。你可以使用绝对值，如 100px 或 5em，也可以使用百分比值，如 50%。你可以把 flex-basis 值看作是 flex 项目的最小宽度。当你设置了 flex-basis 值时，它会为该项目设置一个宽度，但根据其他 flex 设置，该 flex 项目可能会变得比 flex-basis 值更大（或更小）。
+
+### Wrapping Flex Items  
+
+553
