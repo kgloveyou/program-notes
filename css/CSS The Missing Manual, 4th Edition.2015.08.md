@@ -480,4 +480,57 @@ align-self 的可能值与 align-items 相同（见第 537 页），产生相同
 
 ### Wrapping Flex Items  
 
-553
+### The Bottom Line  
+
+```css
+.container {
+    display: flex;
+    flex-flow: row wrap;
+}
+
+.sidebar1 {
+    flex: 1 1 100px;
+}
+
+.sidebar2 {
+    flex: 1 1 100px;
+}
+
+.main {
+    flex: 2 1 200px;
+}
+```
+
+为了保持 flex 项目彼此之间的比例大小，确保你的 flex-basis 值——即 flex 项目的基础宽度——与它们的 flex-grow 值共享相同的比例（上图）。
+如果它们不共享，那么你将无法准确地为行中 flex 项目的宽度设置一致的比例，就像下图中所示的那样。
+
+## 教程：构建 Flexbox 布局
+
+### Adding Three Columns  
+
+```css
+.boxes .more {
+	margin-top: auto;
+}
+```
+
+每个按钮都应用了more类，因此这个选择器选择了列内的按钮。上边距设置为auto，告诉浏览器在按钮顶部之上自动添加剩余的空白空间。这个自动边距的效果是将所有按钮推到每列的底部（见图17-19，底部）。
+
+### Formatting the Footer  
+
+```css
+.signup input[type="email"] {
+  border-radius: 4px 0 0 4px;
+  -webkit-flex: 1;
+  flex: 1;
+}
+.signup input[type="submit"] {
+  border-radius: 0 4px 4px 0;
+  padding: 0 10px;
+}
+```
+
+这些规则使用属性选择器（见第59页）来识别用于接收用户电子邮件地址的文本字段和用于提交表单的按钮。将电子邮件字段的flex值设置为1意味着该字段将扩展以填充所有未被提交按钮占用的可用空间。
+此外，通过使用border-radius属性，使文本字段的左侧角和提交按钮的右侧角变圆，你创建了一个看起来像统一表单部件的效果。结果看起来像图17-20底部的图像。
+
+563
