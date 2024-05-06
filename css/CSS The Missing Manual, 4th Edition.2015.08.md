@@ -206,7 +206,28 @@ img:nth-of-type(even) { float: right; }
 
 ## The :target Selector  
 
-69
+## :not() 选择器  
+
+```css
+p:not(.classy) { color: blue; }
+```
+
+:not() 选择器存在一些限制：
+
+- :not() 选择器只能与简单选择器一起使用。换句话说，您可以使用元素选择器（例如 html 或 p）、通用选择器（* [参见第 49 页]）、类（例如 .footer）、ID（例如 #banner）或伪类（:hover、:checked、:first-child 等）。因此，以下所有内容都是有效的：
+  - .footnote:not(div)
+  - img:not(.portrait)
+  - div:not(#banner)
+  - li:not(:first-child)
+- 您不能使用后代选择器（例如 div p a）、伪元素（例如 ::firstline）、组选择器或组合器（例如相邻兄弟选择器 h2 + p）。
+- 您不能将多个 :not() 选择器连接在一起。例如，以下内容无效：
+  - a[href^="http://"]:not([href*="google.com"]):not([href="yahoo.com"])
+
+换句话说，您只能将 :not() 与一个选择器一起使用一次。
+
+# 第4章 通过样式继承节省时间
+
+86
 
 # 第8章 向网页添加图形
 
