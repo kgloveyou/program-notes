@@ -364,7 +364,57 @@ p.intro {
 
 # 第6章 文本格式化
 
-121
+## 使用 web 字体
+
+### 使用 @font-face 指令
+
+```css
+@font-face {
+  font-family: "League Gothic";
+  src: url("fonts/League_Gothic-web font.woff");
+}
+```
+
+第一个属性是 `font-family`，你之前见过，但这里它有一个不同的用途。当在 `@font-face` 指令中使用时，`font-family` 会为字体分配一个名称。然后，当你想将该字体应用于某个样式时，就使用这个字体名称。例如，假设你想对页面上的所有段落使用 League Gothic 字体。你可以使用如下样式：
+
+```css
+p {
+    font-family: "League Gothic";
+}
+```
+
+**注意**：你希望使用的每种字体都需要一个 `@font-face` 指令。如果你有三种字体——例如字体的常规、斜体和粗体版本——你需要三个 `@font-face` 指令。最好将它们分组放在样式表的顶部，这样浏览器可以立即开始下载它们。
+
+例如：
+
+```css
+@font-face {
+    font-family: "League Gothic";
+    src: url("league-gothic-regular.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "League Gothic Italic";
+    src: url("league-gothic-italic.woff2") format("woff2");
+}
+
+@font-face {
+    font-family: "League Gothic Bold";
+    src: url("league-gothic-bold.woff2") format("woff2");
+}
+```
+
+这样浏览器在解析样式表时会立即开始下载这些字体文件，提高页面的加载速度和用户体验。
+
+### 使用 web 字体创建样式
+
+**提示**：你也可以在网页上使用包含符号和图标的字体。因此，与其创建一个警告标志的图形并将其放入文本段落中，不如使用 `@font-face` 指令加载包含警告标志图标的字体，并只使用一个简单的字母（在字体中映射到该图标）。然而，在使用图标字体之前，你可能想要查看大量实际上是图形图标的 Unicode 符号，或者使用 SVG（可缩放矢量图形）来显示图标。你可以在 [这里](https://developers.google.com/web/fundamentals/media/images/use-icons?hl=en) 了解更多关于这些选项的信息。
+
+## 探索 Google Web Fonts
+
+## 给文本添加颜色
+
+148
 
 # 第8章 向网页添加图形
 
