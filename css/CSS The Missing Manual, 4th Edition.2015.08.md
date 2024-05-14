@@ -338,9 +338,33 @@ http://meyerweb.com/eric/tools/css/reset
 
 **注意**：你不必自己键入所有这些代码。在 05 教程文件夹中你会找到一个名为 reset.css 的文件，其中包含了一个基本的 CSS 重置文件。只需将这个文件中的样式复制粘贴到你自己的样式表中。另一种重置样式的方法是使用 normalize.css，这是一个免费、开源的样式表，它使不同的浏览器以一致的方式显示相同的标签。它被许多网页设计师广泛使用。你可以在这里找到它：[http://necolas.github.io/normalize.css/](http://necolas.github.io/normalize.css/)。
 
-### 教程：层叠样式表的实际应用
+## 教程：层叠样式表的实际应用
 
-114
+### 解决冲突
+
+```css
+.main p {
+  color: #616161;
+  font-family: "Palatino Linotype", Baskerville, serif;
+  font-size: 1.1em;
+  line-height: 150%;
+  margin-bottom: 10px;
+  margin-left: 80px;
+}
+p.intro {
+  color: #6A94CC;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1.2em;
+  margin-left: 0;
+  margin-bottom: 15px;
+}
+```
+
+确保在 p 和 .intro 之间没有空格。你基本上创建了一个平局——.main p 是一个类和一个标签选择器，而 p.intro 是一个标签和一个类。它们的特异性值都是 11，但因为 p.intro 出现在 .main p 后面的样式表中，它赢得了这场比赛，其属性应用于段落。（你可以创建一个更具体的样式——.main .intro——来解决冲突。）
+
+# 第6章 文本格式化
+
+121
 
 # 第8章 向网页添加图形
 
