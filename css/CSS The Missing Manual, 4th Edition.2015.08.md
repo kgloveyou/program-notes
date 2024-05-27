@@ -1028,7 +1028,70 @@ a {
 
 ### 使用图形
 
-288
+如果您希望从右侧或底部精确地放置图像，目前没有直接的方法可以实现。但如果您想让图像从右侧稍微内缩进一点，有两种解决方案：在您的图像编辑软件中，您可以在图形的右侧添加空白区域。添加的空白区域大小应该等于您希望图像距离右侧边缘的缩进的距离。一旦图像准备就绪，使用`background-position`属性将图形定位到元素的右侧。例如，`background-position: right top;`。或者，您可以使用百分比值：`background-position: 90% 75%;`会将图像左侧边缘的90%点与元素顶部的75%对齐。如您能想象的，这种方法不是完全精确的，所以可能需要您做一些尝试。（详情请见第23页了解更多关于百分比定位的工作原理。）
+
+## 构建导航栏
+
+### 使用无序列表
+
+### 垂直导航栏
+
+如果按钮内的文本只占一行，你还可以实现文本的垂直居中对齐，使得文本上下方等距文本有相等的空间。只需给链接添加一个固定高度，并设置`line-height`属性为同样的值：
+```css
+a {
+    height: 1.2em;
+    line-height:1.2em;
+}
+```
+这段代码将使链接的高度设置为1.2倍的em单位，并且行高也是1.2em单位，这样可以确保文本在按钮内垂直居中，且文本上方和下方有相等距。
+
+### 水平导航栏
+
+#### 使用 DISPLAY: INLINE 和 DISPLAY: INLINE-BLOCK
+
+Web浏览器将关闭的 </li> 标签和下一个 <li> 标签之间的任何空白（制表符、回车符或空格字符）都视为一个空格。 有几种方法可以去除这个空格：
+
+- 将关闭的 </li> 标签和打开的 <li> 标签放在同一行上，如下所示：
+```html
+<ul class="nav">
+  <li><a href="index.html">Home</a></li><li>
+  <a href="news.html">News</a></li><li>
+  <a href="reviews.html">Reviews</a></li>
+</ul>
+```
+这种代码通常不会这样写，像 Dreamweaver 这样的程序也绝对不会这样编写代码。要去除空格，你必须手动更改代码。
+
+- 为列表项添加负的右边距。例如，你可以将上面步骤2中的 li 样式更改为这样：
+```css
+.nav li {
+  display: inline;
+  margin-right: -5px;
+}
+```
+
+#### USING FLOATS FOR HORIZONTAL NAVIGATION  
+
+> 注意：由浮动元素组成的导航栏很难水平居中于页面中间。当你需要实现这一点时，使用上述的 inline 方法或第557页展示的flexbox方法会更好。
+
+5. 在\<ul\>标签样式中添加 `overflow: hidden`。
+如果有边框、背景颜色或图像，你需要“包含浮动”——也就是说，浮动的列表项在\<ul\>标签内会看起来从列表的底部弹出（并且超出\<ul\>标签的边框或背景颜色）。
+```css
+.nav {
+    overflow: hidden;
+}
+```
+
+## CSS 样式预加载悬停效果
+
+JavaScript 解决方案可以通过一种叫做预加载的技术来避免这个问题，该技术会在需要之前自动下载鼠标悬停时的图像。但是 CSS 并没有提供这个选项，因此你需要采用另一种巧妙的方法，称为 CSS 精灵，它利用单一的图像为同一个按钮创建不同的状态。
+
+> **注意**：CSS 精灵被像雅虎和谷歌这样的公司广泛使用，不仅用于鼠标悬停效果，还用于优化网站的下载速度。你可以在 http://coding.smashingmagazine.com/2009/04/27/the-mystery-of-CSS-sprites-techniques-tools-and-tutorials/ 上了解更多关于它们的信息。另外，为了获取关于使用精灵的工具、最佳实践和有帮助的应用列表，请访问 http://webdesign.tutsplus.com/articles/css-sprite-sheets-best-practices-tools-and-helpful-applications--webdesign-8340。
+
+**注意**：有许多在线工具可以帮助您做到这一点：SpritePad（http://spritepad.wearekiss.com）和Sprite Cow（www.spritecow.com）就是两个例子。
+
+## 特定类型链接的样式化
+
+301
 
 # 第10章 CSS 变换、过渡和动画
 
