@@ -1005,7 +1005,30 @@ a:active { color: #B2F511; } /* 激活的链接（鼠标点击时） */
 
 ## 设置链接样式
 
-285
+### 给链接添加下划线
+
+**使用背景图片**。您可以通过使用图形线条来进一步自定义链接的外观。例如，图9-1中的第6点使用了一个看起来像手绘线条的图形。在第8章的教程（第273页）中有一个类似的技术，用于在标题下划线。首先，使用诸如Fireworks或Photoshop之类的程序创建一个下划线图形，这些程序拥有可以模拟蜡笔、记号笔或其他工具效果的画笔工具。接下来，为链接创建一个样式，该样式移除正常的下划线并添加背景图片。确保图形在水平方向重复，并定位在链接的底部。您可能还需要添加一点底部内边距来定位线条。以下是一个示例：
+
+```css
+a {
+    text-decoration: none;
+    background: url(images/underline.gif) repeat-x left bottom;
+    padding-bottom: 5px;
+}
+```
+
+这段CSS代码的作用是：
+- 移除了链接的默认下划线(`text-decoration: none;`)
+- 添加了一个背景图片作为下划线，该图片水平重复并且定位在链接的左下角(`background: url(images/underline.gif) repeat-x left bottom;`)
+- 为了使背景图片（即模拟的手绘线条）能正确显示，设置了5像素的底部内边距(`padding-bottom: 5px;`)以便留出空间给图形显示。
+
+### 创建一个按钮
+
+**提示**：创建美观的按钮通常涉及堆砌叠用到CSS属性（如上述代码所示）。如果你需要帮助创建所有代码，查看不那么谦逊色的CSS按钮生成器在<http://www.bestcssbuttongerator.com/>。要看其他CSS按钮例子，访问http://www.freshdesignweb.com/css3-buttons.html和http://tympanus.net/codrops/201/01/1/css-buttons-pseudo-elemens。
+
+### 使用图形
+
+288
 
 # 第10章 CSS 变换、过渡和动画
 
