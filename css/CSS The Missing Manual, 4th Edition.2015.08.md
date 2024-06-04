@@ -1591,7 +1591,35 @@ CSS 的 box-sizing 属性允许你告诉浏览器使用不同的模型来计算�
 
 ## 教程：定位页面元素
 
+```css
+.gallery figure:hover figcaption {
+  opacity: 1;
+}
+```
 
+这段巧妙的CSS代码可以翻译为：“当鼠标移动到包含`gallery`类的元素中的`figure`元素上（`figure:hover`），将标题的透明度设置为1。” 换句话说，将鼠标移到`<figure>`标签上时，会使其子元素`<figcaption>`标签变得可见。保存页面并试试。当你将鼠标移到`figure`上时，标题应该会出现。我们可以通过在`.gallery figcaption`样式中添加一个过渡效果来实现这一动画效果。
+
+```css
+footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px;
+  background-color: black;
+  color: white;
+}
+```
+
+如页面430所述，固定定位允许你将元素“粘贴”在浏览器窗口的特定位置。在这种情况下，它被固定在页面底部（`bottom: 0`），并延伸到整个页面的宽度（得益于`left: 0`和`right: 0`声明）。最后三行声明只是给页脚周围添加了一些空间，使其具有黑色背景和白色文字。
+
+# 第15章 响应式 Web 设计
+
+## 响应式 Web 设计 基础
+
+## Setting Up a Web Page for RWD  
+
+459
 
 # 第17 章 现代网页布局中使用 Flexbox
 
