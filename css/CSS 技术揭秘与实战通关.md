@@ -230,3 +230,64 @@ html {
 }
 ```
 
+# 17、现代 CSS 伪类及伪元素
+
+CSS 规范定义，伪元素通常使用 `::` 两个冒号进行表现，而伪类使用 `:` 单个冒号进行表示：
+
+```css
+// 伪元素使用两个冒号
+#id::after{
+ ...
+}
+
+// 伪类使用单个冒号
+#id:hover{
+ ...
+}
+```
+
+当然，现代浏览器也都支持单个冒号表示的伪元素，譬如 `:before` 也可以正常工作。这是由于最早的 CSS2 规范，定义伪元素就是使用 `:` 单个冒号表示的。为了更加符合规范，建议大家一定要在使用伪元素和伪类的时候，注意区分使用单双冒号。
+
+### 巧用 `inset` 关键字
+
+第一个我认为非常实用的技巧，就在于 `inset` 属性。什么是 `inset` 属性？它的作用是什么？
+
+别急，首先我们看这么一个场景，我们需要实现一个和元素一样大小的伪元素，代码通常是这样的：
+
+```HTML
+div {
+    position: relative;
+    width:120px;
+    height: 64px;
+}
+div::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom:0;
+}
+```
+
+可以看到，几乎每次当你使用伪元素的时候，都需要借助 `position:absolute` 绝对定位加上 `top`、`left`、`right`、`bottom` 四个定位属性控制伪元素的定位。
+
+此时，我们可以使用 `inset` 简化我们的代码：
+
+```CSS
+div {
+    position: relative;
+    width:120px;
+    height: 64px;
+}
+div::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+}
+```
+
+上述 `inset: 0` 就等同于 `top:0; left: 0; right: 0; bottom: 0`，可以有效地简化代码量。
+
+[根据 MDN - inset](https://link.juejin.cn/?target=https%3A%2F%2Fdeveloper.mozilla.org%2Fzh-CN%2Fdocs%2FWeb%2FCSS%2Finset)：[CSS](https://link.juejin.cn/?target=https%3A%2F%2Fdeveloper.mozilla.org%2Fzh-CN%2Fdocs%2FWeb%2FCSS) 属性 `inset` 为简写属性，对应于 `top`、`right`、`bottom` 和 `left` 属性。其与 `margin` 简写属性具有相同的多值语法。
+
