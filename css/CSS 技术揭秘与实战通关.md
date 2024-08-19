@@ -291,3 +291,4 @@ div::before {
 
 [根据 MDN - inset](https://link.juejin.cn/?target=https%3A%2F%2Fdeveloper.mozilla.org%2Fzh-CN%2Fdocs%2FWeb%2FCSS%2Finset)：[CSS](https://link.juejin.cn/?target=https%3A%2F%2Fdeveloper.mozilla.org%2Fzh-CN%2Fdocs%2FWeb%2FCSS) 属性 `inset` 为简写属性，对应于 `top`、`right`、`bottom` 和 `left` 属性。其与 `margin` 简写属性具有相同的多值语法。
 
+# 18、transition：过渡技巧与细节，构建更强大的交互效果
