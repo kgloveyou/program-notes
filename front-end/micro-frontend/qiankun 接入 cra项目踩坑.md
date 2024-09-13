@@ -27,3 +27,13 @@ export async function bootstrap() {
 }
 ```
 
+### 3、antd pro项目使用qiankun，loading加载页不消失
+
+https://blog.csdn.net/w544924116/article/details/120164997
+
+src\pages\document.ejs
+
+```ejs
+<div id="<%= context.config.mountElementId %>">
+```
+

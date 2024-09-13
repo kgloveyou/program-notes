@@ -187,3 +187,61 @@ https://developer.aliyun.com/article/921297
 
 提到了，[@sh-winter/vite-plugin-qiankun](https://github.com/sh-winter/vite-plugin-qiankun)
 
+# 联通数科
+
+@FOREVER 由于我们这边使用的是 umi - qiankun， 注册子应用时需要额外添加一些 umi - qiankun 所必要的参数。 我尝试了下已可以加载， 可以参考下：
+
+```js
+const base = '/AIStudio/pagebox'; // 主应用 basePath
+
+const admagicAppPath = `${base}/admagic/app`; // 子应用 admagic-app 的 basePath
+
+window.routerBase = base; // window.routerBase 为 umi-qiankun 中的参数，应保持与主应用的 base 保持一致
+
+registerMicroApps(
+
+ [{
+
+  name: 'admagic-app',
+
+  entry: '//localhost:8002/AIStudio/admagic/app/dashboard', // TODO: 修改host
+
+  container: containerRef.current,
+
+  activeRule: admagicAppBase,
+
+  props: {
+
+   push: () => {
+
+​    ...
+
+   }, // 必须
+
+   setCollapsed: () => {
+
+​    ...
+
+   }, // 必须
+
+   base: admagicAppBase, // 必须（umi-qiankun 中的参数，在父应用中设置子应用的 base）
+
+   history: 'browser', // 必须（umi-qiankun 中的参数，目前子应用使用的都是 browserHistory）
+
+  },
+
+ }, ], {
+
+  beforeLoad: app => console.log('before load', app.name),
+
+  beforeMount: [app => console.log('before mount', app.name)],
+
+ }
+
+);
+
+start({
+ sandbox: false
+});
+```
+
