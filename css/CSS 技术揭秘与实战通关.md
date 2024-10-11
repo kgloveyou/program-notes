@@ -2,7 +2,7 @@
 
 https://juejin.cn/book/7052964245259943948?scrollMenuIndex=0
 
-账号：mobile 2
+账号：mobile 2，用户78284756767
 
 作者的博客：https://chokcoco.github.io/#blog，https://github.com/chokcoco
 
