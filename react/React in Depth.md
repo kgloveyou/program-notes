@@ -221,3 +221,35 @@ function Component({ ... }) {
 ### 3.3.3 Skip stable variables from dependencies  
 
 85
+
+# 4、使用开发者工具进行更好的代码维护
+
+### 4.1.3 如何开始使用 ESLint
+
+## 4.2 使用格式化工具提高生产力
+
+### 4.2.1 Prettier 解决的问题
+
+### 4.2.3 如何开始使用 Prettier
+
+**步骤 1：将 Prettier 添加为一个包**
+
+**步骤 2：添加一个配置文件（可选）**
+
+**步骤 3：在编辑器中强制格式化**
+
+**步骤 4：在代码提交时强制格式化（可选）**
+
+请注意，这一步是可选的；并非每个项目都需要它。根据你的设置和工具栈中的其他工具，有多种方法可以实现这一任务，其中最简单的方法之一是使用一个名为 **lint-staged** 的工具。
+
+如果你已经在项目中运行了安装 **lint-staged** 的命令，它会自动检测到你已经设置了 Prettier，并会开始根据 Prettier 的规则验证更改的文件。如果还未安装，可以使用以下命令来安装 **lint-staged**：
+
+```bash
+npm install --save-dev lint-staged
+```
+
+**小贴士**：查看在提交前钩子中使用 Prettier 的其他选项列表，请参见此页面：[Prettier Precommit Options](https://prettier.io/docs/en/precommit.html)。
+
+### 4.4.4 Using the profiler in React Developer Tools
+
+117
