@@ -253,3 +253,219 @@ npm install --save-dev lint-staged
 ### 4.4.4 Using the profiler in React Developer Tools
 
 117
+
+# 5、TypeScript：高级 JavaScript
+
+### 5.3.2 Typing children  
+
+```tsx
+import { type PropsWithChildren } from 'react';
+
+function Heading({ children }: PropsWithChildren) {
+...
+}
+```
+
+### 5.3.3 Extending interfaces  
+
+我们甚至可以通过传入多个字符串的联合类型来省略多个属性：
+
+```typescript
+Omit<ButtonProps, "size" | "color">
+```
+
+我们也可以反过来：只选择几个属性，这可能比省略多个属性更简单。假设我们只想从按钮组件中扩展 `color` 属性。我们可以通过省略 `size`、`onClick`、`disabled` 和 `className` 属性来实现这一点。但更简单的方法是只选择 `color` 属性，如下所示：
+
+```typescript
+Pick<ButtonProps, "color">
+```
+
+`Pick` 也是 TypeScript 提供的一个内置接口。在所有这些示例中，我们通过直接引用描述这些属性的接口来扩展另一个组件的属性。但是，如果我们没有该属性接口的引用，只有组件本身呢？请看下一节内容（通过一个小小的绕行）。
+
+### 5.3.4 Spreading props in general  
+
+有一个更好的方法：`ComponentProps`，它是 React 内置的。`ComponentProps` 是一个泛型接口，我们需要提供一个类型参数。这个类型参数是我们希望获取属性接口的组件类型。在我们的例子中，该组件是 `img`，因此我们将其作为字符串传入：
+
+```typescript
+import { type ComponentProps } from 'react';
+
+interface UserImageProps extends ComponentProps<"img"> { ... }
+```
+
+然而，我们遇到了一个小问题：对于所有组件，这个接口还允许 `ref` 属性，但引用在组件内部并不是作为常规属性接收的（至少在 React 19 之前不是）。因此，将组件接收到的属性类型化为包含 `ref` 属性并不合理。我们将在 5.3.8 节中详细讨论引用的类型。稍微更长一些的接口 `ComponentPropsWithoutRef` 则正好解决了这个问题：
+
+```typescript
+import { type ComponentPropsWithoutRef } from 'react';
+
+interface UserImageProps extends ComponentPropsWithoutRef<"img"> { ... }
+```
+
+现在，我们的组件可以完全正常运行，并接收正确的属性。请记住，我们也可以从该接口中使用 `Pick<>` 或 `Omit<>` 来允许或禁止特定属性。例如，如果我们不希望开发人员传入 `alt` 属性，因为我们将自己设置它：
+
+```tsx
+import { type ComponentPropsWithoutRef } from 'react';
+interface UserImageProps extends
+  Omit<ComponentPropsWithoutRef<"img">, "alt"> {
+  name: string;
+  title: string;
+}
+
+function UserImage({ name, title, ...rest }: UserImageProps) {
+  return (
+    ...
+    <img
+      alt={`Profile image for ${name}`}
+      {...rest}
+    />
+    ...
+  );
+}
+```
+
+但是，如果我们正在扩展一个自定义组件，该怎么办？我们还能使用 `ComponentPropsWithoutRef` 吗？假设我们有一个第三方库的 `<Rating />` 组件，该组件接受类似于以下示例的属性（并且可能接受更多属性）：
+
+```javascript
+<Rating icon="♥" max={6} value={4.3} label="4.3 hearts" />
+```
+
+我们想创建一个新的 `BookReview` 组件，希望能够传入一些特定于书籍的信息，同时也传入一些 `Rating` 组件使用的相同属性，例如 `value`、`label` 和 `icon`。我们希望能够这样做：
+
+```tsx
+import { Rating, type RatingProps }
+  from 'cool-rating-library';
+interface BookReviewProps extends
+  Pick<RatingProps, "value" | "label" | "icon"> {
+  title: string;
+  reviewer: string;
+  body: string;
+}
+
+function BookReview({ ... }: BookReviewProps) {
+...
+```
+
+在这个例子中，我们依赖外部库提供组件属性的类型。如果没有提供该类型，我们能使用 `ComponentPropsWithoutRef` 吗？直接使用是不行的，因为 `ComponentPropsWithoutRef<Rating>` 没有意义。这里 `Rating` 是一个真正的 JavaScript 变量，而不是一个 TypeScript 类型。
+
+不过，我们可以采取一种简单的方法，使用 `typeof`：
+
+```tsx
+import { type ComponentPropsWithoutRef } from 'react';
+import { Rating } from 'cool-rating-library';
+type RatingProps =
+  ComponentPropsWithoutRef<typeof Rating>;
+interface BookReviewProps extends
+  Pick<RatingProps, "value" | "label" | "icon"> {
+...
+```
+
+让我们将这段代码扩展成一个完整的示例，以便可以进行实验。我们将自己创建两个组件，但不会对外公开 `Rating` 组件的 `props` 类型。此外，我们还会使用一些 CSS 来制作一个漂亮的评分显示。首先，我们从 `Rating` 组件开始。
+
+### 5.3.5 Restricting and loosening types  
+
+当我们扩展一个接口时，可以对接口进行约束，但不能放宽它。例如，如果我们有以下接口：
+
+```typescript
+interface Style {
+  width: number | string;
+}
+```
+
+可以通过扩展该接口并对其进行约束，例如限定为仅数字类型：
+
+```typescript
+interface NumberStyle extends Style {
+  width: number;
+}
+```
+
+但不能反向操作，放宽其定义为更广泛的类型：
+
+```typescript
+interface AnyStyle extends Style {
+  width: number | string | null;
+}
+```
+
+上述代码会导致以下 TypeScript 错误消息：
+
+```
+Interface 'AnyStyle' incorrectly extends interface 'Style'.
+	Types of property 'width' are incompatible.
+		Type 'string | number | null' is not assignable to type
+		'string | number'.
+			Type 'null' is not assignable to type 'string | number'.
+```
+
+### 5.3.6 Using optional and required properties  
+
+在前面的示例中，我讨论了对类型的约束或放宽，并提到了向联合类型中添加或减少可选项。但我们还可以切换属性的另一个方面，即它是否为必需项。可以通过省略问号来创建一个必须提供的字符串输入：
+
+```typescript
+interface StringInputProps extends ComponentPropsWithoutRef<"input"> {
+  value: string;
+}
+```
+
+但反过来却行不通。假设我们想扩展之前的 `Rating` 组件，但使 `BookReview` 组件的 `value` 属性可选：
+
+```typescript
+interface BookReviewProps extends PickedRatingProps {
+  value?: number;
+}
+```
+
+此代码会导致类似于第 5.3.5 节中的 TypeScript 错误消息，因为我们实际上将类型扩展为了 `number` 或 `undefined`，这种放宽是不允许的，因此我们需要在重新定义之前先省略该属性。
+
+有时，我们只想将特定属性设置为必填，而不是可选，但不希望更改类型的其他内容。假设我们想添加一个按钮，并必须定义 `onClick`。按钮的 `onClick` 属性的内置可选类型相当长：
+
+```typescript
+// 按钮 onClick 属性的内置类型
+onClick?: React.MouseEventHandler<HTMLButtonElement>;
+```
+
+我们不想重复整个定义，只是去掉问号。所以可以直接引用旧定义，通过 `ComponentPropsWithoutRef` 来获取：
+
+```typescript
+type ButtonProps = ComponentPropsWithoutRef<"button">;
+interface ButtonWithClickProps extends ButtonProps {
+  onClick: ButtonProps["onClick"];
+}
+```
+
+不过，这段代码会导致大量的输入，如果我们想对多个属性做同样的事情：
+
+```typescript
+type ButtonProps = ComponentPropsWithoutRef<"button">;
+interface HoverButtonProps extends ButtonProps {
+  onMouseOver: ButtonProps["onMouseOver"];
+  onMouseMove: ButtonProps["onMouseMove"];
+  onMouseOut: ButtonProps["onMouseOut"];
+}
+```
+
+有一种更聪明的方法。TypeScript 有一个内置接口 `Required<>`，它使另一个类型的所有属性都变为必填。虽然这种行为并不是我们想要的，但我们可以用它来创建自己的工具接口，使某些属性变为必填：
+
+```typescript
+type RequireSome<T, K extends keyof T> = T & Required<Pick<T, K>>;
+```
+
+然后，我们可以更加优雅地创建 `HoverButtonProps`：
+
+```typescript
+type ButtonProps = ComponentPropsWithoutRef<"button">;
+type RequireSome<T, K extends keyof T> = T & Required<Pick<T, K>>;
+type HoverButtonProps = RequireSome<
+  ButtonProps,
+  "onMouseOver" | "onMouseMove" | "onMouseOut"
+>;
+```
+
+你可能开始意识到 TypeScript 的强大。你可以仅通过使用类型来进行编程！
+
+### 5.3.7 Using either/or properties  
+
+146
+
+### 5.3.8 Forwarding refs  
+
+148
