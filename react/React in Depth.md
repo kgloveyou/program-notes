@@ -472,4 +472,112 @@ type HoverButtonProps = RequireSome<
 
 # 6、Mastering TypeScript with React  
 
-152
+### 6.1.2 Typing useRef  
+
+如果按照 6.1.1 节中的做法，这段代码基本上会按预期工作。但是，`useRef` 有一些意外之处。我们可以更简单地为第一个示例定义类型：
+
+```javascript
+const stringOrNullRef = useRef<string>(null);
+```
+
+`useRef` 针对特定情况有一个类型重载：如果类型参数中不包含 `null`，但初始化器为 `null`，则 `useRef` 会隐式地将类型参数扩展为允许 `null`。
+
+但这里的陷阱在于，后者的定义是一个不可变引用。不可变引用可以传递给元素，因此类似下面的代码是可行的：
+
+```javascript
+const inputRef = useRef<HTMLInputElement>(null);
+...
+return <input ref={inputRef} />;
+```
+
+这个示例是 `useRef` 特殊重载的常见用例。我们可以在类型参数中省略 `| null`，并用 `null` 初始化 ref，一切都能如预期工作。但是，如果我们为可变状态创建引用，并希望直接更新该状态，例如在 effect 或回调中，这种方法将不起作用。
+
+假设我们想创建一个组件，在光标位于组件内部时记录其位置，并在鼠标离开时清除该引用。我们可以实现如下组件：
+
+```javascript
+function MouseTracker() {
+  const position = useRef<{ x: number; y: number } | null>(null);
+
+  const onMouseLeave = () => {
+    position.current = null;
+  };
+
+  const onMouseMove = (evt: MouseEvent) => {
+    position.current = { x: evt.clientX, y: evt.clientY };
+  };
+
+  return (
+    <div onMouseLeave={onMouseLeave} onMouseMove={onMouseMove}>
+      ...
+    </div>
+  );
+}
+```
+
+请注意，我们在类型参数中使用了显式的 `| null` 来初始化该引用。如果我们省略这一部分，示例将无法正常工作——并非因为不允许 `null`，而是因为该引用将是不可变的，不允许直接更新，并会报以下错误：
+
+```
+Cannot assign to 'current' because it is a read-only property.
+```
+
+最好在类型参数中明确可变引用的可能值，以避免这种奇怪的行为。
+
+### 6.1.3 Typing contexts and useContext  
+
+### 6.1.5 Typing reducers  
+
+```typescript
+export type Action =
+  | { type: "up"; index: number }
+  | { type: "down"; index: number }
+  | { type: "first"; index: number }
+  | { type: "last"; index: number };
+
+export type ActionType = Action["type"];
+```
+
+你定义了一个 TypeScript 类型 `Action`，它是一个联合类型，包含四种不同类型的动作对象。每种动作对象都有一个 `type` 属性和一个 `index` 属性。接着，你定义了一个 `ActionType` 类型，它是 `Action` 类型中 `type` 属性的所有可能值的联合类型。
+
+### 定义 `Action` 类型
+```typescript
+export type Action =
+  | { type: "up"; index: number }
+  | { type: "down"; index: number }
+  | { type: "first"; index: number }
+  | { type: "last"; index: number };
+```
+
+### 提取 `type` 属性的值
+```typescript
+export type ActionType = Action["type"];
+```
+
+### 解释
+- `Action` 类型是一个联合类型，包含四种不同的动作对象。
+- `Action["type"]` 是一个索引类型查询，它提取 `Action` 类型中所有成员的 `type` 属性的值。
+- `ActionType` 是这些 `type` 属性值的联合类型，即 `"up" | "down" | "first" | "last"`。
+
+### 6.1.6 Typing memoization hooks  
+
+`useDeferredValue` 是 React 18 引入的一个 Hook，用于优化用户体验，特别是在处理大量数据或高频率更新的场景中。`useDeferredValue` 允许你延迟某些计算或渲染，从而让更重要的更新优先处理。
+
+### 6.2.2 Memoizing a generic component  
+
+## 6.3 使用 TypeScript 的缺点
+
+## 6.4 TypeScript 资源  
+
+# 7、CSS in JavaScript  
+
+### 7.1.4 Why not inline styles?
+
+disabled 按钮样式
+
+```jsx
+const DISABLED_STYLES = {
+  opacity: 0.5,
+  pointerEvents: "none",
+};
+```
+
+189
