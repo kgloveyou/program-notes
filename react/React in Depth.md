@@ -580,4 +580,80 @@ const DISABLED_STYLES = {
 };
 ```
 
-189
+190
+
+### 7.3.3 Implementation with class names  
+
+```jsx
+  const classNames = [
+    "button",
+    outline ? "button--outline" : "",
+    className,
+  ].filter(Boolean);
+```
+
+这段代码定义了一个名为 `classNames` 的常量，用来动态组合 CSS 类名。以下是代码的解析：
+
+### 代码功能
+
+1. **类名数组：**
+
+   ```javascript
+   [
+     "button",
+     outline ? "button--outline" : "",
+     className,
+   ]
+   ```
+
+   - `"button"`：基础类名，始终存在。
+   - `outline ? "button--outline" : ""`：根据 `outline` 的值是否为真，动态决定是否添加 `"button--outline"` 类名。如果 `outline` 为 `false`，则添加空字符串（即什么都不添加）。
+   - `className`：外部传入的自定义类名，允许额外的类名动态传入。
+
+2. **`.filter(Boolean)`：**
+
+   - 过滤掉数组中的假值（如 `false`、`null`、`undefined`、空字符串等）。
+   - 仅保留有效的类名，确保最终生成的类名字符串中没有多余的空格或无效值。
+
+### 示例用法
+
+假设：
+
+- `outline` 为 `true`。
+- `className` 为 `"custom-class"`。
+
+则 `classNames` 的结果为：
+
+```javascript
+["button", "button--outline", "custom-class"]
+```
+
+最终可以通过 `join(" ")` 转换为：
+
+```javascript
+"button button--outline custom-class"
+```
+
+### 总结
+
+这段代码是动态生成类名的一个常见模式，确保代码简洁且易于维护，是处理条件类名组合的优雅方案。
+
+## 7.4 方法 2: CSS Modules  
+
+这种方法是对常规 CSS 文件和类名方法的小扩展，解决了我在第 7.3.5 节中提到的一些问题。这个概念被称为 **CSS Modules**，它主要处理组件化和命名冲突的问题。CSS Modules 仍然使用 CSS 文件，编写方式与通常的 CSS 文件相同。但这些文件会被解析，类名会被提取并重新生成为新的唯一名称。其他方面的操作保持不变。
+
+### 7.4.1 CSS Modules 是如何工作的
+
+apulis 前端项目就是使用的这种方案。
+
+```jsx
+import styles from './index.less';
+
+<Spin spinning={loading} delay={300}>
+    <Tabs className={styles.tabs} onChange={onTabChange}>
+        {panes}
+    </Tabs>
+</Spin>
+```
+
+198
