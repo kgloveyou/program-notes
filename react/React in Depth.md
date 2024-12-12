@@ -656,4 +656,48 @@ import styles from './index.less';
 </Spin>
 ```
 
-198
+### 7.4.2 CSS Modules 项目的设置
+
+对 CSS Modules 的支持默认内建于任何 Vite 设置中。你所需要做的就是将你的 CSS 文件命名为 *.module.css，然后就可以正常使用了。
+如果你没有使用基于 Vite 的设置，你需要找到一个与你的打包工具兼容的 CSS Modules 插件。对于 webpack，你可以使用 css-loader 插件，
+而对于其他所有情况，你可以使用 postcss 和 postcss-modules 插件。
+
+- css-loader—https://github.com/webpack-contrib/css-loader
+- postcss—https://github.com/postcss/postcss
+- postcss-modules—https://github.com/madyankin/postcss-modules  
+
+## 7.5 方法 3: Styled-components  
+
+Styled-components 是 CSS Modules 的自然延伸，将这一概念推进到了下一步。CSS Modules 使用 CSS 文件和类名，但这些类名是局部变量，而不是最终 CSS 中的类名。那么为什么不跳过类名这一步，直接创建已经应用了一组给定样式的元素，并在组件中直接使用这些元素呢？
+
+### 7.5.1 Styled-components 是如何工作的
+
+https://styled-components.com  
+
+
+
+### 7.5.2 styled-components  项目的设置
+
+对 styled-components 的支持并未内置在 Vite 中，但安装起来仍然非常简单。你只需要使用 npm 安装该模块：
+
+```sh
+$ npm install --save styled-components
+```
+
+然后你可以开始从该包中导入并在项目中使用它，就像我们在第 7.5.1 节中看到的那样。
+
+### 7.5.3 Source code with styled-components  
+
+### 7.5.4 styled-components  的优点
+
+### 7.5.5 styled-components  的缺点
+
+### 7.5.6 什么时候（不）使用 styled-components
+
+Styled-components 非常适合具有许多一次性组件的复杂设计，但对于组件库或拥有统一和精简设计的网页应用程序（如仪表板和管理界面）来说，通常被认为不太理想。这个库非常多功能且受欢迎，所以使用它不会错，但在大型项目中承诺使用它之前，你可能想要考虑一下其他替代方案。
+
+## 7.6 One problem, infinite solutions  
+
+# 8、React 中的数据管理
+
+215
