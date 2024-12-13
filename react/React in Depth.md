@@ -700,4 +700,12 @@ Styled-components 非常适合具有许多一次性组件的复杂设计，但�
 
 # 8、React 中的数据管理
 
-215
+# 9、Remote data and reactive caching  
+
+Mock Service Worker (MSW for short)  
+
+为了模拟真实的网页体验，我们将引入一个小但明显的服务器响应延迟。最初的简单解决方案虽然因为明显的延迟而不太理想——在延迟期间没有任何事情发生，但它确实可以工作。稍后，我们将讨论为什么反应式缓存可能是一个更好的解决方案，并最终使用 TanStack Query 重新实现整个应用程序，TanStack Query 是一个为 React 设计的反应式缓存和数据管理库。我们将从使用默认的基础设置来实现这个工具开始。最后，我们将介绍客户端缓存原则，这些原则将使依赖服务器的体验对用户来说更加流畅。
+
+## 9.2 Adding a remote server to do goal tracking  
+
+273
