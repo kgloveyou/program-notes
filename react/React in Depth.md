@@ -828,3 +828,23 @@ https://nextjs.org
 ### 11.2.3 Environment values and API keys  
 
 341
+
+### 11.3.3 存储本地数据
+
+但 `localStorage` 仅在浏览器中工作，不在服务器上工作。
+
+相反，我们可以使用 cookies。Cookies 在客户端和服务器端都能工作，因为它们在每次请求中都会被发送到服务器并从服务器接收。在每次请求中发送数据看起来似乎有些浪费，因此你能够存储的数据量比 localStorage 中要少很多。我们的示例中将待办事项数据存储在 localStorage 中的做法可能无法用 cookies 实现，因为我们很快就会超出 cookies 的存储空间。
+
+使用 cookies，你会得到如图 11.15 所示的流程。
+
+Cookie 在客户端和服务器端都可以被设置、读取、编辑和删除，因此它们非常适合我们的示例。在任意一端手动设置 Cookie 略显繁琐，但幸运的是，我们使用的两个框架都带有出色的工具来操作 Cookie。在 Remix 中，这一功能内置在核心中，而在 Next.js 中，一个名为 cookies-next 的实用库能完美地完成这项工作。
+
+**COOKIES IN NEXT.JS**  
+
+**COOKIES IN REMIX**  
+
+### 11.3.4 Creating an API  
+
+356
+
+## 11.4 基于 React 的替代网站框架
