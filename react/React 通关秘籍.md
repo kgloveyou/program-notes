@@ -205,3 +205,7 @@ dist 下的组件是 umd 的：
 总结来说就是**用 createContext 创建 context 对象，用 Provider 修改其中的值， function 组件使用 useContext 的 hook 来取值，class 组件使用 Consumer 来取值。**
 
 # 55、React Playground 项目实战：需求分析、实现原理
+
+# 77、低代码编辑器：自定义 JS
+
+通过 new Function 来动态执行代码，执行的代码可以访问 context，传入一些属性方法。
