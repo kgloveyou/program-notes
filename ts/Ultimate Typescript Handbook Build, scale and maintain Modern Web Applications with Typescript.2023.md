@@ -1,5 +1,13 @@
 # 第3章 Basic Type Annotations  
 
+## 基本类型
+
+### BigInt  
+
+bigint类型用于创建和处理非常大的或非常小的数字，这些数字由于JavaScript数值支持的限制，被视为不适合作为常规整数使用。
+
+## unknown  类型
+
 
 
 # 第10 章 Manipulating Types
