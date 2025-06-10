@@ -712,13 +712,17 @@ Mock Service Worker (MSW for short)
 
 # 10、React单元测试
 
-React Testing Library  
+Vitest + React Testing Library.  
 
 你可以使用多种工具来实现不同目标和层次的测试。在本章中，我们将讨论如何使用 Vitest 作为测试运行器，以及如何使用 React Testing Library 作为组件的黑盒测试框架。Vitest 是一个经常与 Vite 一同使用的较新的库，我们在示例中也使用了 Vite。Jest 是另一个测试库，在 React 测试中可能更为常用，但 Vitest 的 API 几乎与 Jest 完全相同，并且由于它与 Vite 的紧密集成而获得了大量关注。Vitest 和 Jest 都可以在没有 React Testing Library 的情况下独立使用，但 React Testing Library 已迅速成为标准，因为它配备了一套更好的工具和实用函数，并基于更优良的原则构建。我们将在第 10.1.3 节中重新审视这些原则。
 
 所以，1-2-3 测试！
 
 ## 10.1 Testing a static component  
+
+### 10.1.3 测试弹性
+
+
 
 ## 10.2 测试交互式组件  
 
@@ -737,6 +741,8 @@ React Testing Library
 使用这种方法，你可以模拟组件可能从浏览器使用的任何 API，包括本地存储、网络请求（如 fetch）、电池状态和屏幕捕获。
 
 ### 10.3.2 Mocking a library  
+
+**注意**：对于网络库，我建议使用 **Mock Service Worker (MSW)** 来模拟整个后端，而不是模拟网络库本身。这种方法更可靠且更具前瞻性，能更好地模拟 API 层。你可以回到第 9 章，了解 MSW 的工作原理。不过，本节介绍的方法仍然有效且有用。
 
 ### 10.3.3 Mocking a context  
 
