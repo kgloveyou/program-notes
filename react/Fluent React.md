@@ -494,9 +494,9 @@ export default ParentComponent;
 
 请考虑以下代码片段：
 
-该代码片段表示来自我们 Counter 组件的虚拟 DOM。由于这是第一次渲染，因此现在使用对命令式 DOM API 的最少调用将此树提交给浏览器。React 如何确保最少调用命令式 DOM API？它通过将虚拟 DOM 更新批量成一个真实的 DOM 更新来实现这一点，并且出于之前章节讨论的原因，尽可能少地接触 DOM。让我们更深入地研究这一点以全面理解批处理。
 
-可以!  Here's the translation of the text in bold:
+
+这段代码片段表示的是来自我们 Counter（计数器）组件的虚拟 DOM。由于这是首次渲染，这棵树现在通过尽可能少的命令式 DOM API 调用被提交到了浏览器中。React 是如何确保对命令式 DOM API 的调用尽可能少的呢？它通过将虚拟 DOM 的更新合并为一次实际的 DOM 更新来实现这一点，并且尽可能少地直接操作 DOM，具体原因我们已经在前面的章节中讨论过。接下来，让我们更深入地探讨一下这个过程，以全面理解“批处理（batching）”机制。
 
 ## **批处理 (Batching)**
 
@@ -587,7 +587,7 @@ React 的原始协调器是一种基于堆栈的算法，用于比较旧的和�
 
 Fiber 协调器使用一种称为“Fiber”的不同数据结构，它表示协调器单个的工作单元。Fiber 由我们在第 3 章介绍的 React 元素创建，主要区别在于它们是有状态和长期存在的，而 React 元素是临时且无状态的。
 
-Redux 的维护者和杰出 React 专家 Mark Erikson 将 Fiber 描述为“React 的内部数据结构，它表示某个时间点的实际组件树”。的确，这是一个思考 Fiber 的好方法，这对于 Mark 来说也恰到好处，他当时正使用 Replay 全职进行时间旅行调试 React 应用。Replay 是一个允许您倒带和重放应用程序状态进行调试的工具。如果您还没有，请查看 Replay.io了解更多信息。
+Redux 的维护者、知名的 React 专家 Mark Erikson 将 Fiber 描述为“React 在某一时刻代表实际组件树的内部数据结构”。这确实是对 Fiber 很贴切的理解，而且这也符合 Mark 的一贯风格 —— 截至本文撰写时，他正全职从事基于 Replay 工具的 React 应用时间旅行调试工作：Replay 是一款能让你回放和重现应用状态以进行调试的工具。如果你还没试过，不妨访问 Replay.io 了解更多信息。
 
 类似于 vDOM 是一个元素树，React 在协调过程中使用 Fiber 树，顾名思义，它是一个直接仿照 vDOM 的 Fiber 树。
 
@@ -620,7 +620,18 @@ React 中的 Fiber 数据结构是 Fiber 协调器的关键组件。Fiber 协调
 }
 ```
 
-这段代码返回一个从元素衍生的 Fiber。一旦创建了 Fiber 节点，Fiber 协调器就会使用工作循环来更新用户界面。工作循环从根 Fiber 节点开始，沿着组件树向下进行，如果需要更新，则将每个 Fiber 节点标记为“dirty”。一旦到达末端，它就会向上遍历，在内存中创建一个新的 DOM 树，该树与浏览器分离，并最终会提交（刷新）到屏幕上。这由两个函数表示：
+在协调（reconciliation）过程中，Fiber 协调器会为虚拟 DOM 中的每个 React 元素创建一个 Fiber 节点。这一过程是由一个名为 createFiberFromTypeAndProps 的函数来完成的。当然，我们也可以把“type 和 props”称为 React 元素。正如我们所记得的，一个 React 元素本质上就是由 type 和 props 组成的：
+
+```js
+{
+  type: "div",
+  props: {
+    className: "container"
+  }
+}
+```
+
+这段代码返回一个从元素衍生的 Fiber。一旦创建了 Fiber 节点，Fiber 协调器就会使用工作循环（work loop）来更新用户界面。工作循环从根 Fiber 节点开始，沿着组件树向下进行，如果需要更新，则将每个 Fiber 节点标记为“dirty”。一旦到达末端，它就会向上遍历，在内存中创建一个新的 DOM 树，该树与浏览器分离，并最终会提交（刷新）到屏幕上。这由两个函数表示：
 
 - `beginWork`：向下遍历，将需要更新的组件标记为“need to update”。
 - `completeWork`：向上遍历，构建一个与浏览器分离的真实 DOM 元素树。
@@ -652,7 +663,63 @@ Fiber 协调类似于双缓冲，当更新发生时，当前的 Fiber 树会进�
 
 ### Fiber 协调
 
-Fiber 协调分两个阶段进行：渲染阶段和提交阶段。如图 4-1 所示，这种两阶段方法允许 React 执行可以在任何时候丢弃的渲染工作，然后再将其提交到 DOM 并向用户显示新状态：它使渲染可中断。更详细地说，使渲染感觉可中断的原因是 React 调度程序使用的启发式方法，每 5 毫秒将执行权让回主线程，这甚至在 120 fps 的设备上也小于单个帧。
+Fiber 的协调过程分为两个阶段：**渲染阶段**和**提交阶段**。如图 4-1 所示，这种两阶段的方法允许 React 执行那些在提交到 DOM 并向用户展示新状态之前可以随时中断和丢弃的渲染工作：这使得渲染过程变得可中断。更详细地说，让渲染感觉可中断的原因是 React 调度器采用的启发式策略，即每隔大约 5 毫秒就将执行权交还给主线程，这个时间间隔比即使在 120 帧每秒的设备上的单帧时间还要短。
+
+#### 渲染阶段
+
+##### renderLanes  
+
+“渲染通道”（Render Lanes）是 React Fiber 协调器中的一个新概念，它取代了旧的 renderExpirationTime（渲染过期时间）。虽然这个新概念比旧的 renderExpirationTime 更复杂一些，但它使 React 能够更好地对更新进行优先级排序，并让更新过程更加高效。由于 renderExpirationTime 已被弃用，本章我们将重点介绍 renderLanes。
+
+简单来说，renderLanes 是一个位掩码（bitmask），用于表示当前更新正在处理的“通道”（lanes）。Lanes 是一种根据更新的优先级以及其他因素对更新进行分类的方式。当对 React 组件进行更改时，会根据该更改的优先级和其他特性为其分配一个通道。更改的优先级越高，它被分配到的通道也就越高。
+
+renderLanes 的值会被传递给 beginWork 函数，以确保更新按照正确的顺序被处理。被分配到高优先级通道的更新会先于低优先级通道的更新被处理。这样可以确保高优先级的更新（例如影响用户交互或可访问性的更新）能够尽快得到处理。
+
+除了对更新进行优先级排序之外，renderLanes 还帮助 React 更好地管理并发。React 使用一种称为“时间切片”（time slicing）的技术，将长时间运行的更新拆分为更小、更易管理的块。renderLanes 在这个过程中起着关键作用，因为它让 React 能够确定哪些更新应该优先处理，哪些可以推迟到稍后处理。
+
+在渲染阶段完成后，会调用 getLanesToRetrySynchronouslyOnError 函数，以判断在渲染阶段是否产生了任何被延迟处理的更新。
+
+如果存在被延迟处理的更新（deferred updates），那么 updateComponent 函数会启动一个新的工作循环来处理这些更新，它使用 beginWork 和 getNextLanes 来处理这些更新，并根据它们所属的通道（lanes）对它们进行优先级排序。
+
+我们将在第 7 章（即将介绍的关于并发的章节）中更深入地探讨渲染通道（render lanes）。现在，让我们继续跟随 Fiber 协调的流程往下走。
+
+##### completeWork  
+
+completeWork 函数会将更新应用到正在构建中的 Fiber 节点（work-in-progress Fiber node），并构造出一棵代表应用程序更新状态的新真实 DOM 树。这棵树是在脱离浏览器可见范围的上下文中、独立于实际 DOM 构建的。
+
+如果宿主环境是浏览器，这意味着会执行诸如 document.createElement 或 newElement.appendChild 之类的操作。但需要注意的是，这棵元素树此时尚未附加到浏览器中的实际文档上：React 只是在屏幕外构建下一版本的 UI。在屏幕外完成这项工作使其具备了可中断性：无论 React 正在计算的是何种下一状态，都尚未被绘制到屏幕上，因此一旦有更高优先级的更新被调度，就可以将其丢弃。这正是 Fiber 协调器的核心设计目的所在。
+
+#### 提交阶段
+
+提交阶段（参见图 4-3）负责将渲染阶段期间对虚拟 DOM 所做的更改更新到实际的 DOM 中。在提交阶段，新的虚拟 DOM 树会被提交到宿主环境，并且正在构建中的树（work-in-progress tree）会替换为当前树（current tree）。也正是在这个阶段，所有的副作用（effects）都会被执行。
+
+提交阶段分为两个部分：变更阶段（mutation phase）和布局阶段（layout phase）。
+
+##### 变更阶段
+
+确定需要进行的更新，并调用一个名为 commitMutationEffects 的特殊函数。该函数会将渲染阶段期间在备用树（alternate tree）中的 Fiber 节点上所做的更新应用到实际的 DOM 上。
+
+##### 布局阶段
+
+布局阶段（Layout Phase）是提交阶段的第二部分，它负责计算 DOM 中已更新节点的新布局。在此阶段，React 会调用一个名为 `commitLayoutEffects` 的特殊函数。该函数会计算 DOM 中已更新节点的新布局。
+
+与 `commitMutationEffects` 类似，`commitLayoutEffects` 也是一个庞大的 switch 语句，它会根据正在更新的节点类型调用不同的函数。
+
+一旦布局阶段完成，React 就已成功将实际 DOM 更新为反映渲染阶段期间对虚拟 DOM 所做的更改。
+
+通过将提交阶段划分为两个部分（变更阶段和布局阶段），React 能够以高效的方式将更新应用到 DOM 上。通过与协调器中的其他关键函数协同工作，提交阶段有助于确保 React 应用程序即使在变得更加复杂并处理更大量数据时，依然保持快速、响应迅速且可靠。
+
+#### **将所有内容呈现在屏幕上**
+
+React 在两棵树的顶层维护一个 **FiberRootNode**，它指向其中一棵树：**当前树（current tree）** 或 **正在工作中的树（workInProgress tree）**。 **FiberRootNode** 是一个关键的数据结构，负责管理协调过程（reconciliation process）中的 **提交阶段（commit phase）**。
+
+当对虚拟 DOM 进行更新时，React 会更新 **workInProgress 树**，同时保持 **当前树** 不变。 这使得 React 能够持续渲染和更新虚拟 DOM，同时保留应用程序的当前状态。
+
+当渲染过程完成后，React 会调用一个名为 **`commitRoot`** 的函数，该函数负责将 **workInProgress 树** 上所做的更改提交到实际的 DOM 中。  **`commitRoot`** 会将 **FiberRootNode** 的指针从 **当前树** 切换到 **workInProgress 树**，从而使 **workInProgress 树** 成为新的 **当前树**。
+
+从这一刻起，任何未来的更新都将基于这个新的 **当前树**。 这一过程确保了应用程序始终处于一致的状态，并且更新能够被正确且高效地应用。
+
+所有这些操作在浏览器中看起来都是瞬间完成的——这正是 **协调（reconciliation）** 的工作成果。
 
 # 第5章 常见问题和强大模式
 
@@ -1474,25 +1541,59 @@ const ChatApp = () => {
 
 ## useTransition  
 
-useTransition是一个强大的React Hook，允许你在组件中管理状态更新的优先级，并防止由于高优先级更新导致UI不响应。当处理可能视觉上具有破坏性的更新时特别有用，例如加载新数据或在页面之间导航。
+useTransition 是一个强大的 React Hook，它允许你管理组件中状态更新的优先级，并防止 UI 因高优先级更新而变得无响应。它在处理可能造成视觉干扰的更新时特别有用，例如加载新数据或在页面之间导航。
 
-它基本上将你包装在其返回的startTransition函数中的任何更新放入过渡通道，这比我们之前看到的Sync通道的优先级低，允许你控制更新的时机，并保持流畅的用户体验，即使其他高优先级的更新正在竞争主线程。
+它本质上会将你用其返回的 startTransition 函数包裹的任何更新放入过渡通道（transition lane），该通道的优先级低于我们前面提到的同步通道（Sync lane），从而允许你控制更新的时机，并即使在其他高优先级更新争夺主线程时也能保持流畅的用户体验。
 
-useTransition是一个Hook，这意味着你只能在函数组件内部使用它。它返回一个包含两个元素的数组：
+useTransition 是一个 Hook，这意味着你只能在函数组件中使用它。它返回一个包含两个元素的数组：
 
 - isPending：一个布尔值，指示是否正在进行过渡。关于useTransition工作方式的一个有趣部分是，当你调用startTransition时，它首先会在这个属性上安排一个同步的setState({ isPending: false })，这意味着依赖于isPending的更新需要快速完成，否则就违背了useTransition的目的。
 
 - startTransition：一个函数，你可以用它来包装应该被延迟或赋予较低优先级的更新。
 
-值得一提的是，在这里可能还有一种startTransition API可用，它不是作为Hook，而是作为一个常规函数。启动非紧急过渡的第二种方法是直接从React导入startTransition函数。这种方法不提供对isPending标志的访问，但是当你不能使用像useTransition这样的Hook时，仍然希望向React发出低优先级更新的信号时，它是可用的。
+值得一提的是，还存在一个不以 Hook 形式提供，而是作为常规函数可用的 startTransition API。启动非紧急过渡的第二种方式是直接从 React 导入 startTransition 函数来使用。这种方法虽然无法提供 isPending 标志（即无法获取过渡状态），但在代码中那些无法使用 Hook（例如 useTransition）但仍希望向 React 发出低优先级更新信号的场景下仍然可用。
+
+### 简单的例子
+
+```jsx
+import React, { useState, useTransition } from "react";
+
+function App() {
+  const [count, setCount] = useState(0);
+  const [isPending, startTransition] = useTransition();
+  const handleClick = () => {
+    doSomethingImportant();
+    startTransition(() => {
+      setCount(count + 1);
+    });
+  };
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={handleClick}>Increment</button>
+      {isPending && <p>Loading...</p>}
+    </div>
+  );
+}
+
+export default App;
+```
+
+在这个示例中，我们使用 `useTransition` 来管理一个递增计数器的状态更新的优先级。通过将 `setCount` 更新包裹在 `startTransition` 函数中，我们向 React 表明这个更新可以被延迟执行，从而防止在同时发生其他高优先级更新时导致 UI 无响应。
+
+### 高级例子：导航
+
+### 深入探讨
+
+
 
 ## useDeferredValue  
 
-useDeferredValue是一个React Hook，允许将某些UI更新推迟到以后的时间点，特别适用于应用程序处理大量负载或计算密集型任务的场景，从而有助于管理更新优先级并促进更平滑的过渡和改善用户体验。
+`useDeferredValue` 是一个 React Hook，它允许将某些 UI 更新推迟到稍后执行，特别适用于应用程序处理高负载或计算密集型任务的场景，从而有助于管理更新优先级，并促进更平滑的过渡和更好的用户体验。
 
-在初始渲染期间，返回的延迟值与提供的值相同。在后续更新中，useDeferredValue通过在更新到新值之前保留旧值更长时间来帮助保持流畅的用户体验，特别是在具有计算密集型操作的情况下。这并不涉及使用旧值和新值进行多次重新渲染，而是对新值进行控制性更新。
+在初始渲染时，返回的延迟值与传入的值相同。在后续更新中，`useDeferredValue` 通过让旧值保持更长时间再更新为新值（尤其是在存在计算密集型操作的场景中），帮助维持流畅的用户体验。这并不意味着会因新旧值而多次重新渲染，而是对更新到新值的过程进行控制。
 
-这种机制类似于一种“陈旧但可重新验证”的策略，即保留陈旧值以保持UI的响应性，同时等待新值的到来。
+该机制类似于一种“stale-while-revalidate”策略，即在等待新值的同时保留旧值，以保持 UI 的响应性。
 
 通过查看React的提交历史，我们可以看到useDeferredValue的第一个实现大致如下：
 
@@ -1502,7 +1603,9 @@ useDeferredValue是一个React Hook，允许将某些UI更新推迟到以后的�
 
 在startTransition中，使用setNewValue将状态更新为新值。使用startTransition表示给React一个信号，表明这个更新不是紧急的，允许React首先处理其他更关键的更新。这几乎正是useDeferredValue今天的工作方式，对我们对它的心理模型应该有所帮助。
 
-useDeferredValue是React并发特性的一部分，它通过允许推迟某些状态更新来实现可中断性。当带有延迟值的组件重新渲染时，React会在一定时间内保持显示旧值，允许高优先级的更新在低优先级的更新之前被处理。这将渲染工作分成了较小的块，可以随着时间的推移分散进行，提高了响应性，并确保高优先级的更新（如用户交互）不会被低优先级的更新延迟，从而提升了积极的用户体验。
+`useDeferredValue` 是 React 并发特性的一部分，它通过允许某些状态更新被延迟来实现可中断性。  
+当组件使用延迟值重新渲染时，React 会在一段时间内继续显示旧值，从而使高优先级更新能够先于低优先级更新被处理。  
+这将渲染工作拆分为更小的块，可以分散在一段时间内完成，从而提高响应速度，并确保高优先级更新（如用户交互）不会被低优先级更新所延迟，进而提升良好的用户体验。
 
 ### useDeferredValue 的目的
 
@@ -1537,13 +1640,48 @@ const SearchResults = memo(({ searchValue }) => {
 })
 ```
 
+在这个示例中，我们有一个搜索输入框和一个用于显示结果的 SearchResults 组件。我们使用 useDeferredValue 来延迟搜索结果的渲染，使应用能够优先处理用户输入，即使在渲染结果列表开销较大时也能保持响应性。让我们更详细地了解一下这个过程。
+
+1. 我们对该组件使用了 `memo`，以确保它不会进行不必要的更新，正如我们在前面章节中讨论过的。  
+2. 当它更新时，会引发性能问题，因为其渲染开销较大。  
+3. 当我们为其传入一个延迟属性 `deferredSearchValue` 时，由于该属性本身是在更紧急的渲染工作之后才更新的，因此该组件也会相应地延迟更新。  
+   这样，该组件只会在没有更紧急的工作需要处理时（例如更新文本输入框）才会重新渲染。
+
+有人可能会问：“为什么不直接对 searchValue 使用防抖（debounce）或节流（throttling）呢？”  
+这是个好问题。让我们在这里对它们进行对比：
+
+**防抖（Debouncing）**  
+涉及在更新列表之前暂停一段时间，等待用户完成输入，比如延迟一秒钟。
+
+**节流（Throttling）**  
+以固定的时间间隔更新列表，比如每秒不超过一次。
+
+虽然这些方法在某些情况下是有效的，但 `useDeferredValue` 作为一种更贴合渲染优化的解决方案应运而生，因为它能无缝适应用户设备的性能能力，而不是采用某种固定的、任意的延迟。
+
+使用 `useDeferredValue` 的关键区别在于其动态的延迟处理方式。它无需设置固定的延迟时间。在高性能设备（例如功能强大的笔记本电脑）上，重新渲染的延迟几乎难以察觉，几乎是瞬间完成的。相反，在较慢的设备上，渲染延迟会相应调整，导致列表在响应输入时出现轻微的滞后，且滞后的程度与设备速度成正比。
+
+此外，`useDeferredValue` 的一大优势在于它能够中断延迟的重新渲染。在 React 正在处理一个较大列表的场景中，如果用户输入了新的按键，React 可以暂停当前的重新渲染过程，优先响应新的输入，然后在后台继续完成渲染。这与防抖（debouncing）和节流（throttling）形成鲜明对比——尽管它们也能延迟更新，但在渲染过程中仍会阻塞交互，从而可能导致体验不连贯。
+
+话虽如此，防抖（debouncing）和节流（throttling）在那些与渲染无直接关系的场景中仍然非常有用。例如，它们可以有效减少网络请求的频率。这些技术也可以与 `useDeferredValue` 结合使用，从而形成一套全面的优化策略。
+
+基于以上内容，我们可以看到在 React 应用中使用 `useDeferredValue` 具备以下几个优势：
+
+**提升响应性**  
+在示例中，当用户在搜索框中输入时，输入框会立即更新，而搜索结果则是延迟渲染的。如果用户快速连续输入五个字符，输入框会立即更新五次，而 `searchResults` 只会在用户停止输入后渲染一次。对于第 1 到第 4 个字符，`SearchResults` 的渲染会被新输入值打断。
+
+**声明式的优先级管理**  
+`useDeferredValue` 提供了一种简单且声明式的方式来管理应用中更新的优先级。通过将延迟更新的逻辑封装在 Hook 中，你可以保持组件代码的简洁，并专注于应用的核心功能。
+
+**更优的资源利用**  
+通过延迟那些非关键性的更新，`useDeferredValue` 能让你的应用更高效地利用可用资源。这有助于降低性能瓶颈出现的可能性，从而提升应用的整体性能。
+
 ### 什么时候使用useDeferredValue  
 
-在需要将某些更新优先于其他更新的情况下，useDeferredValue非常有用。一些常见的情景包括：
+`useDeferredValue` 最适用于那些需要优先处理某些更新而非其他更新的应用场景。以下是一些你可能会考虑使用 `useDeferredValue` 的常见情况：
 
-- 搜索或筛选大型数据集
-- 渲染复杂的可视化或动画
-- 在后台更新来自服务器的数据
+- 搜索或过滤大型数据集  
+- 渲染复杂的可视化图表或动画  
+- 在后台从服务器更新数据  
 - 处理可能影响用户交互的计算密集型操作
 
 让我们来看一个使用useDeferredValue特别有用的示例。假设我们有一个大型的项目列表，我们希望根据用户输入进行筛选。筛选大型列表可能会耗费大量计算资源，因此使用useDeferredValue可以帮助保持应用程序的响应性：
