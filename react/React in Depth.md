@@ -14,29 +14,508 @@ P16
 
 # 第2章 高级组件模式
 
+建筑世界中的项目，无论是高耸入云的摩天大楼，还是宁静的邻里住宅，都遵循着一套普适的原则。无论工程规模大小，在建筑与施工领域，人们始终坚守一些核心的工程原理，这些原理包括设计承重结构、选择合适的材料，以及确保整体的稳定性和安全性。
+
+在数字世界中，React 开发同样恪守着自己的一套构建原则。尽管外在的表现形式和所使用的具体“材料”可能有所不同，但其底层的架构原则却是恒久不变的。
+
+在 React 中，与软件设计整体一样，这些原则体现在设计模式之中。本章将深入探讨现代 React 应用中使用的三个基础性设计模式：
+
 - Provider  
 
 - Composite  
 
 - Summary  
 
+就像实体建筑中的蓝图和承重结构一样，如图 2.1 所示，这些模式为构建稳定且可扩展的 React 项目提供了基础框架。
+
 ## 2.1 The Provider pattern  
 
-P26
+在本节中，我们将深入探讨 **Provider 模式**，这一模式是在你已经掌握的 React Context 知识基础上进一步构建的。我们会学习如何利用 Provider 模式来管理多个相关的值，例如状态值及其对应的状态设置函数（setters）。这种做法（如图 2.2 所示）相比基础的 React Context 使用方式是一个重要的进阶，它能在状态管理方面提供更强的灵活性和更高的效率。
 
-## 2.2 The Composite pattern  
+图 2.2 展示了使用 **Provider 模式** 来管理多个相关值的初始步骤。图中呈现了一个基础的 Context 设置：其中 **Provider（浅灰色背景）** 将多个状态值（state values）及其对应的状态更新函数（updaters，以虚线框表示）封装在一起，从而让我们清晰地看到，如何基于 React Context 的常规用法进行扩展，以支持更复杂的场景。位于组件树中 Provider 下方任意层级的 **Context 消费者（Consumer，深灰色背景）**，即便嵌套得很深，仍然可以轻松访问到由 Context 提供的那些状态值和更新函数（通过虚线箭头表示）。这种方式大大提升了状态在组件树中传递的灵活性和便利性。
 
-38
+我们的探索过程是循序渐进的，旨在通过以下阶段引导你通过动手实践来深入理解并掌握相关内容：
 
-## 2.3 The Summary pattern  
+- **处理多个值的 Context**  
+  我们将从一个简单的示例入手，展示如何将子组件包裹在一个 Provider 中，这个 Provider 负责管理多个相关的状态值（state values）及其对应的状态更新函数（setters）。这一步骤是基础性的，它展示了如何将 React Context 的使用从单一数据点，扩展到能够承载多个相关数据的场景。
 
-### 2.3.4 总结模式有多有用？
+- **专用的 Context 管理组件**  
+  接下来，我们会进一步优化实现方式，创建一个专门用于管理 Context 的组件。这种改进方式能够更好地应对管理多个状态层面时所带来的复杂性，同时也展示了一种更加结构化、更易于维护的方式来处理复杂的 Context 逻辑。
 
-总结来说，总结模式因其能够简化和组织 React 组件的能力而脱颖而出。在通过单个或多个自定义 Hook 探索其应用后，我们看到这种模式在提升代码清晰度和可维护性方面起到了关键作用。
+- **通过选择性订阅优化性能**  
+  最后，我们将在 Provider 模式中引入 **“可选择性”（selectability）** 的概念，这是一种高级技巧，其核心目标是 **最小化不必要的组件重新渲染**，尤其是对于那些内容相对稳定的组件。通过有选择性地传递数据，我们可以显著提升 React 应用的运行性能。
 
-总结模式的优势在于其多功能性和可扩展性。无论是通过单个 Hook 简化组件，还是在更复杂的场景中协调多个 Hook，它都提供了管理组件逻辑的定制化方法。这种模式不仅能清理代码，还能培养可重用的思维方式，使其在需要保持一致性的大型项目中非常宝贵。
+通过本节的完整学习，你不仅会对 React Context 有更深刻的理解，还将通过实际编码掌握 **Provider 模式在复杂状态管理中的应用**。从基础实现逐步过渡到高级技巧的这一学习路径，将赋予你优化 React 应用的能力，确保它们既具备良好的性能表现，又拥有清晰的代码结构和可维护性。
 
-本质上，虽然总结模式可能并不引人注目，但它在创建高效且易于管理的 React 应用程序中所做的贡献是不可否认的。它体现了这样一个原则：有效的解决方案通常蕴含于简洁和深思熟虑的组织中。
+### 2.1.1 发明一个 Provider
+
+一种常见的做法是，将 **Context** 用作承载 **有状态值（stateful values）及其对应的状态设置函数（setters）** 的传递机制。假设我们有一个网站，它支持深色模式（dark mode）和浅色模式（light mode），并且在页面头部有一个按钮，可以在这两种模式之间切换。所有相关的组件都会读取当前的模式状态，并根据该状态值来调整它们的样式设计。
+
+我们希望将两个内容放入状态中：一个用于表示当前是否处于深色模式的值（`isDarkMode`）；一个允许按钮在深色模式与浅色模式之间切换的函数（`toggleDarkMode`）。我们可以将这两个值组合成一个对象，然后把这个对象作为 **value** 放入 Context 中。图 2.3 展示了这个系统结构，我们将在代码清单 2.1 中实现它。
+
+```jsx
+import { useContext, useState, createContext, memo } from "react";
+
+const DarkModeContext = createContext({});
+
+function Button({ children, ...rest }) {
+  const { isDarkMode } = useContext(DarkModeContext);
+  const style = {
+    backgroundColor: isDarkMode ? "#333" : "#CCC",
+    border: "1px solid",
+    color: "inherit",
+  };
+  return (
+    <button style={style} {...rest}>
+      {children}
+    </button>
+  );
+}
+
+function ToggleButton() {
+  const { toggleDarkMode } = useContext(DarkModeContext);
+
+  return <Button onClick={toggleDarkMode}>Toggle mode</Button>;
+}
+
+const Header = memo(function Header() {
+  const style = {
+    padding: "10px 5px",
+    borderBottom: "1px solid",
+    marginBottom: "10px",
+    display: "flex",
+    gap: "5px",
+    justifyContent: "flex-end",
+  };
+  return (
+    <header style={style}>
+      <Button>Products</Button>
+      <Button>Services</Button>
+      <Button>Pricing</Button>
+      <ToggleButton />
+    </header>
+  );
+});
+
+const Main = memo(function Main() {
+  const { isDarkMode } = useContext(DarkModeContext);
+  const style = {
+    color: isDarkMode ? "white" : "black",
+    backgroundColor: isDarkMode ? "black" : "white",
+    margin: "-8px",
+    minHeight: "100vh",
+    boxSizing: "border-box",
+  };
+  return (
+    <main style={style}>
+      <Header />
+      <h1>Welcome to our business site!</h1>
+    </main>
+  );
+});
+
+export default function App() {
+  const [isDarkMode, setDarkMode] = useState(false);
+  const toggleDarkMode = () => setDarkMode((v) => !v);
+  const contextValue = { isDarkMode, toggleDarkMode };
+  return (
+    <DarkModeContext.Provider value={contextValue}>
+      <Main />
+    </DarkModeContext.Provider>
+  );
+}
+```
+
+
+
+> **注意：**  
+> 在 React 19 中，创建 Context Provider 时，你可以通过 JSX 直接写成 `<MyContext value={...}>`，而不再需要显式地写成 `<MyContext.Provider value={...}>`。  此外，Context 的消费方式也有所变化，现在可以使用新的 `use()` 函数来替代传统的 `useContext()` Hook。  不过需要注意的是，这个新的 `use()` 函数 **并不是一个常规的 Hook**，因此 **它不受 Hook 规则的限制** —— 比如，你可以**有条件地调用它**。但需要强调的是，**它并没有提供任何额外的功能**，只是提供了一种不同的 API 风格而已。  除了这些细微的语法简化之外，**在 React 19 中创建和使用 Context 的核心逻辑与之前版本基本一致**。  在本书中，我将始终使用 **旧的语法（即 `<MyContext.Provider>` 和 `useContext()`）** 进行讲解。
+
+这里有几个关键点需要注意：首先，是在 **列表 2.1 中定义 `<App />` 组件时，我们如何为这个 Context 提供了两个不同的属性（即 `isDarkMode` 和 `toggleDarkMode`）**；其次，是在 **定义 `<Main />` 组件时，我们如何对 Context Provider 内部的第一个子组件进行了记忆化（memoization）处理**。
+
+这种 **记忆化处理非常重要**，因为我们的主 App 组件会在每次 Context 发生变化时重新渲染——而 Context 变化的时机正是每次深色模式标志（`isDarkMode`）被切换的时候（也就是状态更新时）。然而，我们并不希望仅仅因为 Context 更新，就导致其他所有组件也都跟着重新渲染。在这个例子中，**`<Main />` 组件会消费（consume）这个 Context，所以它确实会在每次 Context 更新时重新渲染**；但是，**`<Header />` 组件并没有消费这个 Context，因此它不应该重新渲染**。得益于我们使用了记忆化技术，它确实没有重新渲染 —— 这正是我们想要的效果。
+
+而且，这还不是终点。我们还可以 **在 Context 的 value 中放置大量的属性和函数**，以方便在应用的各个部分共享状态和行为。
+
+### 2.1.2 创建一个专用的 Provider 组件
+
+列表 2.1 中的深色模式应用的前一版是完全可用的，但我们还可以做得更好一些。主应用组件目前包含了状态值、切换函数以及 Context Provider，显得有些臃肿，所以我们来清理一下代码结构。我们将不再使用之前的那种写法，而是进行如下优化……
+
+```jsx
+export default function App() {
+  const [isDarkMode, setDarkMode] = useState(false);
+  const toggleDarkMode = () => setDarkMode((v) => !v);
+  const contextValue = { isDarkMode, toggleDarkMode };
+  return (
+    <DarkModeContext.Provider value={contextValue}>
+      <Main />
+    </DarkModeContext.Provider>
+  );
+}
+```
+
+假设我们有如下代码：
+
+```jsx
+export default function App() {
+  return (
+    <DarkModeProvider>
+      <Main />
+    </DarkModeProvider>
+  );
+```
+
+首先，第二个组件的写法要优雅得多。我们把关于实际上下文内容的逻辑从主应用中移除了，但同时我们还获得了一个额外的好处：这个新的 `<App />` 组件不包含状态，因此它永远不会重新渲染。由于它永远不会重新渲染，它也永远不会导致 `<Main />` 组件重新渲染。（**包含在<DarkModeProvider>中，当父组件重新渲染时，子组件还是会重新渲染的**）
+
+之前，`<App />` 是一个有状态的组件，会导致 `<Main />` 组件重新渲染，因此我们不得不使用 `memo()` 包裹 `<Main />` 来避免不必要的重渲染。但现在我们不需要这么做了。另外，我们还可以做的一个额外优化是简化这些调用：
+
+```jsx
+const ... = useContext(DarkModeContext);
+```
+
+我们可以创建一个自定义 Hook，用来返回 Context 中的内容，这样这一行代码就可以变成：
+
+```jsx
+const ... = useDarkMode();
+```
+
+通过这两处改动，我们得到了如下代码清单中的结果。
+
+```jsx
+import { useContext, useState, createContext, memo } from "react";
+
+const DarkModeContext = createContext({});
+
+function Button({ children, ...rest }) {
+  const { isDarkMode } = useDarkMode();
+  const style = {
+    backgroundColor: isDarkMode ? "#333" : "#CCC",
+    border: "1px solid",
+    color: "inherit",
+  };
+  return (
+    <button style={style} {...rest}>
+      {children}
+    </button>
+  );
+}
+
+function ToggleButton() {
+  const { toggleDarkMode } = useDarkMode();
+
+  return <Button onClick={toggleDarkMode}>Toggle mode</Button>;
+}
+
+const Header = memo(function Header() {
+  const style = {
+    padding: "10px 5px",
+    borderBottom: "1px solid",
+    marginBottom: "10px",
+    display: "flex",
+    gap: "5px",
+    justifyContent: "flex-end",
+  };
+  return (
+    <header style={style}>
+      <Button>Products</Button>
+      <Button>Services</Button>
+      <Button>Pricing</Button>
+      <ToggleButton />
+    </header>
+  );
+});
+
+function Main() {
+  const { isDarkMode } = useDarkMode();
+  const style = {
+    color: isDarkMode ? "white" : "black",
+    backgroundColor: isDarkMode ? "black" : "white",
+    margin: "-8px",
+    minHeight: "100vh",
+    boxSizing: "border-box",
+  };
+  return (
+    <main style={style}>
+      <Header />
+      <h1>Welcome to our business site!</h1>
+    </main>
+  );
+}
+
+function DarkModeProvider({ children }) {
+  const [isDarkMode, setDarkMode] = useState(false);
+  const toggleDarkMode = () => setDarkMode((v) => !v);
+  const contextValue = { isDarkMode, toggleDarkMode };
+  return (
+    <DarkModeContext.Provider value={contextValue}>
+      {children}
+    </DarkModeContext.Provider>
+  );
+}
+
+function useDarkMode() {
+  return useContext(DarkModeContext);
+}
+
+export default function App() {
+  return (
+    <DarkModeProvider>
+      <Main />
+    </DarkModeProvider>
+  );
+}
+```
+
+### 2.1.3 避免渲染所有内容
+
+在前面的示例中，上下文提供者（Context provider）存在一个小小的次优问题：当该上下文中的任何值发生变化时，所有消费该特定上下文的组件都会重新渲染。之所以会出现这种情况，是因为现在我们的上下文是一个包含多个属性的复杂对象，但 React 并不在意具体是哪个属性发生了变化；它只知道上下文的值整体发生了改变，因此每一个使用该上下文的组件都会被重新渲染。
+
+然而，我们的切换组件（toggle component）却永远不需要重新渲染，因为它使用了一个可以被记忆化的函数，这个函数是完全稳定的。原因在于 toggleDarkMode 函数并不依赖于上下文的当前值。遗憾的是，我们无法告诉 React 只在上下文的某些特定属性更新时才重新渲染某个特定的组件。至少目前我们还做不到这一点。这个功能原本预计会随 React 19 的测试版推出，但最终并未实现；希望它能在未来的更新中到来。
+
+如果我们想要避免每个上下文消费者都因不必要的上下文变化而重新渲染，我们就需要使用外部库。其中一个这样的库叫做 use-context-selector，它允许我们不必每次都使用整个上下文。相反，我们可以指定我们感兴趣的上下文的特定属性（即选择相关的属性——这也是该库名称中“selector”部分的由来）。然后，只有当该特定属性发生变化时，React 才会重新渲染我们的组件。
+
+为了正确使用 use-context-selector 包，我们还需要使用该包来创建我们的上下文（Context）。我们不能使用 React 包中通过 createContext 创建的常规上下文，而是必须使用 use-context-selector 包提供的 createContext 函数。用于访问上下文的自定义 Hook 接受一个选择器函数（selector function），如下所示：
+
+```javascript
+function useDarkMode(selector) {
+  return useContextSelector(DarkModeContext, selector);
+}
+```
+
+我们将这个新参数 selector 直接传递给 useContextSelector Hook。这个自定义 Hook 仍然有其意义，因为它避免了每次都要显式引用上下文。接下来，让我们在下面的代码清单中实现这个经过更新、更优化的深色模式切换网站版本。
+
+```jsx
+import { useState, useCallback, memo } from "react";
+import {
+  createContext,
+  useContextSelector,
+} from "use-context-selector";
+
+const DarkModeContext = createContext({});
+function Button({ children, ...rest }) {
+  const isDarkMode = useDarkMode((ctx) => ctx.isDarkMode);
+  const style = {
+    backgroundColor: isDarkMode ? "#333" : "#CCC",
+    border: "1px solid",
+    color: "inherit",
+  };
+  return (
+    <button style={style} {...rest}>
+      {children}
+    </button>
+  );
+}
+
+function ToggleButton() {
+  const toggle = useDarkMode((ctx) => ctx.toggle);
+  return <Button onClick={toggle}>Toggle mode</Button>;
+}
+
+const Header = memo(function Header() {
+  const style = {
+    padding: "10px 5px",
+    borderBottom: "1px solid",
+    marginBottom: "10px",
+    display: "flex",
+    gap: "5px",
+    justifyContent: "flex-end",
+  };
+  return (
+    <header style={style}>
+      <Button>Products</Button>
+      <Button>Services</Button>
+      <Button>Pricing</Button>
+      <ToggleButton />
+    </header>
+  );
+});
+
+function Main() {
+  const isDarkMode = useDarkMode((ctx) => ctx.isDarkMode);
+  const style = {
+    color: isDarkMode ? "white" : "black",
+    backgroundColor: isDarkMode ? "black" : "white",
+    margin: "-8px",
+    minHeight: "100vh",
+    boxSizing: "border-box",
+  };
+  return (
+    <main style={style}>
+      <Header />
+      <h1>Welcome to our business site!</h1>
+    </main>
+  );
+}
+
+function DarkModeProvider({ children }) {
+  const [isDarkMode, setDarkMode] = useState(false);
+  const toggle = useCallback(() => setDarkMode((v) => !v), []);
+  const contextValue = { isDarkMode, toggle };
+  return (
+    <DarkModeContext.Provider value={contextValue}>
+      {children}
+    </DarkModeContext.Provider>
+  );
+}
+
+function useDarkMode(selector) {
+  return useContextSelector(DarkModeContext, selector);
+}
+
+export default function App() {
+  return (
+    <DarkModeProvider>
+      <Main />
+    </DarkModeProvider>
+  );
+}
+
+```
+
+最终得到的网站与之前功能完全相同，但现在 ToggleButton 组件永远不会重新渲染，因为它只使用了来自上下文的一个稳定值。由于该上下文值从未发生更新，因此没有必要重新渲染该组件。而另外两个监听上下文中 isDarkMode 标志的组件，在该标志每次更新时仍会重新渲染，因为在这两个组件的 useDarkMode Hook 中，我们选择了该具体的属性。
+
+### 2.1.4 使用 recontextual 工具创建类型优美且可选择上下文
+
+在前面的示例中，我们只使用了 JavaScript，而没有使用 TypeScript。关于 TypeScript，我将在第 5 章、第 6 章以及后续章节中详细讨论。目前，我只想说，其中一些模式在以优雅的方式进行类型定义时相当棘手。
+
+为了使可选择上下文更易于进行类型定义，我创建了一个小型包 recontextual，它封装了 use-context-selector，并提供了一种简单的方式来创建类型良好且可选择上下文，同时只需最少的类型定义工作。在不深入过多细节的情况下，让我们看看以下示例中，使用这个新库时，TypeScript 中的暗黑模式应用是什么样子的。
+
+### 2.1.5 Provider 模式有多实用？
+
+Provider 模式看似只是一个微不足道的模式，可能仅在某些功能上使用起来比较聪明，但实际上它的作用远不止于此。你可以将这单一模式贯穿整个大型应用程序，作为在整个应用中分发和组织数据和功能的唯一方式。
+
+你的应用可以拥有数十个位于不同层级、相互叠加工作的上下文，为应用的某部分或整体提供全局和局部功能。比如，你可以在一个上下文中管理用户授权信息（包括当前用户信息）以及登录和登出方法；在另一个上下文中存放应用数据；还可以在第三个上下文中管理控制 UI 的数据。
+
+如果使用得当，这个模式将成为你 React 工具箱中最强大的工具之一，因为它几乎适用于所有类型的应用。在后续几章中，当我们构建更复杂的应用时，你会多次看到这个模式的使用。Provider 模式极其通用，具有足够的灵活性以适应任何场景，同时又足够可定制，能够满足多种架构需求。
+
+## 2.2 组合模式（The Composite pattern  ）
+
+在本节中，我们将深入探讨 React 中的复合组件（composite components），揭示它们如何帮助我们构建可扩展且易于维护的用户界面。你可以在图 2.5 中看到复合模式的高层概览。
+
+
+
+作为一个关键案例，我们将研究单选按钮组（radio group）组件的演进过程。这个例子将展示它从单一组件发展为复合结构的过程，并突出每个阶段所面临的挑战与带来的好处。单选按钮组从一个简单的 UI 元素开始，逐渐变得复杂，是展示复合组件需求与应用的一个理想示例。以下列表详细说明了我们在探索该模式的优点和用例时将经历的步骤：
+
+
+
+到本节结束时，你将对 React 中的复合组件有一个全面的理解，并掌握重构和优化自己应用的知识。单选按钮组的示例将为你提供一个蓝图，帮助你识别何时以及如何从单一组件过渡到复合组件，从而提升应用的可扩展性以及你的开发效率。
+
+### 2.2.1 简单的开端
+
+### 2.2.2 复杂性增加
+
+总结这段新代码，我们发现自己正处在一个功能丰富但已濒临复杂边缘的领域中。每一个选项如今都自成一个包含众多属性和条件的小世界，为 RadioGroup 带来了其独特的风格。曾经简洁明了的组件已经演变为一个更加动态的实体，能够处理图标、受欢迎程度指示器、附加费用，甚至还有条件详情。
+
+尽管该组件能够应对这种日益增长的复杂性，但它也在进行着一种平衡。JSX 的简洁性被丰富的 JavaScript 逻辑所取代——组件的个性与特色大多不再体现在 JSX 本身，而是在定义选项的准备阶段就已经确定。这种从以 JSX 为主导的结构向以 JavaScript 逻辑为主的重心转移，体现了 React 灵活性的一个关键方面，但也凸显了在设计时需要谨慎权衡的重要性。作为开发者，我们必须不断在功能丰富性与代码清晰度、可维护性之间进行权衡。
+
+本质上，我们与 RadioGroup 组件共同经历的这一阶段，正是整个软件开发过程的一个缩影。它反映了**简洁与复杂之间的拉锯战，也体现了添加功能与保持代码清晰之间的持续权衡**。随着我们不断深入，对一种更结构化方法的需求——一种能够优雅应对复杂性的方式——变得越来越明显。而正是在这样的背景下，**复合组件（composite components）悄然登场，它们早已蓄势待发，准备为构建 React 组件引入一种全新的范式**。
+
+### 2.2.3 理想的 JSX 写法  
+
+如果我们不通过 JavaScript 数组来定义选项，而是将每个选项作为子组件传递给 RadioGroup，然后在这些子组件内部处理选项的所有复杂性呢？这样，我们就能回归到 React 中更理想的方式：**在 JSX 中（而非 JavaScript 中）处理结构、数据和内容**，这也是我们在 React 开发中通常采用的模式。  理想情况下，我们可以这样定义 RadioGroup：
+
+### 2.2.4 使用复合组件的实现方式
+
+你可能会思考该如何实现这个示例。有两点应该很明确：我们需要将信息从 RadioGroup 传递给每一个选项，同时还需要将信息从某个选项传递给其内部的详情组件（如果有的话）。  
+
+实现这些通信的方式有多种，但最简单的解决方案是为每条信息流使用一个 **React Context**。你可以在图 2.8 中看到所需的信息传递流程。
+
+
+
+ch02\radio-composite\src\radiogroup\RadioGroup.jsx
+
+```jsx
+import { useState } from "react";
+import { RadioGroupContext } from "./contexts";
+import { Option } from "./Option";
+import { Details } from "./Details";
+
+export function RadioGroup({ children, name, onChange }) {
+  const [selectedValue, setSelectedValue] = useState("");
+
+  const handleChange = (value) => {
+    setSelectedValue(value);
+    if (onChange) {
+      onChange(value);
+    }
+  };
+
+  const contextValue = {
+    name,
+    selectedValue,
+    onChange: handleChange,
+  };
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+      }}
+    >
+      <RadioGroupContext.Provider value={contextValue}>
+        {children}
+      </RadioGroupContext.Provider>
+    </div>
+  );
+}
+//将组成组件作为主组件的属性重新导出，这样我们只需一次导入即可使用整个单选组。
+RadioGroup.Option = Option;
+RadioGroup.Details = Details;
+```
+
+通过这段代码，我们现在定义了所有的组件，并且每个组件都比之前那个复杂示例中的单一组件要简单得多——在那个旧例中，单个组件承担了所有的职责。**组合模式（Composite Pattern）的美妙之处在于，它允许不同的功能模块像一支和谐的交响乐团一样协同工作：每个功能都封装在自己独立的组件中，却又能够无缝地共同运作。**这种模块化的设计方式不仅让代码更加直观、更易于管理，同时也提升了代码的可扩展性。在这种新的架构下，每个组件只负责单选组行为中的一个特定方面，我们从原本那种庞大而僵化的单体结构，转变为了一种灵活且可扩展的架构。
+
+在这个新模式中：**RadioGroup 扮演着指挥的角色**，通过上下文（Context）来协调数据与事件的流动；每个 **Option 和 Details 组件** 则各司其职，承担自己专注的职责；**RadioGroupContext 优雅地管理着选项之间共享的状态和行为**，确保用户获得连贯一致的体验；而 **RadioOptionContext 则提供了一个直接通向 Details 组件的通信通道**，使得我们能够根据选中状态动态渲染对应的内容。这种设计思路不仅清晰分离了关注点，还充分利用了 React 的组件化与上下文机制，实现了高内聚、低耦合的优质架构。
+
+最终得到的 **RadioGroup 组件** 不仅功能丰富，而且使用起来和扩展起来都非常愉快。这正体现了将复杂界面拆分为多个更小、更易管理的组件——每个组件都有明确职责——所带来的强大力量。这种方式不仅简化了开发和维护工作，还为更具创意和复杂性的 UI 设计打开了大门，同时还能保持代码库的整洁与易懂。从最初的混乱与困惑，到如今的清晰与优雅，这一转变过程充分展现了 **组合模式（Composite Pattern）** 在 React 开发中所具有的变革性力量。
+
+### 2.2.5 组合模式有多实用？
+
+组合模式乍看之下可能只是组织组件的一种结构性便利手段，但它在 React 开发中的实用性远不止于此。该模式不仅仅是一种编写更清晰代码的工具，更是构建可扩展、可维护应用程序的一项基础策略。在大规模应用中，组合模式可以成为管理复杂组件层级结构的关键，从而实现模块化、灵活的架构。
+
+试想你的应用程序是由一系列相互关联的组件构成的集合，每个组件都承担着特定的职责。借助组合模式，你可以通过以不同方式组合这些组件来构建复杂的用户界面，每个组件都像一块积木。例如，一个复杂的表单可以由各种输入组件、验证消息和控制按钮组成，它们各自独立定义，但却作为一个协调统一的整体协同工作。
+
+有些开发者可能更倾向于使用直接的父子关系或其他状态管理技术来组织组件结构。然而，组合模式提供了一种更高层次的抽象和灵活性，这是其他方法通常所缺乏的。通过将子组件与其父组件解耦，组合模式使得各个组件更易于复用，也更容易单独修改。
+
+当 UI 组件需要以多种方式进行复用和重组时，该模式便能大显身手，因而成为你 React 工具箱中不可或缺的利器。对于任何希望构建复杂、健壮的 Web 应用的 React 开发者来说，理解何时以及如何有效运用组合模式至关重要。
+
+## 2.3 概要模式（The Summary pattern  ）
+
+好的，让我们深入探讨第三个也是最后一个 React 设计模式：**概要模式（Summary Pattern）**。别被它看似简单的外表所迷惑；这个模式可是改变游戏规则的存在。它能让 React 组件更加简洁高效，尤其适用于 JSX return 语句之上的部分。可以把概要模式看作是一种巧妙的代码整理技巧，通过将逻辑封装进自定义 Hook 来让代码变得井井有条。使用这个模式，就像是为你的组件做了一次“整容手术”，让它看起来更精炼、更高级。而且，你的团队伙伴也会因此感谢你，因为这大大提升了协作的便捷性。
+
+接下来就到了有趣的部分。我们将通过两个示例来展示概要模式的强大与便利。首先，我们会看到**单个自定义 Hook 是如何在简化组件方面发挥奇效的**，让一切变得轻松愉快，就像周日的早晨一样惬意。这个例子将向你展示，一个精心设计的 Hook 是如何让你的组件在视觉和功能上都更上一层楼。
+
+接着，我们会进入一个更复杂的场景，其中会用到**两到三个自定义 Hook**。概要模式在这种复杂情况下展现出了它的真正实力。将逻辑拆分到多个 Hook 中，不仅能让你的组件结构更加清晰，还能带来更高的可复用性与灵活性，开启全新的开发体验。
+
+图 2.9 是你直观了解 **概要模式（Summary Pattern）** 如何将传统组件结构转变为更精致、更高效的视觉指南。这个模式就像是 React 组件的“前后对比图”——清晰展现了优化前后的差异。那么，让我们继续深入，看看这个看似简单的模式是如何对你的 React 开发产生深远影响的。
+
+<img src="React in Depth.assets/image-20250915121721244.png" alt="image-20250915121721244" style="zoom:50%;" />
+
+图 2.9 以一个简洁的图表展现了 **概要模式（Summary Pattern）** 的精髓。  在应用该模式之前，组件的结构通常是：在 JSX 渲染代码之前有一大段逻辑代码，然后紧接着是 JSX 部分。  而在应用概要模式之后，组件变得更加简洁：在 JSX 之前只保留少量关键代码，其余的逻辑都被抽离并封装进了一个专门为该组件定制的自定义 Hook 中。
+
+### 2.3.1 单个自定义 Hook
+
+### 2.3.2 更多复杂度带来更好效果
+
+让我们来看一个更复杂的组件，它依赖更多内容，并使用了更多的常规 Hook。这次，我们要构建一个用户资料组件；用户可以查看和编辑自己的用户数据，还可以更新他们的偏好设置（例如主题和通知）。最终效果如图 2.10 所示。（请想象它看起来很美观，带有一些专业的样式。）
+
+
+
+这个组件短多了！我们将组件文件的行数从 58 行减少到了 34 行（忽略空行）。虽然我们确实增加了一个额外的文件，因此总行数有所上升，但每个文件都更短小精悍，功能单一明确——这是一个巨大的改进，也让组件更加清晰整洁。最棒的是，如果你是一位经验丰富的开发者，你甚至可能都不需要查看 useUserProfile 这个 Hook 的内部实现，因为根据它的返回值以及这些返回值的使用方式，你就能一眼明白它的作用——在代码审查的拉取请求中，这简直就是“LGTM”（Looks Good To Me，即“我觉得没问题”）的典范！
+
+### 2.3.3 需要多个 Hook
+
+
+
+### 2.3.4 汇总模式有多实用？
+
+总结来说，**汇总模式（Summary pattern）**因其能够简化和组织 React 组件而脱颖而出。通过探索其在单个或多个自定义 Hook 中的应用，我们可以看到，这种模式是提升代码清晰度和可维护性的关键手段。
+
+该模式的强大之处在于其灵活性与可扩展性。无论是通过一个简单的 Hook 来简化组件，还是协调多个 Hook 来应对更复杂的场景，它都能为管理组件逻辑提供量身定制的解决方案。这一模式不仅让代码更加简洁，还培养了复用性思维，使其在需要高度一致性的更大规模项目中显得尤为宝贵。
+
+简而言之，汇总模式或许并不张扬，但它对创建高效、易管理的 React 应用所做出的贡献是不可否认的。它体现了这样一个原则：真正有效的解决方案，往往就藏在简洁与合理组织之中。
 
 ## 总结
 
@@ -712,9 +1191,39 @@ Cannot assign to 'current' because it is a read-only property.
 
 ### 6.1.4 为 effects  添加类型
 
+副作用（Effects）的类型定义非常简单，因为副作用本质上是一个不接收任何参数、且返回一个函数或什么都不返回的函数。所有的副作用 Hook 都不需要传入任何类型参数，因为实际上永远用不到：
+
+```tsx
+useEffect(() => {
+  // 在这里编写副作用逻辑 —— 任何地方都不需要显式声明类型！
+}, []);
+```
+
+在 TypeScript 和 JavaScript 中，你可以以完全相同的方式使用 `useEffect` 和 `useLayoutEffect`。唯一需要注意的与类型相关的事情是：**副作用函数只允许返回 `undefined` 或一个函数（即清理函数）**。如果你返回了其他任何值，TypeScript 就会提示你出错了。
+
+假设我们有一个定时器组件，当定时器处于运行状态时，该组件会通过一个副作用（Effect）来启动一个定时器（interval）。在常规的 JavaScript 中，你可能会这样编写代码：
 
 
-### 6.1.5 Typing reducers  
+
+
+
+### 6.1.5 为 reducers  添加类型
+
+一个行为良好的 Reducer 很容易进行类型定义，因为它的结构非常清晰。`useReducer` 这个 Hook 的类型声明也直接遵循 Reducer 的结构，逻辑上非常直观。不过，对于泛型（generic）Reducer 而言，需要一个小技巧，因为 `useReducer` 在某些情况下会“忘记”泛型参数。
+
+> **注意**：在 React 19 中，这个问题已经修复！你不再需要任何小技巧，即使在使用泛型时，为 `useReducer` 添加类型提示也不是必须的。
+
+假设我们正着手开发一款革命性的音乐流媒体应用，目标是向全球用户提供数百万首歌曲。作为我们应用的核心功能之一，我们希望赋予用户创建个人音乐播放列表的能力，让他们能够将自己喜爱的曲目整理成个性化的歌单。打造无缝的用户体验至关重要：用户应该能够轻松地重新排列歌单中歌曲的顺序，把最喜欢的曲目放到最前面，或者根据自己的喜好将其他歌曲移到后面。
+
+为了实现这一功能，我们需要在应用程序的前端管理这些播放列表的状态。与其在每个组件或场景中都重新造轮子，不如创建一个专门用于管理可重排序列表的自定义 Hook，这将极为有益。这个 Hook 会封装移动歌曲（上移、下移或移动到播放列表中特定位置）所需的逻辑，从而确保整个应用中用户体验的一致性和高效性。通过构建这样一个我们称之为 useReorderable 的 Hook，我们可以让应用离为用户提供无与伦比的音乐整理体验更近一步。
+
+我们完全可以专门为播放列表数组中的歌曲项创建这个 Hook 来实现重排序，但为什么不将它设计为泛型的呢？这样它就可以对任意类型元素的列表进行重排序了。我们就这么做吧。首先，我们定义 Reducer 的状态，也就是元素列表。
+
+```tsx
+type State<T> = T[];
+```
+
+接下来，我们需要将操作定义为可辨识联合类型（discriminated union）。
 
 ```typescript
 export type Action =
@@ -747,9 +1256,56 @@ export type ActionType = Action["type"];
 - `Action["type"]` 是一个索引类型查询，它提取 `Action` 类型中所有成员的 `type` 属性的值。
 - `ActionType` 是这些 `type` 属性值的联合类型，即 `"up" | "down" | "first" | "last"`。
 
-### 6.1.6 Typing memoization hooks  
+### 6.1.6 类型化记忆化（Memoization）Hooks  
+
+React 提供了三个用于记忆化的 Hooks，但从 TypeScript 的角度来看，其中只有 useCallback 是比较值得关注的。useMemo 和 useDeferredValue 在 TypeScript 中的类型使用方式与在纯 JavaScript 中几乎完全一致。
 
 `useDeferredValue` 是 React 18 引入的一个 Hook，用于优化用户体验，特别是在处理大量数据或高频率更新的场景中。`useDeferredValue` 允许你延迟某些计算或渲染，从而让更重要的更新优先处理。
+
+### 6.1.7 为其余的 Hooks 添加类型
+
+React 中的其他 Hooks 使用频率较低，从类型的角度来看，它们要么极其简单，要么相当复杂，因此我们暂时跳过它们。在极少数情况下，如果你确实需要在 TypeScript 项目中使用它们，可以查阅 React 官方文档，通常你应该能够理解并正确地为它们添加类型。
+
+## 6.2 泛型分页：一个示例
+
+到目前为止，我们已经看到了大量使用泛型来让函数更加通用的例子。Hooks 中也经常用到泛型。但组件本质上也是函数，那么组件是否也可以做成泛型的呢？当然可以。
+
+为了通过使用泛型组件来构建一个实用的 React 应用程序，我们将创建一个包含多个组件的应用，所以它并不是完全简单的。要完全理解其中的原理需要付出更多努力，但最终的结果绝对值得。
+
+我们想要创建一个组件，它可以显示一个项目列表，如果项目数量很多，就提供分页功能。我们希望每页显示四个项目，如果超过四个，就在组件下方显示一些小数字，让用户可以点击跳转到第 1 页、第 2 页等结果页面（如图 6.3 所示）。
+
+
+
+请注意，这段代码比较复杂。如果你没有完全理解它，也没关系——这里涉及的内容很多。这个示例的目的只是为了启发你去进一步探索和学习。正如我之前提到的，我甚至可以把整本书都用来讲 TypeScript，那样也会同样详尽且全面。
+
+而且，这其中的深度远不止于此。TypeScript 提供了一些非常强大的功能，允许你在类型系统中使用一种类似编程的语法来定义类型，从而实现动态、可扩展的类型系统。请记住，TypeScript 最终并不会在浏览器中运行；它只会在你的编辑器和编译器中运行，以确保你的代码能够正确执行。TypeScript 能做到的事情，以及它能为你做的事情，真的非常令人惊叹。
+
+像 Paginable 这样的泛型组件有一个小陷阱：React 核心 API 中的两个内置函数与泛型组件配合得不太好，你需要稍微绕一下来解决这个问题（或者寄希望于它在未来的版本中被修复，而这很可能会发生）。
+
+如果你对泛型组件进行 **memo 化（记忆化）** 或者 **转发引用（forwardRef）**，该组件的类型参数将会被“遗忘”。遗憾的是，我们必须自己手动修复这个问题，才能恢复我们想要的泛型功能。
+
+### 6.2.1 向泛型组件转发引用
+
+问题在于，`forwardRef` 并不会返回一个与你传入的组件具有相同类型的组件。我们并不要求返回的类型完全一致，但仅仅因为我们想向组件传递引用，并不意味着我们想改变其他任何东西。
+
+有两种解决方案可供选择。第一种方案适用于一次性（或者可能两三次）的情况，但如果你有很多泛型组件，第二种方案可能是你更常用的方式：
+
+- 在应用 `forwardRef` 之后，将组件强制转换为正确的类型。
+
+- 在你的应用程序中，全局地扩展 React 的类型定义，以增强 `forwardRef` 的类型。
+
+为了进行类型转换（即类型断言），我们需要思考一个没有使用 `forwardRef` 的组件与使用了 `forwardRef` 的组件之间有何不同。唯一的区别在于：**带有 ref 的组件接收所有相同的属性（props），并返回相同的值，但它还额外接收一个 `ref` 属性，该属性的类型是指向特定元素类型的引用**。为了给这样一个函数（仍然带有泛型类型）进行类型标注，我们需要使用以下复杂的类型表达式：
+
+
+
+这段代码看起来有些笨重，主要是因为它过于复杂，而且似乎凭空出现。但尽管代码写法看起来不太友好，它确实能正常工作。如果你需要多次为代码添加这种类型断言，就会变得有点烦人，而且你可能还会忘记怎么写。此外，对于新加入项目的开发者来说，这样的代码也可能让人感到困惑，因此你应该加上注释，解释这里到底发生了什么。
+
+除了在每个使用了 `forwardRef` 的泛型组件中都手动添加这种类型断言之外，还有另一种替代方案，那就是**扩展 React 命名空间的类型定义（即类型增强，type augmentation）**。是的，我们是可以这么做的。我们可以重新定义外部库（包括 React）的类型，因为我们“比 React 更了解自己的使用场景”。React 团队在类型定义上可能犯了一个小错误，而我们有能力、也允许去修正它。
+
+要进行类型增强，我们需要**在源码树的某个位置创建一个 TypeScript 类型定义文件（*.d.ts），比如 `<root>/react-augmented.d.ts`**。注意，我们只需要全局做一次这样的操作，之后它就应该对所有组件都生效了。
+
+在这个文件中，我们需要包含如下内容：（接下来应该会展示具体的类型增强代码）
+
 
 ### 6.2.2 Memoizing a generic component  
 
