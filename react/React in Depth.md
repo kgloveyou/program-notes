@@ -28,7 +28,7 @@ P16
 
 就像实体建筑中的蓝图和承重结构一样，如图 2.1 所示，这些模式为构建稳定且可扩展的 React 项目提供了基础框架。
 
-## 2.1 The Provider pattern  
+## 2.1 Provider 模式（The Provider pattern  ）
 
 在本节中，我们将深入探讨 **Provider 模式**，这一模式是在你已经掌握的 React Context 知识基础上进一步构建的。我们会学习如何利用 Provider 模式来管理多个相关的值，例如状态值及其对应的状态设置函数（setters）。这种做法（如图 2.2 所示）相比基础的 React Context 使用方式是一个重要的进阶，它能在状态管理方面提供更强的灵活性和更高的效率。
 
