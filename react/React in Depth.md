@@ -298,7 +298,7 @@ export default function App() {
 
 ### 2.1.2 创建一个专用的 Provider 组件
 
-列表 2.1 中的深色模式应用的前一版是完全可用的，但我们还可以做得更好一些。主应用组件目前包含了状态值、切换函数以及 Context Provider，显得有些臃肿，所以我们来清理一下代码结构。我们将不再使用之前的那种写法，而是进行如下优化……
+列表 2.1 中的深色模式应用的前一版是完全可用的，但我们还可以做得更好一些。主应用组件目前包含了状态值、切换函数以及 Context Provider，显得有些臃肿，所以我们来清理一下代码结构。我们将不再使用之前的那种写法，
 
 ```jsx
 export default function App() {
@@ -313,7 +313,7 @@ export default function App() {
 }
 ```
 
-假设我们有如下代码：
+而是进行如下优化……，假设我们有如下代码：
 
 ```jsx
 export default function App() {
@@ -551,11 +551,25 @@ Provider 模式看似只是一个微不足道的模式，可能仅在某些功�
 
 在本节中，我们将深入探讨 React 中的复合组件（composite components），揭示它们如何帮助我们构建可扩展且易于维护的用户界面。你可以在图 2.5 中看到复合模式的高层概览。
 
+<img src="React in Depth.assets/image-20251010122328576.png" alt="image-20251010122328576" style="zoom:50%;" />
+
+图2.5 组合模式的高层概览。从外部看，这些组件就像是通过组合组件的根节点进行命名空间划分一样被使用（虚线箭头所示），但在内部，它们就是常规组件，通过一个或多个上下文进行通信（点线箭头所示）。
+
 
 
 作为一个关键案例，我们将研究单选按钮组（radio group）组件的演进过程。这个例子将展示它从单一组件发展为复合结构的过程，并突出每个阶段所面临的挑战与带来的好处。单选按钮组从一个简单的 UI 元素开始，逐渐变得复杂，是展示复合组件需求与应用的一个理想示例。以下列表详细说明了我们在探索该模式的优点和用例时将经历的步骤：
 
+- 单组件起步（简单直接）
+  最初将单选按钮组实现为单一组件，展现这种方式的简洁直观。此阶段示例虽体现初期开发的便利性，但也埋下了随着复杂度上升可能引发问题的伏笔。
 
+- 复杂度攀升的挑战
+  当为单选按钮组逐步添加功能与需求时，单组件模式的局限性逐渐暴露。这一阶段演示了原本简单的组件如何变得臃肿，最终形成难以维护的膨胀代码库。
+
+- 理想方案（模块化组合组件）
+  在明确单选按钮组的复杂需求后，我们探索模块化的组合结构方案。该方法将单选按钮组拆解为多个专注的小型组件，呈现如何通过这种设计获得更清晰、易读且易于维护的代码。
+
+- 组合组件的实践实现
+  最后深入探讨组合组件的具体实现过程（以单选按钮组为案例）。详细说明如何在组合架构中有效管理状态、属性与上下文，确保每个组件保持专注性与可维护性。单选按钮组的改造过程，生动诠释了该方案在实际场景中的优势。
 
 到本节结束时，你将对 React 中的复合组件有一个全面的理解，并掌握重构和优化自己应用的知识。单选按钮组的示例将为你提供一个蓝图，帮助你识别何时以及如何从单一组件过渡到复合组件，从而提升应用的可扩展性以及你的开发效率。
 
@@ -573,13 +587,25 @@ Provider 模式看似只是一个微不足道的模式，可能仅在某些功�
 
 如果我们不通过 JavaScript 数组来定义选项，而是将每个选项作为子组件传递给 RadioGroup，然后在这些子组件内部处理选项的所有复杂性呢？这样，我们就能回归到 React 中更理想的方式：**在 JSX 中（而非 JavaScript 中）处理结构、数据和内容**，这也是我们在 React 开发中通常采用的模式。  理想情况下，我们可以这样定义 RadioGroup：
 
+```jsx
+<RadioGroup name="bread" onChange={onChange("bread")}>
+    <RadioGroup.Option value="bagel">Bagel</RadioGroup.Option>
+    <RadioGroup.Option value="roll">Roll</RadioGroup.Option>
+    <RadioGroup.Option value="croissant" isPopular>
+        Croissant
+    </RadioGroup.Option>
+</RadioGroup>
+```
+
+
+
 ### 2.2.4 使用复合组件的实现方式
 
 你可能会思考该如何实现这个示例。有两点应该很明确：我们需要将信息从 RadioGroup 传递给每一个选项，同时还需要将信息从某个选项传递给其内部的详情组件（如果有的话）。  
 
 实现这些通信的方式有多种，但最简单的解决方案是为每条信息流使用一个 **React Context**。你可以在图 2.8 中看到所需的信息传递流程。
 
-
+图2.8 我们需要将信息从单选按钮组传递到选项（option），包括输入名称（input name）、当前选中的值（currently selected value）以及选项被选中时调用的回调函数（callback to invoke when the option is selected），这是通过组提供者（group provider）实现的。如果存在详情元素（details element），我们还需要将一些信息从选项传递到详情元素——即该选项是否被选中（whether it is selected），这是通过选项提供者（option provider）实现的。
 
 ch02\radio-composite\src\radiogroup\RadioGroup.jsx
 
@@ -656,15 +682,150 @@ RadioGroup.Details = Details;
 
 ### 2.3.1 单个自定义 Hook
 
+我们将从一个你可能熟悉的组件开始：前几页列表2.13中的RadioGroup组件。首先，让我们聚焦于return语句之前的组件部分：
+
+```javascript
+const [selectedValue, setSelectedValue] = useState("");
+const handleChange = (value) => {
+  setSelectedValue(value);
+  if (onChange) {
+    onChange(value);
+  }
+};
+const contextValue = {
+  name,
+  selectedValue,
+  onChange: handleChange,
+};
+```
+
+这段代码量不大，但还可以更精简。对于JSX来说，我们唯一需要的就是最后的contextValue对象。因此，如果我们创建一个自定义hook，从中只需要获取这个对象即可。所以我们可以将代码重写为：
+
+```javascript
+const contextValue = useContextValue({ name, onChange });
+```
+
+注意，我们需要传入name和onChange这两个属性，因为它们会被上下文使用。没错，我们可以轻松地创建这样一个自定义hook，如下所示：
+
+```javascript
+import { useState } from "react";
+export function useContextValue({ name, onChange }) {
+  const [selectedValue, setSelectedValue] = useState("");
+  const handleChange = (value) => {
+    setSelectedValue(value);
+    if (onChange) {
+      onChange(value);
+    }
+  };
+  return {
+    name,
+    selectedValue,
+    onChange: handleChange,
+  };
+}
+```
+
+我们实际上只是将这些代码行移到了一个新函数中。仅此而已。但结果是得到了一个更加简洁的RadioGroup组件，具体如下一节列表所示。
+
+ch02\radio-summary\src\radiogroup\RadioGroup.jsx
+
+```jsx
+import { RadioGroupContext } from "./contexts";
+import { Option } from "./Option";
+import { Details } from "./Details";
+import { useContextValue } from "./useContextValue";
+
+export function RadioGroup({ children, name, onChange }) {
+  const contextValue = useContextValue({ name, onChange });
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+      }}
+    >
+      <RadioGroupContext.Provider value={contextValue}>
+        {children}
+      </RadioGroupContext.Provider>
+    </div>
+  );
+}
+
+RadioGroup.Option = Option;
+RadioGroup.Details = Details;
+```
+
+就是这样。这个示例看起来简单得有些误导人，确实如此。但只需这一处小小的改动，你的代码就会显得专业得多。相信我！
+
+需要注意的是，我们不仅移除了组件内部的几行代码。由于这个文件不再需要useState，我们还去掉了一个导入项。是的，我们确实为自定义hook添加了一个新的导入，但通常情况下，我们减少的导入项往往不止一个。
+
 ### 2.3.2 更多复杂度带来更好效果
 
 让我们来看一个更复杂的组件，它依赖更多内容，并使用了更多的常规 Hook。这次，我们要构建一个用户资料组件；用户可以查看和编辑自己的用户数据，还可以更新他们的偏好设置（例如主题和通知）。最终效果如图 2.10 所示。（请想象它看起来很美观，带有一些专业的样式。）
 
+要实现这个页面，我们使用了一个名为useAPI的共享钩子来访问API功能。同时，我们还准备了用于渲染用户数据、用户数据编辑表单和用户偏好设置的组件（这些组件的命名同样直观易懂）。接下来，让我们看看这个组件在常规设置中的实现方式。我们会把所有基础钩子和自定义钩子都直接放在组件内部。
 
+
+
+现在，让我们把所有位于（第一个）return语句之前的逻辑抽离到一个自定义钩子中。
+
+ch02\user-summary\src\useUserProfile.js
+
+ch02\user-summary\src\CompactUserProfile.jsx
+
+```jsx
+import { useUserProfile } from "./useUserProfile";
+import { UserDataForm } from "./UserDataForm";
+import { UserDetails } from "./UserDetails";
+import { UserPreferences } from "./UserPreferences";
+
+export function CompactUserProfile({ userId }) {
+  const {
+    userData,
+    editMode,
+    userPreferences,
+    toggleEditMode,
+    updatePreferences,
+  } = useUserProfile(userId);
+
+  if (!userData) return <div>Loading...</div>;
+
+  return (
+    <div>
+      <h1>User Profile</h1>
+      {editMode ? (
+        <UserDataForm
+          userData={userData}
+          onSave={toggleEditMode} // Assuming onSave is the prop for handling save action
+        />
+      ) : (
+        <UserDetails userData={userData} />
+      )}
+      <button onClick={toggleEditMode}>
+        {editMode ? "Save Changes" : "Edit Profile"}
+      </button>
+      <UserPreferences
+        preferences={userPreferences}
+        onPreferencesChange={updatePreferences}
+      />
+    </div>
+  );
+}
+```
 
 这个组件短多了！我们将组件文件的行数从 58 行减少到了 34 行（忽略空行）。虽然我们确实增加了一个额外的文件，因此总行数有所上升，但每个文件都更短小精悍，功能单一明确——这是一个巨大的改进，也让组件更加清晰整洁。最棒的是，如果你是一位经验丰富的开发者，你甚至可能都不需要查看 useUserProfile 这个 Hook 的内部实现，因为根据它的返回值以及这些返回值的使用方式，你就能一眼明白它的作用——在代码审查的拉取请求中，这简直就是“LGTM”（Looks Good To Me，即“我觉得没问题”）的典范！
 
 ### 2.3.3 需要多个 Hook
+
+
+
+这里的代码并不复杂，大多数开发者都会按照类似列表2.18的方式编写这个组件。但我们还能做得更好：在return语句之前有20多行逻辑代码，其实可以大幅精简以提升代码可读性！
+
+虽然我们可以将所有逻辑都提取到一个自定义Hook中（技术上完全可行），但这些逻辑实际上可以分为两组：一组负责任务列表以及其中的添加和切换任务操作；另一组则处理新增任务表单及其所需的内部逻辑——包括更新表单状态和处理提交操作。
+
+这两部分职责互不重叠，这正是将它们拆分为两个独立Hook的最佳场景。不过它们也不会完全分离，因为处理表单的Hook需要知道任务列表Hook中的addTask函数。下面的代码展示了如何将任务列表逻辑提取到单独的Hook中。
 
 
 
