@@ -123,3 +123,43 @@ Promise.race([promise1, promise2]).then((value) => {
 
 ```
 
+# 使用 for-await-of 循环
+
+```js
+/**
+ * @fileoverview Understanding JavaScript Promises Example 04-15
+ * @author Nicholas C. Zakas
+ * @see https://leanpub.com/understanding-javascript-promises
+ */
+
+const promise1 = Promise.resolve(1);
+const promise2 = Promise.resolve(2);
+const promise3 = Promise.resolve(3);
+
+for await (const value of [promise1, promise2, promise3]) {
+    console.log(value);
+}
+```
+
+# 顶层 Await 表达式
+
+```js
+/**
+ * @fileoverview Understanding JavaScript Promises Example 04-19
+ * @author Nicholas C. Zakas
+ * @see https://leanpub.com/understanding-javascript-promises
+ */
+
+// static import
+import something from "./file.js";
+
+// dynamic import
+const filename = "./another-file.js";
+const somethingElse = await import(filename);
+```
+
+使用顶层 await，你可以动态加载模块，同时保留静态加载的模块。（动态加载模块还允许你动态构造模块路径，这是静态导入无法做到的。）本例通过静态导入和动态导入对比两者的差异。
+
+当 JavaScript 引擎遇到顶层 await 时，会暂停当前模块的执行，直到 Promise 完成（settled）。如果被暂停模块的父模块还有其他静态导入需要处理，这些静态导入会继续执行，即使它的兄弟模块（使用了顶层 await 的模块）处于暂停状态。此时，兄弟模块的加载顺序无法保证，但在大多数情况下，这个顺序并不影响功能。
+
+> 顶层 await 表达式不能在 JavaScript 脚本中使用。为了使用顶层 await，你必须通过 import 或 <script type="module"> 来加载你的 JavaScript 代码。
