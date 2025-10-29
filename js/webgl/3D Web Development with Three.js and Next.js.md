@@ -8,6 +8,7 @@ https://github.com/bpbpublications/3D-Web-Development-with-Three.js-and-Next.js
 
 ```bash
 npm install --save three vite lil-gui
+npm install three @react-spring/three
 ```
 
 
@@ -1102,3 +1103,564 @@ yarn add @react-three/drei
 
 ### 将 Three.js 概念转换为 React 组件
 我们从基础开始，首先了解 canvas 对象。正如前几章所述，过去需要手动调整场景与渲染器的画布尺寸匹配。而使用 R3F 库可以节省时间——它会自动采用父元素的尺寸并实现 100% 填充。
+
+## 将 Three.js 场景集成到 Next.js 页面中
+
+### 将场景连接到 Next.js 页面
+
+我们已获得不错的效果，能在页面上渲染多个画布元素。但从优化角度看，这加重了浏览器负担。有一种方法可以用一个渲染器处理多个对象，Drei 库将这种可能称为“传送门”（Portals）。多个对象可用作“传送门”。在本例中，我们将采用 Views 组件。
+
+Views 组件利用 `gl.scissor`（原生 WebGL 函数）将视口分割成多个部分。我们将一个视图与一个跟踪 div 关联起来，该 div 随后管理视口的位置和边界。这种方法能利用单个高效画布创建多个视图。这些视图能无缝跟踪其对应的元素，适应滚动、调整大小等情况。
+
+建议将事件系统连接重新建立到父元素，该父元素包含画布和 HTML 内容。这既能保证画布和 HTML 内容的可访问性与可选择性，还允许挂载控件或进行更深入的视图集成。
+
+使用 Views 组件可以将多个独立场景连接到页面。在页面上，我们会看到画布包含所有页面内容，但不同位置只会加载场景的一小部分。 
+
+这样我们就能创建一个包含多个 3D 元素的页面，或者为一个 3D 元素设置多个相机视角。
+
+正如前文所述，Views 组件会使用 `gl.scissor` 方法。Drei 库中有一个包可以实现这一功能，名为 `tunnel-rat`。`tunnel-rat` 包的逻辑和隧道的原理很相似，有入口（IN）和出口（OUT）。在这个库中，它可以有多个入口和一个出口，这意味着我们可以为每个模型打开一个"隧道"，最后将它们渲染到一个地方。
+
+在进行代码重构时，首先需要修改的是 `layout.js` 文件。我们需要用类似下面的组件包裹子元素：
+```jsx
+<body>
+  <CanvasLayout>
+    {children}
+  </CanvasLayout>
+</body>
+```
+
+## 使用 R3F 操纵 3D 对象
+
+对 3D 对象的操纵是通过一个叫做 Raycaster 的对象实现的（前几章已经学习过）。由于我们现在处于 React 环境中，这些操作将更容易实现。
+
+### React 环境中的基本对象交互
+
+当鼠标悬停在页面上的盒子上时，我们会改变材质的颜色。我们将材质的颜色与一个变量关联起来，这个变量会在鼠标事件发生时改变，就像在任何 React 组件中一样。按照代码清单 10.8 为 3D 对象添加交互操作：
+
+```jsx
+'use client';
+import { Model, General } from "@/components/Model";
+import { useState, useRef } from 'react';
+import { useSpring, animated, config } from "@react-spring/three";
+
+export default function Block({ reverse }) {
+  const ref = useRef();
+  const [hover, setHover] = useState(false);
+  const [clicked, click] = useState(false);
+  const { scale } = useSpring({
+    scale: clicked ? 1.5 : 1,
+    config: config.wobbly
+  });
+
+  const pointerAction = (e, state) => {
+    e.stopPropagation(); 
+    setHover(state);
+  }
+
+  return (
+    <div className={`my-6 flex items-center ${reverse ? 'flex-row-reverse' : ''}`}>
+        <div>
+            <h1>Lorem ipsum Header</h1>
+            <p>
+                Lorem ipsum text Lorem ipsum text
+                Lorem ipsum text Lorem ipsum text
+                Lorem ipsum text Lorem ipsum text
+            </p>
+        </div>
+        <div className='w-full text-center md:w-3/5'>
+            scale: {clicked ? 1 : 0}
+            <Model orbit className='flex h-96 w-full flex-col items-center justify-center'>
+                <General />
+                <animated.mesh
+                    scale={scale}
+                    position={[-1.2, 0, 0]}
+                    rotation={[Math.PI / 2, 0, 0]}
+                    onClick={() => click(!clicked)}
+                    ref={ref}
+                    onPointerOver={(e) => pointerAction(e, true)}
+                    onPointerOut={(e) =>  pointerAction(e, false)}
+                >
+                    <boxGeometry args={[4, 4, 4]} />
+                    <meshStandardMaterial color={hover ? 'blue' : 'orange'} />
+                </animated.mesh>
+            </Model>
+        </div>
+    </div>
+  )
+};
+```
+
+### 使用 R3F 实现动画与补间效果
+
+不建议在隧道（tunnels）中使用动画，因为这可能导致严重的性能问题。隧道的严格用途是渲染页面内的元素，但复杂的交互操作会使页面过载——最终我们还是需要通过隧道传递动画数据。
+
+安装动画包的命令：
+
+```bash
+npm install three @react-spring/three
+```
+
+或
+
+```bash
+yarn add three @react-spring/three
+```
+
+要尝试动画效果，我们将在 Next.js 中创建一个新页面，命名为 basic-animations。创建步骤：新建 basic-animations 文件夹，并在其中放置 page.js 文件。基础动画示例请参见代码清单 13.9。
+
+```jsx
+'use client';
+import { useState, useRef } from 'react';
+import { Canvas, useFrame } from "@react-three/fiber";
+import { useSpring, animated, config } from "@react-spring/three";
+
+function RotatingBox() {
+    const mesh = useRef();
+    const [active, setActive] = useState(false);
+    const [y, setY] = useState(0);
+  
+    const { scale } = useSpring({
+      scale: active ? 1.5 : 1,
+      config: config.wobbly,
+    });
+  
+    useFrame(({ clock }) => {
+      const a = clock.getElapsedTime();
+      mesh.current.rotation.x = a;
+    });
+
+    // setInterval(() => {
+    //     setY(Date.now()/1000);
+    // }, 1);
+  
+    return (
+      <animated.mesh
+        scale={scale}
+        onClick={() => { setActive(!active); console.log(active)}}
+        ref={mesh}
+        rotation={[1, y, 4]}
+      >
+        <boxGeometry args={[2, 2, 2]} />
+        <meshPhongMaterial color="orange" />
+      </animated.mesh>
+    );
+  }
+
+export default function BasicAnimations() {
+  return (
+    <main className="max-w-[1000px] m-auto">
+     <div className="App">
+      <Canvas>
+        <RotatingBox />
+        <ambientLight intensity={0.1} />
+        <directionalLight />
+      </Canvas>
+    </div>
+    </main>
+  )
+}
+```
+
+以下是重要代码部分，这是屏幕上盒子的旋转钩子：
+
+```jsx
+    useFrame(({ clock }) => {
+      const a = clock.getElapsedTime();
+      mesh.current.rotation.x = a;
+    });
+```
+
+此钩子只能用在作为 Canvas 子组件的独立组件中，否则会导致问题。这就是不能在隧道中使用此动画的原因——因为组件是在 Canvas 外部渲染，然后通过隧道移入内部的。
+
+可以看到，另一个点击动画使用了 React Spring 库。该库可以自由使用，甚至在隧道中也可以（根据练习要求在上一页尝试）。
+
+动画技巧在于管理时间，你可以获取时间或连接至 ticks（根据需求而定）。具体技巧请查看代码清单 13.10。
+
+```jsx
+    setInterval(() => {
+        setY(Date.now()/1000);
+    }, 1);
+```
+
+可以看到盒子正在旋转。这种动画技巧同样适用于隧道，因为它不依赖于 Canvas 对象。
+
+## 上传和操作 3D 模型  
+
+在利用 Three.js 开发 Web 应用的创作过程中，我们并不总是使用形状基元。这里有一个任务：将 3D 模型上传到场景中并进行管理。  
+
+（运行代码，需要开启全局代理，不然有个资源文件访问不到）
+
+### 导入外部 3D 模型到场景  
+
+将 3D 模型导入场景有两种方式。第一种支持多种文件类型：GLTF、FBX 和 OBJ。我们以 *.gltf 文件为例尝试导入。为了做个示例，我们将创建一个新页面。对于这个新页面，我们需要创建一个名为 upload-model 的文件夹，其中必须包含一个 page.js 文件（这是 Next.js 的规则）。下载并将文件放入 public 文件夹。我们将我们的文件命名为 scene.gltf。按照代码清单 13.11 渲染上传的文件到屏幕上：
+
+```js
+'use client';
+import { Canvas, useLoader } from "@react-three/fiber";
+import { Environment, OrbitControls, useFBX } from "@react-three/drei";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { Suspense } from "react";
+import { useSpring, animated, config } from "@react-spring/three";
+import { useState, useRef } from 'react';
+
+const Model = () => {
+    const ref = useRef();
+    const [clicked, click] = useState(false);
+    const { scale } = useSpring({
+        scale: clicked ? 0.003 : 0.0005,
+        config: config.wobbly
+    });
+
+    const gltf = useLoader(GLTFLoader, "./scene.gltf");
+    return (
+      <>
+        <animated.mesh 
+            scale={scale} 
+            onClick={() => click(!clicked)}
+            ref={ref}
+        >
+            <primitive 
+                receiveShadow
+                castShadow
+                object={gltf.scene} 
+                />
+        </animated.mesh>
+      </>
+    );
+    // const fbx = useFBX('/room.fbx');
+    // return <animated.mesh 
+    //             onClick={() => click(!clicked)}
+    //             ref={ref}
+    //             scale={scale}><primitive object={fbx} /></animated.mesh>;
+  };
+
+export default function UploadModel() {
+  return (
+    <main className="w-full h-svh m-auto">
+      <Canvas>
+        <Suspense fallback={null}>
+                <Model />
+                <ambientLight intensity={0.1} />
+                <directionalLight />
+                <OrbitControls />
+                <Environment preset="city" background />
+        </Suspense>
+      </Canvas>
+    </main>
+  )
+}
+```
+
+这段代码中有几个重要注意事项：  
+● 在官方文档示例中，我们会看到直接使用 `<primitive />` 对象的情况。但如果不包裹在 `<mesh />` 内使用，将无法启用鼠标交互事件。  
+● `<Environment />` 对象是一个非常实用的工具，它能帮助我们为场景创建背景。本例中使用的是开箱即用的图片背景方案，但实际上你可以上传任意图片，甚至整个场景作为环境贴图。以下是其用法示例：
+
+### 操控与动画化导入的模型
+
+当场景中包含3D模型后，我们通常需要对它进行一些操控。运用我们在处理基础几何体时掌握的知识，这些操作同样适用于导入的模型文件。
+
+首先是集成轨道控制器（OrbitControls）。要实现更新，只需在Canvas组件中光源对象之后添加它，如下所示：
+```jsx
+<Model />
+<ambientLight intensity={0.1} />
+<directionalLight />
+<OrbitControls />
+<Environment preset="city" background />
+```
+这样配置后，我们就能通过鼠标旋转场景了。下一步是集成React Spring动画。为此，我们需要使用代码清单13.12中的代码来更新Model对象。
+
+项目重启后，我们就能像操作立方体那样点击该对象，从而平滑地放大网格模型的比例了。
+
+## 总结  
+本章深入探讨了 Next.js 与 Three.js 的融合应用。这两种技术能创造无限可能——无论是构建虚拟环境，还是打造交互式产品展示，Next.js 与 Three.js 的组合都能提供实现创意所需的工具与灵活性。  
+
+下一章将聚焦 Next.js 基础，涵盖文件约定、基于文件的路由系统、处理请求的中间件，以及用于创建无服务器端点的 API 路由等内容。
+
+## 要点总结
+● 辅助库几乎包含了我们在浏览器中创建干净、有创意的3D场景所需的一切，绝不能忽视它。
+● 有多种方法可以为场景添加动画，每种方法都有其优点和缺点。在React中，我们主要会使用弹簧动画，但如果我们需要使用tick动画，则需要对代码库进行组织以避免出现隧道效应。对于tick动画，最好避免出现隧道效应。 
+
+# 第14章 Next.js 基础教程
+
+## 简介
+
+## 结构
+
+## 目标
+
+## Next.js 基础
+
+### 文件约定
+
+### 路由
+
+### 中间件
+
+### API 路由
+
+## 结论
+
+## 需要记住的要点
+
+## 练习
+
+# 第16章 用户交互和控制
+
+## 实现交互式相机和对象控制
+
+### 相机控制和相机导航
+
+由于我们将使用外部 3D 对象，因此我们需要实现它们。我们可以使用上一章的指南将对象插入到场景中。在这里，我们将看到一种使用特殊 NPM 包的便捷实现方法。这个包名为gltfjsx可以从这个存储库中获取https://github.com/pmndrs/gltfjsx. 要使用它，我们需要npx命令，所以不需要手动安装；脚本会自动完成。该脚本支持可以从Blender等3D建模软件中获取的各种文件类型（。glb或。gltf). 这不是强制性的，我们仍然可以使用前面的章节作为手动插入3D对象的指南。
+
+要使用该脚本，请运行以下命令：
+
+```sh
+npx gltfjsx <PATH-TO-YOUR-FILE/FILE-NAME> --transform
+```
+
+脚本将自动生成组件。脚本将在同一位置生成一个新的模型对象，其中包含一个标准化的坐标对象。我们可以重命名它或保持原样。我们将把主要对象组件命名为BoxModel.jsx (代码清单 16.6) 并将其放入 components 文件夹。最后，components 文件夹应该看起来像图 16.4:
+
+
+
+**运行注意**
+
+```sh
+npm install @react-three/a11y
+```
+
+需要开启全局代理
+
+### 对象操作与变换
+
+### 交互式UI元素
+
+## 可访问性和包容性的用户交互与控制
+
+## 使用 React Spring 添加过渡效果
+
+```bash
+npm install three @react-spring/three 
+
+#or yarn add three @react-spring/three
+```
+
+# 第17章 优化和性能考虑
+
+运行注意：
+
+```bash
+npm install three @types/three @react-three/fiber@^8.0.0
+npm install @react-spring/three
+npm install @react-three/drei@^9.0.0
+npm install @react-three/offscreen
+```
+
+
+
+## 性能分析和调试
+
+### 性能监控工具
+
+#### Stats
+
+首先，我们可以使用 Drei 插件中已经存在的一个辅助工具，我们之前用它来为 React Fiber 提供辅助工具。这个辅助工具名为 Stats。Stats 辅助工具是一个组件，它将创建一个带有性能信息的屏幕特殊布局。为了看到它的实际效果，我们将创建一个新页面。
+
+在这个页面上，我们必须创建一个用于测量性能的对象。如果我们只是将该对象放在页面上，它不会产生太多性能信息。
+
+为了检查此功能，我们将代码清单 17.1 中的代码添加到新创建的页面中。请确保您已完成第 13 章“Next.js 和 Three.js 集成简介”中的所有安装。在第 13 章中，您将了解如何安装 Drei 和 Fiber 包：
+
+#### R3-Perf
+
+```bash
+npm install r3f-perf --save-dev 
+
+#or yarn add install r3f-perf --save-dev
+```
+
+#### Spector.js
+
+另一个用于调试 WebGL 应用程序的有用工具是一个 Chrome（或 Firefox）扩展程序，Spector.js（https://chromewebstore.google.com/detail/denbgaamihkadbghdceggmchnflmhpmk）。
+
+这个扩展程序会录制画布，并提供所有所需的信息以及所有可能的截图。我们之前使用的性能工具也会创建画布，因此为了避免混淆，如果使用此扩展程序，则需要将它们从场景中移除。
+
+还需要考虑的一点是，这个工具与 React Three Fiber（R3F）或 Three.js 无关；它是一个 WebGL 调试工具，当我们在这一层面上发现可能存在问题时会使用它。结果屏幕的一个示例可以在图 17.3 中看到：
+
+## 应用程序性能
+
+### useMemo
+
+提高应用程序性能的第一个技术是使用useMemo钩子来初始化几何体。这种方法不仅可以节省一些内存，还可以帮助我们改变几何体本身，而无需在组件中硬性使用内存。
+
+下一个与 React 相关的更新将是将组件本身包装在React.memo 中功能。如果我们在属性或组件本身中没有做任何更改，这也可以使我们免于重新渲染操作。
+
+当useMemoReact中的hook可以通过避免不必要的重新计算来提高性能，但它不是一个万能的解决方案，尤其是在使用Three.js应用程序的上下文中@react-three/fiber.
+
+在 Three.js 中，场景通常依赖于持续更新和动态值。动画、用户交互和基于物理的变化通常发生在每一帧。在这些情况下，过度使用 useMemo 可能会导致代码混乱，而没有任何有意义的性能提升。
+
+想象一下，你正在构建一个粒子系统，其中每个粒子的位置每一帧都会根据速度、重力或用户交互而改变。如果你将粒子数据包装在useMemo认为这会优化系统，你会锁定数据并阻止它正确更新。里面的值useMemo只有当它们的依赖项发生变化时才会重新计算，这可能不会发生在每一帧。这会导致过时的值和错误的行为。
+
+此外，即使在不太动态的情况下，如果计算成本很低（比如设置一个简单的颜色或向量），记忆化它会增加不必要的复杂性，而没有明显的好处。React的渲染已经很快了；除非性能分析显示存在瓶颈，否则最好保持逻辑简单明了。
+
+useMemo最好将它保留给静态或半静态的值，例如几何定义、配置对象或不经常更改的纹理。例如，如果您只创建一次自定义几何体并在重新渲染时重复使用它，那么记忆化可以防止重新实例化并节省内存。
+
+>注意：
+>
+>对于昂贵的计算或大型静态对象，请使用 useMemo。避免将其用于每帧都在变化或依赖于动画的值。
+
+### useCallback
+
+组件的另一个更新将使用 `useCallback` 钩子来处理动画变化。这也可以节省一些内存中的代码字节。`useCallback` 钩子用于记忆一个回调函数，确保该函数在重新渲染时不会被不必要地重新创建。这有助于防止意外行为，并通过隔离函数，除非其依赖项明确发生变化，从而提高性能。在与动画并行执行操作（例如点击对象）时，它非常有帮助。这就是我们将要添加到场景中的内容。点击盒子将导致几何形状变为圆环。这些更改的源代码如代码清单 17.5 所示：
+
+
+
+这种方法可能会增加组件未被优化并出现优化问题的几率。在其他情况下，性能提升可能非常有限。即使是微小的性能改进也很重要，这将引导我们进入下一个部分。
+
+`useCallback` 钩子通常被介绍为一种通过记忆化函数定义来防止不必要的重新渲染的方法。虽然在某些情况下这可能很有用，但在像 Three.js 这样的实时渲染环境中过度使用 `useCallback`，可能会导致代码难以阅读，而实际上并没有任何性能提升。
+
+假设你在处理鼠标移动以旋转相机或触发动画。你可能会被诱惑将处理程序包装在 `useCallback` 中以“优化”它。然而，当函数内部的任何值发生变化时，比如相机状态、动画计时或指针位置，这个函数可能需要改变。在实践中，这通常会导致列出许多依赖项，但仍然会在每次渲染时重新创建该函数，从而失去了记忆化的目的。
+
+在动画密集的上下文中或在 `useFrame` 中，这些函数通常是短暂且轻量级的。与正确管理它们的依赖项相比，重新声明它们的成本微不足道。
+
+什么时候值得使用 `useCallback`？如果你将一个函数传递到组件树的深层——尤其是传递到记忆化或纯组件中——`useCallback` 可以帮助防止不必要的重新渲染。例如，如果你将一个事件处理程序传递到不需要因回调变化而重新渲染的 Canvas 覆盖层或 UI 组件中，记忆化该函数可能是有益的。
+
+但在大多数情况下，如果函数是在本地声明和使用的（在同一个组件或附近逻辑中），则没有性能优势。
+
+> 注意：在将稳定的函数传递到记忆化的子组件时使用 `useCallback`。避免将其用于频繁变化或不会触发重新渲染的短暂本地函数。
+
+### React Fiber offscreen
+
+另一种有助于优化应用程序的技术是使用 React Fiber Offscreen。这将允许我们将大量的 CPU 操作移至 Web Worker 中。
+
+Web Worker 是浏览器的一个特性，它允许在后台并发执行 JavaScript 代码，与网页的主线程分开运行。它们提供了一种执行计算密集型任务（如数据处理）的方法，而不会阻塞用户界面或导致主线程变慢。
+
+要将这一功能添加到我们的项目中，我们使用以下命令：
+
+```bash
+npm install @react-three/offscreen
+```
+
+或者
+
+```bash
+yarn add @react-three/offscreen
+```
+
+Chapter 17\src\components\renderer.js
+
+```js
+const worker = new Worker(new URL("./worker.js", import.meta.url), {
+    type: "module",
+});
+```
+
+这句代码创建了一个 Web Worker，用于在后台线程中执行 JavaScript 代码。让我逐部分解释：
+
+```jsx
+const worker = new Worker(new URL("./worker.js", import.meta.url), {    type: "module", });
+```
+
+1. `new Worker(...)` - 创建一个新的 Web Worker 实例
+
+2. ```
+   new URL("./worker.js", import.meta.url)
+   ```
+
+    \- 构造 worker.js 文件的绝对 URL
+
+   - `import.meta.url` 提供当前模块的 URL
+   - `new URL("./worker.js", import.meta.url)` 将相对路径 "./worker.js" 解析为相对于当前模块的绝对 URL
+
+3. `type: "module"` - 指定 Worker 应该作为 ES6 模块加载，这样 worker.js 可以使用 import/export 语法
+
+这种模式常用于：
+
+- 在 Next.js 或其他现代 JavaScript 项目中动态创建 Web Worker
+- 确保正确的模块解析和路径处理
+- 允许 worker.js 文件使用 ES6 模块功能
+
+Web Worker 的主要优势是能够在后台线程中执行计算密集型任务，而不会阻塞主线程，从而保持用户界面的响应性。
+
+
+
+在我们使用 Web Worker 构建项目后，出现了一个错误，提示“window is not defined”。目前没有方法可以解决这个错误。这是因为在 Next.js 构建阶段，我们在配置文件中添加了一个额外的选项。打开 `next.config.js` 文件，查看 `transpilePackages: ['three']` 这一行。我们将其移除，因为它与 Web Worker 选项冲突。一些额外的包可能需要这个选项，因此我们只有在性能不佳或其他需求的情况下才使用这种优化方法。
+
+## 移动设备性能
+
+大多数用户通过手机或平板电脑使用 Web 应用程序。尽管这些设备在渲染和使用 Web 上的 3D 图形方面拥有大量资源，但它们的电池续航能力有限，这与资源使用直接相关。因此，对于移动设备，我们需要考虑减少所有可能的资源使用，以节省设备电池。
+
+除了我们在上一节中学到的方法外，还有几种其他技术可以用来减少资源和电池的使用：
+
+- **使用低多边形模型**：与桌面计算机相比，移动设备的资源有限，因此使用顶点较少、几何形状更简单的低多边形模型至关重要。避免使用可能会对设备的 GPU 和 CPU 造成负担的高度详细模型。
+
+- **最小化纹理尺寸**：降低用于 3D 模型的纹理分辨率和尺寸，以节省内存并缩短加载时间。使用 JPEG 或 WebP 等纹理压缩格式，可以在不降低质量的情况下进一步减小文件大小。例如：
+
+  ```javascript
+  const texture = useLoader(THREE.TextureLoader, 'texture.jpg');
+  texture.encoding = THREE.sRGBEncoding;
+  texture.anisotropy = 4;
+  ```
+
+  **代码清单 17.10**：配置纹理以降低细节
+
+- **优化渲染管线**：实现视锥体裁剪、遮挡剔除和细节层次（LOD）等技术，以优化渲染管线。这些技术有助于减少屏幕上渲染的对象和多边形数量，从而提高移动设备上的性能。为此，我们可以使用 Drei 辅助工具中的特殊组件并降低细节级别。这是 Three.js 细节层次模块的一个封装。使用示例可以在 **代码清单 17.11** 中找到。在示例中，我们使用距离作为属性来切换细节层次。我们可以使用在 React 组件中可以创建的任何属性。
+
+  ```javascript
+  <Detailed distances={[0, 10, 20]} {...props}>
+    <mesh geometry={highDetail} />
+    <mesh geometry={mediumDetail} />
+    <mesh geometry={lowDetail} />
+  </Detailed>
+  ```
+
+  **代码清单 17.11**：使用 Drei 辅助工具的细节层次
+
+- **避免使用复杂的着色器**：复杂的着色器可能会对移动设备的 GPU 造成负担，从而导致性能问题。使用计算量较少的简单着色器，并且除非必要，否则避免使用反射、折射和实时阴影等功能。
+
+## 浏览器兼容性
+
+在使用 R3F 开发应用程序时，确保浏览器兼容性至关重要，尤其是对于基于 Web 的 3D 体验。使用 R3F、Three.js 或直接使用 WebGL 时，可能会遇到与浏览器兼容性相关的问题。
+
+首先，我们必须确保目标浏览器支持 WebGL。我们可以通过不同的工具来实现这一点，例如 webglreport.com。在目标浏览器中打开此链接，将引导我们进入一个页面，页面上会显示当前时间点 WebGL 的新增或更新内容的报告。对我们来说最重要的信息将是支持性。我们将看到如图 17.7 所示的顶部布局：
+
+
+图 17.7：浏览器兼容性检查
+
+如果出现浏览器不支持该功能的错误，我们可以尝试使用特殊的 polyfill。以下是一些我们可以使用的 polyfill 示例的简短列表：
+
+- **core-js**：一个模块化的 JavaScript 标准库，包含 ECMAScript 特性的 polyfill。
+
+- **Babel polyfill**：一组 polyfill，用于复制现代 ECMAScript 特性的浏览器 API。
+
+- **Web components polyfills**：Web Components API 的 polyfill，某些 R3F 组件或功能可能需要这些。
+
+另一个重要的是，React Three Fiber 使用了 Web Worker，R3F 使用它来卸载昂贵的计算。你可以使用像 Comlink 这样的 polyfill 来为不原生支持它的浏览器添加 Web Worker 的支持。
+
+## 测试应用程序
+
+与其他应用程序类似，测试在应用程序的发布过程中起着至关重要的作用，确保其在上线前的可靠性和质量。使用 R3F 时，我们可以利用 React Three Test Renderer 来完成这项任务。
+
+使用 R3F，我们将拥有一个普通的 React 应用程序，因此可以使用我们用于测试它的相同技术。
+
+在 React + Three.js 环境中进行测试时，Jest 广泛被采用并推荐为一个基础的测试库。它提供了一个强大且灵活的框架，能够很好地与现代 JavaScript 应用程序集成，尤其是使用 React 构建的应用程序。
+
+以下是选择 Jest 的原因：
+
+- **Jest 是 React 生态系统中的标准选择**。它由 React 背后的团队维护，这确保了其兼容性和长期支持。
+
+- **它支持快照测试和 DOM 测试**，与 @testing-library/react 等工具配合良好，用于验证组件输出和用户交互。
+
+- **测试运行快速且独立**，这在持续集成工作流和本地开发中特别有益。
+
+- **Jest 拥有强大的插件生态系统**，可以轻松扩展，支持模拟工具、代码覆盖率报告或视觉测试工具。
+
+对于 **React Three Fiber** 组件的测试，我们还需要一种在测试环境中渲染 3D 组件的方法。由于这些组件依赖于 WebGL 上下文，传统的 React 测试设置将不足以满足需求。这就是 @react-three/test-renderer 包的用武之地——它允许你在虚拟场景中预渲染 3D 组件，而无需实际的画布。要添加它，我们使用以下命令：
+
+```bash
+npm install @react-three/test-renderer --save-dev
+```
+
+或者
+
+```bash
+yarn add @react-three/test-renderer --save-dev
+```
