@@ -37,3 +37,4 @@ src\pages\document.ejs
 <div id="<%= context.config.mountElementId %>">
 ```
 
+在主应用pagebox中进行修改。
