@@ -2,6 +2,8 @@
 
 ## 30、`use` 是什么，如何使用？  
 
+（不能在普通react项目使用，目前主要在 Next.js 中可用）
+
 use Hook 是 React 18 引入的新特性，用于简化 React 应用中的异步渲染和数据获取。它主要应用于 React 服务端组件架构和 React Suspense 系统中，通过"暂停"组件渲染直至异步数据解析完成，有效简化服务端与客户端的渲染工作流程。
 
 
@@ -34,6 +36,8 @@ const App: React.FC = () => {
 
 export default App;
 ```
+
+
 
 # 第七部分：性能与优化
 
