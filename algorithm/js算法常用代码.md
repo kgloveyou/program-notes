@@ -10,9 +10,12 @@ const left = new Array(n).fill(0);
 
 ```js
 n = n.toString()
+// 将一个数字 n 转换为一个由其各位数字组成的数组（每个元素是数字类型）
 n = n.split('').map(item => {
     return +item
 })
+//or 
+const digits = n.toString().split('').map(Number);
 
 n = n.join('')
 return +n
