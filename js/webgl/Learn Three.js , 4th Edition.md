@@ -1189,17 +1189,73 @@ Three.js 提供的最后一个多面体几何体是 THREE.DodecahedronGeometry�
 
 在这个示例中，我们生成了一组随机点，并基于这些点创建了THREE.ConvexGeometry。示例中，你可以通过右侧菜单的“重绘”按钮生成20个新点并绘制凸包。如果你想亲自尝试，可以开启材质的透明度并将不透明度设置为低于1的值，这样就能看到用于创建此几何体的点。在此示例中，这些点被创建为小的THREE.SphereGeometry对象。
 
+```js
+const generatePoints = () => {
+  const spGroup = new THREE.Object3D()
+  spGroup.name = 'spGroup'
+  const points = []
+
+  for (let i = 0; i < 20; i++) {
+    const randomX = -5 + Math.round(Math.random() * 10)
+    const randomY = -5 + Math.round(Math.random() * 10)
+    const randomZ = -5 + Math.round(Math.random() * 10)
+    points.push(new THREE.Vector3(randomX, randomY, randomZ))
+  }
+
+  const material = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: false })
+  points.forEach(function (point) {
+    const spGeom = new THREE.SphereGeometry(0.04)
+    const spMesh = new THREE.Mesh(spGeom, material)
+    spMesh.position.copy(point)
+    spGroup.add(spMesh)
+  })
+
+  return {
+    spGroup,
+    points
+  }
+}
+```
+
+正如您在这段代码片段中所见，我们创建了20个随机点（THREE.Vector3），并将它们存入一个数组。接着，我们遍历这个数组并创建多个 THREE.SphereGeometry 实例，将每个实例的位置设置为这些点之一（通过 position.copy(point)）。所有点都被添加到一个组中，这样在重绘时就能轻松替换它们。一旦获得这组点，从中创建 THREE.ConvexGeometry 就非常简单，如以下代码片段所示：
+
+```js
+const convexGeometry = new THREE.ConvexGeometry(points);
+```
+
+THREE.ConvexGeometry 接受的唯一参数是一个包含顶点（THREE.Vector3 类型）的数组。请注意，若想渲染平滑的 THREE.ConvexGeometry，应调用 computeVertexNormals 方法，正如我们在第二章《构成 Three.js 应用的基本组件》中解释的那样。
+
+下一个复杂几何体是 THREE.LatheGeometry，例如可用于创建花瓶状形状。
+
 ### THREE.LatheGeometry  
 
-THREE.LatheGeometry允许你从一组共同形成曲线的点创建形状。
+THREE.LatheGeometry 允许您通过一组共同构成曲线的点来创建形状。查看图6.2时，可以看到我们创建了一系列点（红点），Three.js 利用这些点生成了 THREE.LatheGeometry。再次强调，理解 THREE.LatheGeometry 形态最直观的方式是查看示例。此几何体的展示可参考 lathe-geometry.html 文件，下图取自该示例的截图展示了这种几何体：
 
 ### BoxLineGeometry  
 
 如果您只想显示轮廓线，您可以使用THREE.BoxLineGeometry。这个几何体的工作方式与THREE.BoxGeometry完全相同，但不是渲染实心对象，而是使用线条渲染盒子，如下所示（来自box-line-geometry.html）：
 
+您使用此几何体的方式与 THREE.BoxGeometry 相同，但并非创建 THREE.Mesh，而是需要使用线框专用材质之一来创建 THREE.LineSegments：
+
+```js
+import { BoxLineGeometry } from 'three/examples/jsm/geometries/BoxLineGeometry'
+
+const material = new THREE.LineBasicMaterial({ color: 0x000000 })
+
+const geometry = new BoxLineGeometry(width, height, depth, widthSegments, heightSegments, depthSegments)
+const lines = new THREE.LineSegments(geometry, material)
+scene.add(lines)
+```
+
 ### THREE.RoundedBoxGeometry  
 
+此几何体使用与 THREE.BoxGeometry 相同的属性，同时还允许您指定圆角的弧度。在 rounded-box-geometry 示例中，您可以观察到实际效果：
+
+
+
 ### TeapotGeometry  
+
+TeapotGeometry 是一种可用于渲染茶壶的几何体（这并不令人意外）。该茶壶是自1975年以来一直使用的3D渲染标准参考模型。关于此模型历史的更多信息可在此处查看：https://www.computerhistory.org/ revolution/computer-graphics-music-and-art/15/206。
 
 ## 通过拉伸二维形状来创建几何体
 
@@ -1207,13 +1263,79 @@ Three.js 提供了一种方法，可以将二维形状拉伸成三维形状。�
 
 ### THREE.ExtrudeGeometry  
 
+THREE.ExtrudeGeometry 允许您将2D形状转换为3D对象。在深入探讨此几何体前，我们先通过示例 extrude-geometry.html 来观察效果。下图截取自该示例，展示了这种几何体的形态：
+
 ### THREE.TubeGeometry  
+
+THREE.TubeGeometry 可沿三维样条曲线生成管道。您只需指定由顶点构成的路径，该几何体便会自动创建管道结构。本章提供的 tube-geometry.html 示例可供交互体验，下图展示了该案例效果：
 
 ### 从SVG元素拉伸3D形状
 
+在第5章讨论THREE.ShapeGeometry时，我们提到SVG采用非常相似的形状绘制方法。本节将介绍如何结合SVG图像与THREE.SVGLoader进行挤出操作，并以蝙蝠侠标志为例演示：
+
 ### THREE.ParametricGeometry  
 
+THREE.ParametricGeometry 允许基于数学方程创建几何体。在探索自定义示例前，建议先研究 Three.js 官方提供的案例。下载 Three.js 发行包时，您会获得 examples/js/ParametricGeometries.js 文件，其中包含多个可与 THREE.ParametricGeometry 配合使用的方程示例。
 
+最基础的示例是创建平面的函数：
+
+```js
+plane: function (width, height) {
+  return function (u, v, target) {
+    const x = u * width;
+    const y = 0;
+    const z = v * height;
+    target.set(x, y, z);
+  };
+}
+```
+
+该函数由 THREE.ParametricGeometry 调用。参数 u 和 v 的取值范围为 0 到 1，系统会多次调用该函数以覆盖整个取值区间。在此示例中，u 值用于确定向量的 x 坐标，v 值用于确定 z 坐标。运行后将生成一个宽度为 width、深度为 depth 的基础平面。
+
+而在我们的示例中，我们采用了类似方法，但并非创建平坦平面，而是生成了波浪状图案（如 parametric-geometry.html 示例所示）。下图展示了该案例效果：
+
+为创建此形状，我们向 THREE.ParametricGeometry 传递了以下函数：
+
+```js
+const radialWave = (u, v, optionalTarget) => {
+  var result = optionalTarget || new THREE.Vector3()
+  var r = 20
+
+  var x = Math.sin(u) * r
+  var z = Math.sin(v / 2) * 2 * r + -10
+  var y = Math.sin(u * 4 * Math.PI) + Math.cos(v * 2 * Math.PI)
+
+  return result.set(x, y, z)
+}
+
+const geom = new THREE.ParametricGeometry(radialWave, 120, 120);
+```
+
+通过此示例可见，仅需少量代码即可创建出非常有趣的几何体。该示例同时展示了 THREE.ParametricGeometry 可接收的参数：
+• function：定义基于 u、v 值的顶点坐标生成函数
+
+• slices：设定 u 值方向的分段数量
+
+• stacks：设定 v 值方向的分段数量
+
+更多示例可参考 Three.js 发行包中的 examples/js/ParametricGeometries.js 文件，该文件包含创建以下几何体的函数：
+• 克莱因瓶
+
+• 平面  
+
+• 二维莫比乌斯带
+
+• 三维莫比乌斯带  
+
+• 管道
+
+• 环面纽结
+
+• 球体
+
+• 平面  
+
+当您需要专注于几何体结构细节（如顶点与面片分析）而不关心材质与渲染效果时，除了启用材质的线框模式外，Three.js 还提供了一些辅助几何体。我们将在下一节探讨这些工具。
 
 ## 可用于调试的几何图形
 
@@ -1225,28 +1347,152 @@ Three.js提供了两种辅助几何体，使得查看几何体的细节或仅轮
 
 ### THREE.EdgesGeometry 
 
-它提供了一个只渲染几何体边缘的几何体。
+THREE.EdgesGeometry 通过包裹现有几何体，仅渲染边缘线而非单独显示顶点和面片。该效果展示在 edges-geometry.html 示例中：
+
+上图中可见 RoundedBoxGeometry 的轮廓线被完整呈现，由于该几何体具有圆角特征，使用 THREE.EdgesGeometry 时会自然显示这些平滑转角。
+
+使用时只需按以下方式包裹现有几何体：
+
+```js
+const baseGeometry = new RoundedBoxGeometry(3, 3, 3, 10, 0.4)
+const edgesGeometry = THREE.EdgesGeometry(baseGeometry, 1.5)
+```
+
+THREE.EdgesGeometry 的唯一参数是 thresholdAngle（阈值角度）。通过该属性可控制几何体绘制边缘的条件。在 edges-geometry.html 示例中，您可以实时调整该参数观察效果。
+
+若需显示现有几何体的线框，可直接通过材质配置实现：
+
+```js
+const material = new THREE.MeshBasicMaterial({ color: 0xffff00, wireframe: true })
+```
+
+Three.js 还提供了另一种使用 THREE.WireframeGeometry 的方式。
 
 ### THREE.WireFrameGeometry  
 
 这个几何体模拟了将材质的 wireframe 属性设置为 true 时所看到的效果：
 
+使用此材质的方式与 THREE.EdgesGeometry 相同：
+
+```js
+const baseGeometry = new THREE.TorusKnotBufferGeometry(3, 1, 100, 20, 6, 9)
+const wireframeGeometry = new THREE.WireframeGeometry(baseGeometry)
+```
+
+此几何体不接收任何附加属性。  
+本章最后部分将介绍创建3D文本对象的两种方法：一种使用 THREE.Text 对象，另一种借助外部库实现。
+
 ## 创建一个三维文本网格
 
+本节将简要介绍创建3D文本的方法。首先讲解如何使用Three.js内置字体渲染文本，以及如何加载自定义字体；随后通过Troika库（https://github.com/ protectwise/troika  ）的简易示例，演示如何快速创建标签与2D文本元素并添加到场景中。
 
+### 渲染文本
+
+在Three.js中渲染文本非常简单，只需定义所需字体并运用与THREE.ExtrudeGeometry相同的挤出属性即可。下图展示了text-geometry.html示例中Three.js的文本渲染效果：
+
+该几何体也支持使用其他字体，但需要先将字体转换为JSON格式——具体操作方法将在下一节说明。
+
+### 添加自定义字体
+
+Three.js 提供了一些基于 TypeFace.js 库的预设字体。TypeFace.js 能够将 TrueType 和 OpenType 字体转换为 JavaScript 或 JSON 格式。早期版本使用 JavaScript 文件，但新版 Three.js 已全面改用 JSON 格式。  
+
+如需转换现有字体，可通过 https://gero3.github.io/facetype.js/ 在线工具实现。
+
+在此页面中，您可以上传字体文件，系统会将其转换为JSON格式。需注意：并非所有字体都能完美转换——结构越简单的字体（直线条居多），在Three.js中的渲染成功率越高。生成的JSON文件格式如下，其中每个字符（或字形）均被详细描述：
+
+获取JSON文件后，您可通过FontLoader（如先前"渲染文本"章节所示）加载该字体，并将其作为font属性传入TextGeometry的配置参数。本章最后一个示例将展示Three.js创建文本的另一种方法。
+
+### 使用 Troika 库创建文本
+
+若需为场景中的特定部分创建标签或二维文本标记，除了使用 THREE.Text 几何体外，还可选用名为 Troika 的外部库：https://github.com/protectwise/troika。
+
+该库功能丰富，能为场景添加大量交互特性。本例将重点介绍其文本模块的功能，具体效果可参阅 troika-text.html 示例：
+
+使用该库前需先安装（若已按第1章《使用Three.js创建首个3D场景》的指引操作，则已具备使用条件）：  
+
+```sh
+$ yarn add troika-three-text
+```
+
+安装完成后，可像调用Three.js其他模块一样导入使用：
+
+```js
+import { Text } from 'troika-three-text'
+
+const troikaText = new Text()
+troikaText.text = 'Text rendering with Troika!\nGreat for 2D labels'
+troikaText.fontSize = 2
+troikaText.position.x = -3
+troikaText.color = 0xff00ff
+troikaText.sync()
+scene.add(troikaText)
+```
+
+以上代码片段展示了如何使用 Troika 创建简单文本元素。您只需调用 Text() 构造函数并设置属性即可。但需注意：修改 Text() 对象的任何属性后，都必须调用 troikaText.sync() 方法，以确保变更能同步应用到屏幕渲染的模型上。
+
+## 总结
+
+本章我们学习了许多内容。我们介绍了几种高级几何体，并展示了如何使用Three.js创建和渲染文本元素。我们演示了如何利用THREE.ConvexGeometry、THREE.TubeGeometry和THREE.LatheGeometry等高级几何体创建非常精美的形状，以及如何通过调整这些几何体来获得期望的效果。一个非常好的特性是，我们可以使用THREE.ExtrudeGeometry将现有的SVG路径转换为Three.js几何体。
+
+我们还快速了解了几种对调试非常有用的几何体。THREE.EdgesGeometry仅显示其他几何体的边缘，而THREE.WireframeGeometry可用于显示其他几何体的线框。
+
+最后，如果您想创建3D文本，Three.js提供了TextGeometry，您可以传入要使用的字体。Three.js自带了一些字体，但您也可以创建自己的字体。不过请记住，复杂的字体通常无法正确转换。使用TextGeometry的替代方案是使用Troika库，它可以非常轻松地创建2D文本标签并将其放置在场景中的任何位置。
+
+到目前为止，我们探讨的是实体（或线框）几何体，其中顶点相互连接形成面。在下一章中，我们将探讨一种使用粒子或点来可视化几何体的替代方法。使用粒子时，我们并不渲染完整的几何体，而是仅将各个顶点作为空间中的点进行渲染。这使您可以创建性能良好的、外观出色的3D效果。
 
 # 7、点和精灵
 
-在之前的章节中，我们讨论了 Three.js 提供的最重要的概念、对象和 API。在本章中，我们将探讨到目前为止我们跳过的唯一概念：点和精灵。通过 `THREE.Points`（有时也称为精灵），可以非常容易地创建许多小矩形，它们始终面向摄像机，可以用来模拟雨、雪、烟等有趣的效果。例如，您可以将单个几何体渲染为一组点，并分别控制这些点。在本章中，我们将探索由 Three.js 提供的各种与点和精灵相关的功能。
+在前几章中，我们已经探讨了Three.js提供的核心概念、对象和API。本章将深入讲解此前唯一未涉及的主题：点（Points）和精灵（Sprites）。通过THREE.Points（有时也称为精灵），可以轻松创建大量始终面向相机的小矩形，用于模拟雨、雪、烟雾等特效。例如，您可以将独立几何体以点集形式渲染，并分别控制这些点。本章将系统介绍Three.js中与点及精灵相关的各项功能。
 
-**关于本章中使用的一些名称的简要说明**
-在较新版本的 Three.js 中，与点相关的对象的名称已经多次更改。`THREE.Points` 对象以前被称为 `THREE.PointCloud`，在更早的版本中，它被称为 `THREE.ParticleSystem`。`THREE.Sprite` 以前被称为 `THREE.Particle`，而材质也经历了几次更名。因此，如果您看到使用这些旧名称的在线示例，请记住它们是在讨论相同的概念。
+具体来说，本章将涵盖以下主题：
+• 使用 THREE.SpriteMaterial 和 THREE.PointsMaterial 创建并设置粒子样式
+
+• 使用 THREE.Points 创建点群
+
+• 利用画布为每个点单独设置样式
+
+• 通过纹理定制单个点的外观
+
+• 为 THREE.Points 对象添加动画效果
+
+• 基于现有几何体生成 THREE.Points 对象
+
+> **关于本章中使用的一些名称的简要说明**
+> 在较新版本的 Three.js 中，与点相关的对象的名称已经多次更改。`THREE.Points` 对象以前被称为 `THREE.PointCloud`，在更早的版本中，它被称为 `THREE.ParticleSystem`。`THREE.Sprite` 以前被称为 `THREE.Particle`，而材质也经历了几次更名。因此，如果您看到使用这些旧名称的在线示例，请记住它们是在讨论相同的概念。
 
 ## 理解点和精灵
 
+遵循新概念的讲解惯例，我们将从示例入手。在本章源码中，您会找到名为sprite.html的示例。打开该示例后，您将看到一个极简场景，其中仅包含一个纯色正方形：
 
+您可以使用鼠标旋转场景观察。值得注意的是，无论从哪个角度观察，这个正方形看起来都完全一样。例如，下图展示了同一场景从不同视角观察的效果：
 
-使用 THREE.Sprite，你可以非常轻松地创建一组对象并在场景中移动它们。 当你处理少量对象时，这很有效，但是当你要处理大量 THREE.Sprite 对象时，你很快就会遇到性能问题。 这是因为每个对象都需要由 Three.js 单独管理。 Three.js 提供了一种使用 THREE.Points 对象处理大量精灵的替代方法。 使用 THREE.Points，Three.js 不必管理许多单独的 THREE.Sprite 对象，只需管理 THREE.Points 实例。这将允许 Three.js 优化其绘制精灵的方式并获得更好的性能。 以下屏幕截图显示了使用 THREE.Points 对象渲染的几个精灵：
+如图所示，精灵仍以朝向摄像机的角度呈现，您无法看到其背面。可以将精灵理解为一个始终面向摄像机的二维平面。若创建时不设置任何属性，精灵默认渲染为白色的小型二维方块。创建精灵仅需提供一种材质：
+
+```js
+const material = new THREE.SpriteMaterial({ size: 0.1, color: 0xff0000 })
+const sprite = new THREE.Sprite(material)
+sprite.position.copy(new THREE.Vector3(1, 1, 1))
+```
+
+您可以使用 THREE.SpriteMaterial 来配置精灵的外观：
+
+• color：精灵的颜色，默认为白色。
+
+• sizeAttenuation：若设为 false，则无论精灵距离摄像机多远，其大小保持不变；若设为 true，则大小随距离摄像机远近而变化，默认为 true。注意：此属性仅在使用 THREE.PerspectiveCamera 时生效，对于 THREE.OrthographicCamera，其行为始终等同于设为 false。
+
+• map：通过此属性可为精灵添加纹理，例如将其显示为雪花状。此属性未在本示例中展示，但将在本章的“使用纹理设置粒子样式”一节中说明。
+
+• opacity：结合 transparent 属性，设置精灵的不透明度，默认为 1（完全不透明）。
+
+• transparent：若设为 true，精灵将根据 opacity 属性值呈现透明度，默认为 false。
+
+• blending：渲染精灵时使用的混合模式。
+
+需要注意的是，THREE.SpriteMaterial 继承自基础的 THREE.Material 对象，因此该对象的所有属性也可用于 THREE.SpriteMaterial。
+
+在深入探讨更有趣的 THREE.Points 对象之前，我们先来详细了解 THREE.Sprite 对象。THREE.Sprite 与 THREE.Mesh 一样，继承自 THREE.Object3D 对象。这意味着 THREE.Mesh 中大多数已知的属性和函数均可用于 THREE.Sprite：您可以通过 position 属性设置其位置，使用 scale 属性进行缩放，并通过 translate 属性沿坐标轴移动。
+
+使用 THREE.Sprite 可以轻松创建一组对象并在场景中移动它们。当处理少量对象时效果良好，但若需操作大量 THREE.Sprite 对象，很快就会遇到性能问题，因为每个对象都需要由 Three.js 单独管理。为此，Three.js 提供了通过 THREE.Points 对象批量处理大量精灵的优化方案。使用 THREE.Points 时，Three.js 只需管理单个 THREE.Points 实例而非众多独立精灵，从而实现对绘制过程的优化并提升性能。下图展示了通过 THREE.Points 对象渲染的多个精灵效果：
 
 要创建一个 THREE.Points 对象，我们需要为其提供 THREE.BufferGeometry。 对于前面的屏幕截图，我们可以创建一个 THREE.BufferGeometry，如下所示：
 
@@ -1287,9 +1533,109 @@ bootstrapGeometryScene({
 }).then()
 ```
 
-pcd 点云数据的读取可以参照这个。
+从这段代码可见，我们首先创建了一个 THREE.Vector3 对象数组——每个元素对应一个精灵的生成位置。同时，我们在 THREE.BufferGeometry 上设置了 color 属性，用于为每个精灵着色。通过 THREE.BufferGeometry 和 THREE.PointsMaterial 实例，即可创建 THREE.Points 对象。THREE.PointsMaterial 的属性与 THREE.SpriteMaterial 高度相似：
 
-## 使用纹理美化粒子
+• color：点的颜色，默认为 0xffffff（白色）
+
+• sizeAttenuation：若设为 false，所有点将保持相同尺寸（与摄像机距离无关）；设为 true 则根据摄像机距离动态调整尺寸，默认为 true
+
+• map：通过纹理贴图可定制点的外观（如雪花效果），本章后续"使用纹理设置粒子样式"章节将详细说明
+
+• opacity：配合 transparent 属性控制透明度，默认为 1（完全不透明）
+
+• transparent：设为 true 时启用 opacity 设定的透明度，默认为 false
+
+• blending：指定精灵的混合渲染模式
+
+• vertexColors：通常所有点颜色相同，设为 true 且几何体设置 color 缓冲属性后，各点将采用数组中的对应颜色值，默认为 false
+
+与往常一样，您可以通过示例右侧的菜单交互调整这些属性。
+
+目前我们仅将粒子渲染为默认的小方块，但接下来将介绍另外两种粒子样式定制方法。
+
+（pcd 点云数据的读取可以参照这个。）
+
+## 使用纹理定制粒子样式
+
+本节将介绍两种改变精灵外观的方法：  
+1. 通过HTML画布绘制图像，并将该图像应用于每个精灵  
+2. 加载外部图像文件，定义每个精灵的视觉形态  
+
+我们先从自主绘制图像开始。
+
+### 在画布上绘制图像
+
+在 THREE.PointsMaterial 的属性中，我们提到过 map 属性。通过该属性，可以为每个粒子加载纹理。在 Three.js 中，这个纹理可以来自 HTML5 画布的输出。在查看代码之前，我们先看一个示例（canvas-texture.js）：  
+
+如图所示，屏幕上出现了一大群类似吃豆人游戏中幽灵的粒子。这里使用的实现方法与之前"理解点与精灵"章节中介绍的方式相同。但这次我们展示的不再是简单的方块，而是自定义图像。创建该纹理的代码如下：
+
+
+
+在下一节中，我们将加载一些外部图像作为纹理，替代手动绘制纹理的方式。
+
+### 使用纹理定制粒子样式
+
+在"画布绘制图像"章节的示例中，我们了解了如何通过HTML画布定制THREE.Points的样式。虽然您可以自由绘制任何内容甚至加载外部图像，但还有一种更直接的方式为粒子系统添加样式：使用THREE.TextureLoader().load()加载图像作为THREE.Texture对象，并将其赋给材质的map属性。  
+
+本节将通过两个示例演示实现方法，两个案例均采用图像纹理为粒子赋予形态。第一个示例将创建雨滴模拟效果（rain.html）：
+
+首先我们需要获取代表雨滴的纹理。您可以在 assets/textures/particles 文件夹中找到一些示例纹理。在后续章节中，我们将详细说明纹理的所有细节和要求。目前您只需了解：纹理应为正方形，且尺寸最好是2的幂次方（例如64x64、128x128或256x256）。本示例将使用以下纹理：
+
+本章已详细讲解这些属性。核心要点在于：map属性指向通过THREE.TextureLoader.load加载的纹理。注意我们再次使用alphaTest属性来避免多个精灵重叠移动时出现渲染异常。
+
+至此已完成THREE.Points对象的样式设置。当您打开示例时还会发现粒子本身在运动。实现原理非常简单：每个粒子都是构成THREE.Points对象几何体的顶点。下面展示如何为THREE.Points对象添加动态顶点：
+
+这与本章之前的示例并无太大差异。这里我们为每个粒子添加了一个名为 velocity 的属性，该属性包含两个值：velocityX 和 velocityY。前者定义粒子（雨滴）的水平移动速度，后者则控制雨滴的下落速度。既然每个雨滴都有了独立的速度属性，我们就可以在渲染循环中移动单个粒子了：
+
+这段代码从创建 THREE.Points 的几何体中获取所有顶点（粒子）。对于每个粒子，我们使用 velocityX 和 velocityY 来更新其当前位置。随后确保粒子保持在设定范围内：当 v.y 位置低于 0 时，将雨滴重置回顶部；当 v.x 位置触及边界时，通过反转水平速度实现反弹效果。最后需通知 Three.js 我们已修改 bufferGeometry 的数据，确保下次渲染时使用正确数值。
+
+现在来看另一个示例。这次我们将不再模拟雨滴，而是创建雪花效果，并使用三张不同的纹理图片（取自 Three.js 示例）。先观察最终效果（snow.html）：
+
+仔细观察上图会发现，我们并未使用单一图像作为纹理，而是采用了多张带透明背景的图片。您可能好奇这是如何实现的。如您所知，单个 THREE.Points 对象只能使用一种材质。若需多材质效果，只需创建多个 THREE.Points 实例即可，具体实现如下：
+
+在这段代码中，我们创建了三个独立的 THREE.Points 实例，每个实例使用专属材质。雪花移动逻辑与雨滴示例相同（故未展示 createPoint 和渲染循环细节）。值得注意的是：若要在单个 THREE.Points 实例中实现多纹理效果，需自定义片元着色器并使用 THREE.ShaderMaterial。
+
+需要强调的是，THREE.Points 是为现有场景添加视觉特效的高效方式。例如前文的雪花效果，能快速将普通场景转换为雪景：
+
+精灵的另一种应用场景是在现有场景上方创建简易的二维平视显示器（HUD）。我们将在下一节探讨具体实现方法。
+
+## 使用精灵贴图  
+
+本章开头我们使用 THREE.Sprite 对象渲染独立点状元素，这些精灵被定位在3D世界中，其大小基于与摄像机的距离（这种技术也称为布告板渲染）。本节将展示 THREE.Sprite 的另一种应用：通过额外的 THREE.OrthographicCamera 实例和辅助场景，创建类似HUD（平视显示器）的图层。同时演示如何通过精灵贴图（sprite map）为 THREE.Sprite 选择图像。  
+
+我们将创建一个从左向右移动的简单 THREE.Sprite 对象作为示例。背景中渲染的3D场景摄像机可自由移动，以此证明精灵的运动独立于摄像机。下图展示了首个示例（spritemap.html）的效果：
+
+通过 map.offset 和 map.repeat 属性，我们可以选择在屏幕上显示正确的精灵。使用 map.offset 属性，我们可以确定已加载纹理在 x 轴（u）和 y 轴（v）上的偏移量。这些属性的取值范围是 0 到 1。在我们的示例中，如果要选择第三个幽灵，必须将 u 偏移量（x 轴）设置为 0.4，并且由于我们只有一行，因此不需要更改 v 偏移量（y 轴）。如果仅设置此属性，纹理将在屏幕上显示被压缩在一起的第三、第四和第五个幽灵。为了只显示一个幽灵，我们需要放大。我们可以通过将 u 值的 map.repeat 属性设置为 1/5 来实现这一点。这意味着我们放大（仅针对 x 轴）以仅显示纹理的 20%，正好是一个幽灵。最后，我们需要更新渲染函数：
+
+```js
+renderer.render(scene, camera)
+renderer.autoClear = false
+renderer.render(sceneOrtho, cameraOrtho)
+```
+
+首先，我们用普通摄像机渲染包含两个网格的场景；然后，渲染包含精灵的场景。在渲染循环中，我们还切换了一些属性，以便在精灵碰到右侧墙壁时显示下一个精灵并改变其方向（代码未显示）。
+
+到目前为止，本章主要介绍了如何从头开始创建精灵和点云。不过，一个有趣的选项是从现有几何体创建 THREE.Points。
+
+## 基于现有几何体创建 THREE.Points
+
+您可能记得，THREE.Points 会根据提供的 THREE.BufferGeometry 的顶点来渲染每个点。这意味着如果我们提供一个复杂几何体（例如圆环结或管道），就可以基于该几何体的顶点创建 THREE.Points。在本章最后一节，我们将创建一个类似于第6章《探索高级几何体》中介绍的圆环结，并将其渲染为 THREE.Points 对象。  
+
+关于圆环结的详细说明已在第6章中介绍，这里不再赘述。下图展示了该示例（points-from-geom.html）：
+
+从以上截图可见，生成圆环结所用的每个顶点都被用作一个点。我们可以通过以下方式设置：
+
+如您所见，我们只需创建一个几何体，并将其作为 THREE.Points 对象的输入。通过这种方式，我们可以将任何几何体渲染为点对象。
+
+> **注意：**
+>
+> 若使用 Three.js 模型加载器（如 glTF 加载器）导入外部模型，通常会获得包含层级关系的对象结构——这些对象通常被分组在 THREE.Group 或 THREE.Object3D 中。此类情况下，需将每个组内的几何体单独转换为 THREE.Points 对象。
+
+## 总结  
+
+本章内容到此结束。我们已经讲解了精灵和点的概念，以及如何利用可用材质为这些对象设置样式。在本章中，您了解了如何直接使用 THREE.Sprite，以及当需要创建大量粒子时，应使用 THREE.Points 对象。使用 THREE.Points 时，所有元素共享相同的材质，对于单个粒子唯一可更改的属性是其颜色——通过将材质的 vertexColors 属性设置为 true，并在用于创建 THREE.Points 的 THREE.BufferGeometry 的 colors 数组中提供颜色值来实现。我们还展示了如何通过改变位置轻松实现粒子动画。这种方法对于单个 THREE.Sprite 实例和用于创建 THREE.Points 对象的几何体顶点同样适用。
+
+到目前为止，我们基于 Three.js 提供的几何体创建了网格。这对于简单模型（如球体和立方体）效果很好，但当需要创建复杂 3D 模型时，这并不是最佳方法。对于这些模型，通常需要使用 3D 建模应用程序，例如 Blender 或 3D Studio Max。在下一章中，您将学习如何加载和显示由这类 3D 建模应用程序创建的模型。
 
 # 8、创建和加载高级网格和几何体
 
