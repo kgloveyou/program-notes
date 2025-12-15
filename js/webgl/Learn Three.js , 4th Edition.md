@@ -1649,15 +1649,61 @@ renderer.render(sceneOrtho, cameraOrtho)
 
 创建组非常简单。你创建的每个网格都可以包含子元素，这些子元素可以使用 `add` 函数添加。将子对象添加到组中的效果是，你可以移动、缩放、旋转和平移父对象，所有的子对象也会受到影响。在使用组时，你仍然可以引用、修改和定位单独的几何体。你需要记住的唯一一件事是，所有的位置、旋转和平移都是相对于父对象进行的。
 
-**使用 `THREE.Group` 的性能影响**
+```js
+const size = 1
+const amount = 5000
+const range = 20
+const group = new THREE.Group()
+const mat = new THREE.MeshNormalMaterial()
+mat.blending = THREE.NormalBlending
+mat.opacity = 0.1
+mat.transparent = true
+for (let i = 0; i < amount; i++) {
+  const x = Math.random() * range - range / 2
+  const y = Math.random() * range - range / 2
+  const z = Math.random() * range - range / 2
+  const g = new THREE.BoxGeometry(size, size, size)
+  const m = new THREE.Mesh(g, mat)
+  m.position.set(x, y, z)
+  group.add(m)
+}
+```
 
-在我们进入下一节关于合并的内容之前，先简要说明一下性能问题。当你使用 `THREE.Group` 时，这个组内的所有单独的网格都被视为单独的对象，需要 Three.js 进行管理和渲染。如果你在场景中有大量的对象，你会看到性能明显下降。如果你看一下图 8.2 的左上角，你会发现在屏幕上有 5,000 个立方体时，我们的帧率（FPS）大约是 56。这还算不错，但通常我们的帧率应该在 120 FPS 左右。
+在此代码片段中，您可以看到我们创建了一个 THREE.Group 实例。这个对象几乎与 THREE.Object3D 完全相同，而 THREE.Object3D 是 THREE.Mesh 和 THREE.Scene 的基类，但就其本身而言，它并不包含任何内容，也不会导致任何东西被渲染。在本示例中，我们使用 add 函数将大量立方体添加到该场景中。对于本示例，我们还添加了可用于更改网格位置的控件。每当您使用此菜单更改某个属性时，THREE.Group 对象的相关属性也会随之改变。例如，在下一个示例中，您可以看到当我们缩放这个 THREE.Group 对象时，所有嵌套的立方体也会随之缩放：
 
+如果您想对 THREE.Group 对象进行更多实验，一个不错的练习是修改示例，使 THREE.Group 实例本身绕 x 轴旋转，而各个立方体则绕 y 轴旋转。
 
+> **使用 `THREE.Group` 的性能影响**
+>
+> 在我们进入下一节关于合并的内容之前，先简要说明一下性能问题。当你使用 `THREE.Group` 时，这个组内的所有单独的网格都被视为单独的对象，需要 Three.js 进行管理和渲染。如果你在场景中有大量的对象，你会看到性能明显下降。如果你看一下图 8.2 的左上角，你会发现在屏幕上有 5,000 个立方体时，我们的帧率（FPS）大约是 56。这还算不错，但通常我们的帧率应该在 120 FPS 左右。
 
 Three.js 还提供了另一种方法，我们可以通过它来控制单独的网格，但性能更好。这就是使用 `THREE.InstancedMesh`。如果你想渲染大量具有相同几何形状但具有不同变换（例如，旋转、缩放、颜色或任何其他矩阵变换）的对象，这个对象非常适合使用。
 
 我们创建了一个名为 instanced-mesh.html 的示例，展示了这个方法的工作原理。在这个示例中，我们渲染了 250,000 个立方体，但仍然保持了出色的性能。
+
+要使用 THREE.InstancedMesh 对象，我们创建它的方式与创建 THREE.Group 实例的方式类似：
+
+```js
+const size = 1
+const amount = 250000
+const range = 20
+const mat = new THREE.MeshNormalMaterial()
+mat.opacity = 0.1
+mat.transparent = true
+mat.blending = THREE.NormalBlending
+const g = new THREE.BoxGeometry(size, size, size)
+const mesh = new THREE.InstancedMesh(g, mat, amount)
+for (let i = 0; i < amount; i++) {
+  const x = Math.random() * range - range / 2
+  const y = Math.random() * range - range / 2
+  const z = Math.random() * range - range / 2
+  const matrix = new THREE.Matrix4()
+  matrix.makeTranslation(x, y, z)
+  mesh.setMatrixAt(i, matrix)
+}
+```
+
+与 THREE.Group 相比，创建 THREE.InstancedMesh 对象的主要区别在于，我们需要事先定义要使用的材质和几何体，以及要创建该几何体的实例数量。要定位或旋转其中一个实例，我们需要使用 THREE.Matrix4 实例提供变换信息。幸运的是，我们无需深入了解矩阵背后的数学原理，因为 Three.js 在 THREE.Matrix4 实例上为我们提供了几个辅助函数，用于定义旋转、平移以及其他一些变换。在本示例中，我们只是简单地将每个实例放置在随机位置。
 
 因此，如果你要处理少量的网格（或使用不同几何形状的网格），你应该使用 `THREE.Group` 对象将它们分组在一起。如果你处理的是大量共享几何体和材质的网格，你可以使用 `THREE.InstancedMesh` 对象或 `THREE.InstancedBufferGeometry` 对象以获得出色的性能提升。
 
@@ -1667,29 +1713,444 @@ Three.js 还提供了另一种方法，我们可以通过它来控制单独的�
 
 大多数情况下，使用组允许您轻松地操作和管理大量的网格。然而，当您处理大量对象时，性能将成为一个问题，因为 Three.js 必须单独处理组的所有子对象。通过 `BufferGeometryUtils.mergeBufferGeometries`，您可以将几何体合并在一起，创建一个组合的几何体，这样 Three.js 就只需要管理这个单一的几何体。在图 8.4 中，您可以看到这是如何工作的以及它对性能的影响。如果您打开 `merging.html` 示例，您会看到一个场景，其中包含了相同的随机分布的半透明立方体，我们将它们合并成一个单一的 `THREE.BufferGeometry` 对象：
 
+如你所见，我们能够轻松地渲染50,000个立方体，而性能没有任何下降。为此，我们使用了以下几行代码：
 
+```js
+const size = 1
+const amount = 500000
+const range = 20
+const mat = new THREE.MeshNormalMaterial()
+mat.blending = THREE.NormalBlending
+mat.opacity = 0.1
+mat.transparent = true
+const geoms = []
+for (let i = 0; i < amount; i++) {
+  const x = Math.random() * range - range / 2
+  const y = Math.random() * range - range / 2
+  const z = Math.random() * range - range / 2
+  const g = new THREE.BoxGeometry(size, size, size)
+  g.translate(x, y, z)
+  geoms.push(g)
+}
+const merged = BufferGeometryUtils.mergeBufferGeometries(geoms)
+const mesh = new THREE.Mesh(merged, mat)
+```
 
-**通过构造实体几何（Constructive Solid Geometry，CSG）**
+在此代码片段中，我们创建了大量的 THREE.BoxGeometry 对象，然后使用 BufferGeometryUtils.mergeBufferGeometries(geoms) 函数将它们合并在一起。结果是一个单一的大型几何体，我们可以将其添加到场景中。最大的缺点是，你失去了对各个立方体的控制，因为它们都被合并成了一个单一的大型几何体。如果你想移动、旋转或缩放单个立方体，你是无法做到的（除非你找到正确的面和顶点并单独定位它们）。
 
-除了在本章中看到的合并几何体的方式之外，我们还可以使用构造实体几何(CSG)来创建几何体。通过CSG，您可以对两个几何体应用操作（通常是加法、减法、差异和交集），从而组合出一个新的几何体，基于所选的操作。例如，使用CSG，很容易在一个立方体的一侧创建一个类似于球体凹陷的形状。您可以在Three.js中使用的两个库是`three-bvh-csg`（https://github.com/gkjohnson/three-bvh-csg）和`Three.csg`（https://github.com/looeee/threejs-csg）。
+> **通过构造实体几何（Constructive Solid Geometry，CSG）创建新几何体**
+>
+> 除了在本章中看到的合并几何体的方式之外，我们还可以使用构造实体几何(CSG)来创建几何体。通过CSG，您可以对两个几何体应用操作（通常是加法、减法、差异和交集），从而组合出一个新的几何体，基于所选的操作。例如，使用CSG，很容易在一个立方体的一侧创建一个类似于球体凹陷的形状。您可以在Three.js中使用的两个库是`three-bvh-csg`（https://github.com/gkjohnson/three-bvh-csg）和`Three.csg`（https://github.com/looeee/threejs-csg）。
+
+借助分组和合并方法，您可以使用Three.js提供的基本几何体创建大型且复杂的几何体。如果您想创建更高级的几何体，那么使用Three.js提供的编程方法并不总是最佳和最简单的选择。幸运的是，Three.js还提供了其他几种创建几何体的方法。在下一节中，我们将介绍如何从外部资源加载几何体和网格。
 
 ## 从外部资源加载几何体
 
-Three.js可以读取大量的3D文件格式，并导入这些文件中定义的几何体和网格。需要注意的是，并非所有这些格式的所有功能都总是被支持的。因此，有时可能会出现纹理有问题，或者材质设置不正确的情况。现在用于交换模型和纹理的新事实标准是glTF，因此，如果您想加载外部创建的模型，将这些模型导出为glTF格式通常会在Three.js中获得最佳结果。
+Three.js 可以读取大量 3D 文件格式，并导入这些文件中定义的几何体和网格。需要注意的是，并非所有这些格式的功能都始终得到支持。因此，有时可能会出现纹理问题，或者材质可能未正确设置。目前，用于交换模型和纹理的事实标准是 glTF，所以如果您想加载外部创建的模型，通常将这些模型导出为 glTF 格式会在 Three.js 中获得最佳效果。
 
-# 9、动画和移动相机
+在本节中，我们将更深入地探讨Three.js支持的一些格式，但不会向您展示所有加载器。以下列表展示了Three.js支持的格式概览：
+
+• AMF：AMF是另一种3D打印标准，但目前已不再积极开发。有关此标准的更多信息，请参阅以下维基百科页面：https://www.sculpteo.com/en/glossary/amf-definition/。
+
+• 3DM：3DM 是 Rhinoceros 使用的格式，Rhinoceros 是一款用于创建三维模型的工具。有关 Rhinoceros 的更多信息，请访问：https://www.rhino3d.com/。
+
+• 3MF：3MF是3D打印所采用的标准之一。有关此格式的更多信息，请访问3MF联盟主页：https://3mf.io。
+
+• 协作设计活动（COLLADA）：COLLADA 是一种以 XML 为基础的数字资产定义格式。这是一种应用广泛的格式，几乎所有的 3D 应用程序和渲染引擎都支持。
+
+• Draco：Draco 是一种文件格式，可极为高效地存储几何体和点云数据。它规定了这些元素的最佳压缩与解压缩方式。有关 Draco 工作原理的详细信息，请访问其 GitHub 页面：https://github.com/google/draco。
+
+• G代码：G代码是与3D打印机或CNC机床通信的一种标准方式。在打印模型时，控制3D打印机的一种方法就是向其发送G代码指令。该标准的详细内容请参阅以下论文：https://www.nist.gov/publications/nist-rs274ngc-interpreter-version-3?pub_id=823374。
+
+• glTF：这是一种规范，定义了3D场景和模型如何被不同应用和工具交换与加载，并正逐渐成为网络上模型交换的行业标准格式。它们以二进制格式（扩展名为.glb）和基于文本的格式（扩展名为.gltf）提供。有关此标准的更多信息，请访问：https://www.khronos.org/gltf/。
+
+• 工业基础类（IFC）：这是一种由建筑信息模型（BIM）工具使用的开放文件格式。它包含建筑物的模型以及大量有关所用材料的附加信息。有关此标准的更多信息，请访问：https://www.buildingsmart.org/standards/bsi-standards/industry-foundation-classes/。
+
+• JSON：Three.js 有自己的 JSON 格式，可用于以声明方式定义几何体或场景。尽管这并非官方格式，但它使用起来非常简便，在您希望复用复杂几何体或场景时尤为方便。
+
+• KMZ：这是Google Earth中用于3D资产的格式。更多信息请访问：https://developers.google.com/kml/documentation/kmzarchives。
+
+• LDraw：LDraw 是一种开放标准，可用于创建虚拟乐高模型和场景。更多信息请访问 LDraw 主页：https://ldraw.org。
+
+• LWO：这是LightWave 3D所使用的文件格式。有关LightWave 3D的更多信息，请访问：https://www.lightwave3d.com/。
+
+• NRRD：NRRD 是一种用于可视化体数据的文件格式。例如，它可用于渲染 CT 扫描图像。您可在此处找到大量相关信息和示例：http://teem.sourceforge.net/nrrd/。
+
+• OBJ 和 MTL：OBJ 是一种由 Wavefront Technologies 首次开发的简单 3D 格式。它是应用最广泛的 3D 文件格式之一，用于定义物体的几何形状。MTL 是 OBJ 的配套格式。在 MTL 文件中，会指定 OBJ 文件中各个物体的材质。如果您希望从 Three.js 将模型导出为 OBJ 格式，Three.js 还提供了一个自定义的 OBJ 导出器，称为 OBJExporter。
+
+• PCD：这是一种用于描述点云的开放格式。更多信息请访问：https://pointclouds.org/documentation/tutorials/pcd_file_format.html。
+
+• PDB：这是一种非常专业的格式，由蛋白质数据银行（PDB）创建，用于描述蛋白质的结构。Three.js 可以加载并可视化采用这种格式描述的蛋白质。
+
+• 多边形文件格式（PLY）：此格式最常用于存储来自3D扫描仪的信息。
+
+• 打包的原始WebGL模型（PRWM）：这是一种专注于高效存储和解析3D几何体的另一种格式。有关此标准的更多信息以及如何使用它，请参阅：https://github.com/kchapelier/PRWM。
+
+• 立体光刻（STL）：这是一种广泛用于快速原型制作的技术。例如，3D打印机的模型通常以STL文件形式定义。如果你希望从Three.js中将模型导出为STL格式，Three.js还提供了一个自定义的STL导出器，名为STLExporter.js。
+
+• SVG：SVG 是一种定义矢量图形的标准方式。此加载器可让您加载 SVG 文件，并返回一组 THREE.Path 元素，您可使用这些元素进行拉伸或在 2D 中渲染。
+
+• 3DS：Autodesk 3DS 格式。更多信息请访问 https://www.autodesk.com/。
+
+• TILT：TILT 是 Tilt Brush 所采用的格式，这是一款可在 VR 中进行绘画的工具。更多信息请访问：https://www.tiltbrush.com/。
+
+• VOX：MagicaVoxel所使用的格式，这是一款免费工具，可用于创作体素艺术。更多信息请访问MagicaVoxel主页：https://ephtracy.github.io/。
+
+• 虚拟现实建模语言（VRML）：这是一种基于文本的格式，可用于指定3D对象和世界。它已被X3D文件格式所取代。Three.js不支持加载X3D模型，但这些模型可轻松转换为其他格式。更多信息请访问http://www.x3dom.org/?page_id=532#。
+
+• 可视化工具包（VTK）：这是由VTK定义并用于指定顶点和面的文件格式。该格式有两种形式：二进制格式和基于文本的ASCII格式。Three.js仅支持基于ASCII的格式。
+
+• XYZ：这是一种用于描述三维空间中点的非常简单的文件格式。更多信息请访问：https://people.math.sc.edu/Burkardt/data/xyz/xyz.html。
+
+在第9章“动画与摄像机移动”中，当我们探讨动画时，将再次回顾其中一些格式（并了解若干新增格式）。
+
+正如您从这份列表中所看到的，Three.js 支持数量庞大的3D文件格式。我们不会逐一介绍所有这些格式，而只重点介绍其中最有趣的几个。我们将从JSON加载器开始，因为它提供了一种便捷的方式，用于存储和检索您自己创建的场景。
+
+### 使用Three.js的JSON格式进行保存和加载
+
+您可以在Three.js中针对两种不同场景使用Three.js JSON格式。您可以利用它来保存和加载单个THREE.Object3D对象（这意味着您也可以用它来导出THREE.Scene对象）。
+
+为了演示保存与加载功能，我们基于THREE.TorusKnotGeometry创建了一个简单示例。通过这个示例，你可以像我们在第5章中那样创建一个环面纽结，并借助“保存/加载”菜单中的“保存”按钮，将当前的几何体保存下来。在本示例中，我们采用HTML5本地存储API进行保存。该API能够让我们轻松地在客户端浏览器中存储持久化信息，并在稍后随时调用（即使浏览器已关闭并重新启动）：
+
+在前面的截图中，您可以看到两个网格——红色的是我们加载的网格，黄色的是原始网格。如果您自己打开这个示例并点击保存按钮，当前网格的状态将被存储。现在，您可以刷新浏览器并点击加载，保存的状态将以红色显示。
+
+从Three.js导出JSON非常简单，无需引入任何额外的库。你唯一需要做的就是将THREE.Mesh导出为JSON，并将其存储在浏览器的localStorage中，如下所示：
+
+```json
+const asJson = mesh.toJSON()
+localStorage.setItem('json', JSON.stringify(asJson))
+```
+
+此 JSON 字符串如下所示：
+
+```json
+{
+  "metadata": {
+    "version": 4.5,
+    "type": "Object",
+    "generator": "Object3D.toJSON"
+  },
+  "geometries": [
+    {
+      "uuid": "15a98944-91a8-45e0-b974-0d505fcd12a8",
+      "type": "TorusKnotGeometry",
+      "radius": 1,
+      "tube": 0.1,
+      "tubularSegments": 200,
+      "radialSegments": 10,
+      "p": 6,
+      "q": 7
+    }
+  ],
+  "materials": [
+    {
+      "uuid": "38e11bca-36f1-4b91-b3a5-0b2104c58029",
+      "type": "MeshStandardMaterial",
+      "color": 16770655,
+      // left out some material properties
+      "stencilFuncMask": 255,
+      "stencilFail": 7680,
+      "stencilZFail": 7680,
+      "stencilZPass": 7680
+    }
+  ],
+  "object": {
+    "uuid": "373db2c3-496d-461d-9e7e-48f4d58a507d",
+    "type": "Mesh",
+    "castShadow": true,
+    "layers": 1,
+    "matrix": [
+      0.5,
+      ...
+      1
+    ],
+    "geometry": "15a98944-91a8-45e0-b974-0d505fcd12a8",
+    "material": "38e11bca-36f1-4b91-b3a5-0b2104c58029"
+  }
+}
+```
+
+如你所见，Three.js 保存了关于 THREE.Mesh 对象的所有信息。将 THREE.Mesh 加载回 Three.js 也只需几行代码，如下所示：
+
+```js
+const fromStorage = localStorage.getItem('json')
+if (fromStorage) {
+  const structure = JSON.parse(fromStorage)
+  const loader = new THREE.ObjectLoader()
+  const mesh = loader.parse(structure)
+  mesh.material.color = new THREE.Color(0xff0000)
+  scene.add(mesh)
+}
+```
+
+在这里，我们首先使用保存时所用的名称（本例中为json）从本地存储中获取JSON。为此，我们使用HTML5本地存储API提供的localStorage.getItem函数。接下来，我们需要将字符串转换回JavaScript对象(JSON.parse)，并将JSON对象转换回THREE.Mesh。Three.js提供了一个名为THREE.ObjectLoader的辅助对象，你可以用它将JSON转换为THREE.Mesh。在本示例中，我们直接对加载器调用了parse方法来解析JSON字符串。加载器还提供了一个load函数，你可以在其中传递包含JSON定义的文件的URL。
+
+如您在此处所见，我们仅保存了一个 THREE.Mesh 对象，因此会丢失其他所有内容。如果您想保存完整的场景，包括灯光和摄像机，可以使用相同的方法来导出场景：
+
+```js
+const asJson = scene.toJSON()
+localStorage.setItem('scene', JSON.stringify(asJson))
+```
+
+这可以按照我们之前为 THREE.Mesh 对象展示的方式加载。虽然在仅使用 Three.js 时，以 JSON 格式存储当前场景和对象非常方便，但这种格式并不容易与其他工具或程序进行交换或创建。在下一节中，我们将更深入地探讨 Three.js 支持的一些 3D 格式。
+
+## 从3D文件格式导入
+
+在本章开头，我们列出了 Three.js 支持的多种格式。在本节中，我们将快速浏览这些格式的一些示例。
+
+### OBJ 和 MTL 格式
+
+OBJ 和 MTL 是配套格式，通常一起使用。OBJ 文件定义几何体，MTL 文件定义所使用的材质。OBJ 和 MTL 都是基于文本的格式。OBJ 文件的一部分如下所示：
+
+```
+v -0.032442 0.010796 0.025935
+v -0.028519 0.013697 0.026201
+v -0.029086 0.014533 0.021409
+usemtl Material
+s 1
+f 2731 2735 2736 2732
+f 2732 2736 3043 3044
+```
+
+MTL 文件定义材质，如下所示：
+
+```
+newmtl Material
+Ns 56.862745
+Ka 0.000000 0.000000 0.000000
+Kd 0.360725 0.227524 0.127497
+Ks 0.010000 0.010000 0.010000
+Ni 1.000000
+d 1.000000
+illum 2
+```
+
+OBJ 和 MTL 格式受 Three.js 的良好支持，因此如果您想交换 3D 模型，这是一个不错的格式选择。Three.js 提供了两种不同的加载器可供使用。如果您只想加载几何体，可以使用 OBJLoader。我们在示例中使用了此加载器（load-obj.html）。以下截图展示了此示例：
+
+从外部文件加载OBJ模型的方法如下：
+
+在本章中，我们将使用基于 Promise 的 loadAsync 方法，因为它避免了嵌套回调，并使这种类型的调用链式处理变得更容易。下一个示例（load-obj-mtl.html）使用 OBJLoader 和 MTLLoader 来加载模型并直接分配材质。以下截图展示了此示例：
+
+在查看代码之前，首先要说明的是，如果您收到一个OBJ文件、一个MTL文件以及所需的纹理文件，您需要检查MTL文件是如何引用这些纹理的。这些引用应相对于MTL文件进行，而不能使用绝对路径。这段代码本身与我们之前看到的THREE.ObjLoader代码差别不大。首先，我们用一个THREE.MTLLoader对象加载MTL文件，然后通过setMaterials函数将加载的材质设置到THREE.ObjLoader中。
+
+我们在此示例中使用的模型很复杂。因此，我们在回调中设置了一些特定属性，以解决若干渲染问题，如下所示：
+
+•  我们需要合并模型中的顶点，以便将其渲染为平滑的模型。为此，我们首先需要从加载的模型中删除已定义的法线向量，这样我们就可以使用BufferGeometryUtils.mergeVertices和computeVertexNormals函数，为Three.js提供正确渲染模型所需的信息。
+
+•  源文件中的不透明度设置有误，导致翅膀不可见。因此，为了修复这个问题，我们自己设置了不透明度和透明属性。
+
+•  默认情况下，Three.js 只渲染对象的一侧。由于我们从两个侧面观察翅膀，我们需要将 side 属性设置为 THREE.DoubleSide 值。
+
+•  当需要将翅膀叠加在一起渲染时，它们会产生一些不需要的伪影。我们通过设置 alphaTest 属性解决了这个问题。
+
+但正如你所见，你可以轻松地将复杂模型直接加载到Three.js中，并在浏览器中实时渲染它们。不过，你可能需要微调各种材质属性。
+
+### 加载 gLTF 模型
+
+我们已经提到，glTF 是在 Three.js 中导入数据时非常棒的格式。为了向您展示导入和呈现甚至复杂场景是多么简单，我们添加了一个示例，其中我们直接从 https://sketchfab.com/3d-models/sea-house-bc4782005e9646fb9e6e18df61bfd28d 获取了一个模型:
+
+正如您从之前的截图中所看到的，这并不是一个简单的场景，而是一个复杂的场景，包含大量模型、纹理、阴影和其他元素。要在Three.js中实现这一点，我们只需做以下操作：
+
+```js
+const loader = new GLTFLoader()
+return loader.loadAsync('/assets/models/sea_house/scene.gltf').then((structure) => {
+  structure.scene.scale.setScalar(0.2, 0.2, 0.2)
+  visitChildren(structure.scene, (child) => {
+    if (child.material) {
+      child.material.depthWrite = true
+    }
+  })
+  scene.add(structure.scene)
+})
+```
+
+你已经熟悉异步加载器了，我们唯一需要修复的是确保材质的 depthWrite 属性设置正确（这似乎是某些 glTF 模型中常见的问题）。就这么简单——它就是能用。glTF 还允许我们定义动画，这一点我们将在下一章中更深入地探讨。
+
+### 显示完整的乐高模型
+
+除了3D模型——其中模型定义了顶点、材质、光源等——还有各种文件格式，它们并不显式地定义几何体，但具有更具体的用途。我们将在本节中介绍的LDrawLoader加载器，就是为渲染乐高模型而创建的3D加载器。使用这个加载器的方式与我们之前已经见过的几次完全相同：
+
+http://localhost:8080/chapter-8/load-ldraw.html
+
+如果你想探索更多模型，可以从LDraw仓库下载：https:// omr.ldraw.org/.
+
+### 加载基于体素的模型（voxel-based models）
+
+另一种有趣的创建3D模型的方法是使用体素。这使你可以用小立方体构建模型，并使用Three.js进行渲染。例如，你可以使用这种工具在Minecraft之外创建Minecraft结构，并在稍后将其导入Minecraft。一个免费的体素实验工具是MagicaVoxel (https://ephtracy.github.io/)。这个工具允许你创建像这样的体素模型：
+
+有趣的是，你可以使用 VOXLoader 加载器轻松地在 Three.js 中导入这些模型，如下所示：
+
+http://localhost:8080/chapter-8/load-vox.html
+
+有趣的是，你可以使用 VOXLoader 加载器轻松地在 Three.js 中导入这些模型，如下所示：
+
+### 显示来自PDB的蛋白质
+
+PDB网站（www.rcsb.org）包含许多不同分子和蛋白质的详细信息。除了对这些蛋白质的解释外，它还提供了一种以PDB格式下载这些分子结构的方法。Three.js为PDB格式指定的文件提供了一个加载器。在本节中，我们将举例说明如何解析PDB文件并使用Three.js进行可视化。
+
+包含此加载器后，我们将创建以下分子描述的3D模型（请参阅load-pdb.html示例）：
+
+### 从PLY模型加载点云
+
+使用PLY格式与使用其他格式并没有太大区别。你需要包含加载器并处理加载的模型。不过，在这个最后一个示例中，我们将采用一种不同的方法。我们不会将模型渲染为网格，而是利用该模型中的信息创建一个粒子系统（请参阅以下截图中的load-ply.html示例）：
+
+用于呈现上述屏幕截图的 JavaScript 代码实际上非常简单；它看起来像这样：
+
+```js
+const texture = new THREE.TextureLoader().load('/assets/textures/particles/glow.png')
+const material = new THREE.PointsMaterial({
+  size: 0.15,
+  vertexColors: false,
+  color: 0xffffff,
+  map: texture,
+  depthWrite: false,
+  opacity: 0.1,
+  transparent: true,
+  blending: THREE.AdditiveBlending
+})
+return new PLYLoader().loadAsync('/assets/models/carcloud/carcloud.ply').then((model) => {
+  const points = new THREE.Points(model, material)
+  points.scale.set(0.7, 0.7, 0.7)
+  scene.add(points)
+})
+```
+
+正如你所见，我们使用 THREE.PLYLoader 加载模型，并将此几何体用作 THREE.Points 的输入。我们使用的材质与我们在第 7 章最后一个示例中使用的相同，即 Points and Sprites。正如你所见，借助 Three.js，只需几行代码，就能非常轻松地组合来自不同来源的模型，并以不同的方式呈现它们。
+
+### 其他加载器
+
+在本章开头的“从外部资源加载几何体”部分，我们向您展示了Three.js提供的所有不同加载器列表。我们在第8章的源文件中提供了所有这些加载器的示例:
+
+所有这些加载器的源代码都遵循与我们在本章中所解释的加载器相同的模式。只需加载模型，确定要显示已加载模型的哪一部分，确保缩放和位置正确，然后将其添加到场景中。
+
+### 加载PCD模型
+
+```js
+import { bootstrapMeshScene } from './util/standard-scene'
+import { PCDLoader } from 'three/examples/jsm/loaders/PCDLoader'
+
+const modelAsync = () => {
+  return new PCDLoader().loadAsync('/assets/models/points/car6.pcd').then((model) => {
+    model.translateY(66)
+    model.translateX(37)
+    model.translateZ(6)
+
+    model.material.size = 0.03
+
+    return model
+  })
+}
+
+bootstrapMeshScene({
+  loadMesh: modelAsync
+}).then()
+```
+
+## 总结
+
+在 Three.js 中使用外部来源的模型并不难，尤其是对于简单的模型——你只需采取几个简单的步骤。
+
+在使用外部模型或通过分组和合并创建模型时，需要注意以下几点。首先，您需要记住的是，当您对对象进行分组时，这些对象仍可作为独立对象使用。应用于父级的变换也会影响子级，但您仍然可以单独变换子级。除了分组之外，您还可以将几何体合并到一起。采用这种方法后，您将失去各个独立的几何体，而得到一个全新的单一几何体。这在处理数千个需要渲染的几何体并遇到性能问题时特别有用。如果您想控制大量具有相同几何形状的网格，最后一种方法是使用THREE.InstancedMesh对象或THREE.InstancedBufferGeometry对象。这两种对象允许您定位和变换各个网格，同时还能获得出色的性能。
+
+Three.js 支持大量外部格式。在使用这些格式加载器时，最好查看一下源代码，并添加 console.log 语句，以确定所加载的数据的真实面貌。这将有助于您了解为获得正确的网格并将其设置到正确的位置和比例需要采取哪些步骤。通常，当模型显示不正确时，这是由其材质设置引起的。可能是使用了不兼容的纹理格式、不正确地定义了透明度，或者格式中包含了指向纹理图像的错误链接。通常，使用测试材质来确定模型本身是否正确加载是个好主意，并将加载的材质记录到 JavaScript 控制台，以检查是否存在意外值。
+
+如果您想重用自己的场景或模型，只需调用 asJson 函数将其导出，然后使用 ObjectLoader 再次加载即可.
+
+你在本章以及前几章中所使用的模型大多是静态模型。它们没有动画效果，不会移动，也不会改变形状。在第9章中，你将学习如何为你的模型添加动画，让它们栩栩如生。除了动画之外，下一章还将介绍Three.js提供的各种相机控制功能。借助相机控制，你可以围绕场景移动、平移和旋转相机。
+
+# 9、动画与摄像机移动
+
+在之前的章节中，我们看到了一些简单的动画，但并没有涉及太复杂的内容。在第1章“使用Three.js创建你的第一个3D场景”中，我们介绍了基本的渲染循环；在接下来的几章中，我们利用这个循环旋转了一些简单的物体，并展示了一些其他基本的动画概念。
+
+在本章中，我们将更详细地探讨Three.js如何支持动画。我们将涉及以下四个主题：
+
+- 基本动画
+- 使用相机
+- 变形和骨骼动画
+- 使用外部模式创建动画
+
+我们将首先介绍动画背后的基本概念。
 
 ## 基本动画
 
+在我们看示例之前，让我们快速回顾一下第1章中介绍的内容，即渲染循环。为了支持动画，我们需要告诉Three.js每隔一段时间就渲染一次场景。为此，我们使用标准的HTML5 requestAnimationFrame功能，如下所示：
+
+```js
+function animate() {
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
+}
+animate();
+```
+
+有了这段代码，我们只需在初始化场景后调用一次render()函数。在render()函数内部，我们使用requestAnimationFrame来安排下一次渲染。这样一来，浏览器就能确保render()函数以正确的间隔被调用（通常每秒约60次或120次）。在requestAnimationFrame被引入浏览器之前，人们会使用setInterval(function, interval)或setTimeout(function, interval)。这些方法会在设定的间隔内每次调用指定的函数。
+
+这种方法的问题在于，它没有考虑到其他正在发生的事情。即使你的动画没有显示出来，或者在隐藏的选项卡中，它仍然会被调用，并且仍在占用资源。另一个问题是，这些函数每次被调用时都会更新屏幕，而不是在浏览器最适宜的时候更新，这会导致更高的CPU使用率。而通过requestAnimationFrame，我们并不告诉浏览器何时需要更新屏幕；我们只是请求浏览器在最恰当的时候运行提供的函数。通常，这会带来大约60或120 FPS的帧率（具体取决于你的硬件）。借助requestAnimationFrame，你的动画将运行得更加流畅，对CPU和GPU也更加友好，而且你也不用再担心时间同步问题了。
+
+在下一节中，我们将从创建一个简单的动画开始
+
+### 简单动画
+
+通过这种方法，我们可以通过改变对象的旋转、缩放、位置、材质、顶点、面以及你能想到的任何其他属性，非常轻松地实现对象的动画效果。在下一个渲染循环中，Three.js 将会渲染这些已更改的属性。一个非常简单的示例，基于我们在第 7 章“点和精灵”中已经看到的示例，可在 01-basic-animations.html 中找到。以下截图展示了这个示例：
+
+这个渲染循环非常简单。首先，我们初始化 userData 对象上的各种属性——这是一个用于存储自定义数据的场所，这些数据保存在 THREE.Mesh 本身中；然后，我们使用在 userData 对象上定义的数据更新网格上的这些属性。在动画循环中，只需根据这些属性更改旋转、位置和缩放，其余部分由 Three.js 处理。以下是我们的实现方式：
+
+这里没什么特别的，但它很好地展示了本书中我们将要讨论的基本动画背后的概念。我们只需改变缩放、旋转和位置属性，Three.js会完成剩下的工作。
+
+在下一节中，我们将快速绕道而行。除了动画之外，当您在更复杂的场景中使用Three.js时，很快就会遇到的一个重要方面是：能够用鼠标在屏幕上选择对象。
+
 ### 选择和移动对象
+
+尽管这与动画没有直接关系，但由于本章将涉及摄像机和动画，因此了解如何选择和移动对象也是对本章所讲解内容的一个很好的补充。在此，我们将向您展示如何执行以下操作：
+
+•  使用鼠标从场景中选择一个对象
+
+•  用鼠标在场景中拖动对象
+
+我们先来看看选择一个对象所需的步骤。
 
 #### 选择对象
 
-当你在场景中移动鼠标时，你会看到每当你的鼠标点击一个对象时，该对象就会突出显示。 你可以使用 `THREE.Raycaster` 轻松创建它。raycaster  将查看你当前的相机并将光线从相机投射到你的鼠标位置。 在此基础上，它可以根据鼠标的位置计算出击中了哪个对象。为此，我们需要采取以下步骤：
+当你在场景中移动鼠标时，你会发现，每当鼠标碰到某个物体时，该物体就会被高亮显示。你可以通过使用 `THREE.Raycaster`轻松实现这一点。射线检测器会查看你当前的摄像机，并从摄像机向鼠标位置发射一条射线。根据这条射线，它能够根据鼠标的当前位置计算出被击中的物体。为了实现这一功能，我们需要执行以下步骤：
+
+- 创建一个对象，用于跟踪鼠标指向的位置
+- 每当我们移动鼠标时，就更新该对象。
+- 在渲染循环中，使用此更新后的信息来查看我们正指向哪个Three.js对象
+
+以下代码片段中显示了这一点：
+
+```js
+// initially set the position to -1, -1
+let pointer = {
+  x: -1,
+  y: -1
+}
+// when the mouse moves update the point
+document.addEventListener('mousemove', (event) => {
+  pointer.x = (event.clientX / window.innerWidth) * 2 - 1
+  pointer.y = -(event.clientY / window.innerHeight) * 2 + 1
+})
+// an array containing all the cubes in the scene
+const cubes = ...
+// use in the render loop to determine the object to highlight
+const raycaster = new THREE.Raycaster()
+function render() {
+  raycaster.setFromCamera(pointer, camera)
+  const cubes = scene.getObjectByName('group').children
+  const intersects = raycaster.intersectObjects(cubes)
+  // do something with the intersected objects
+}
+```
+
+在这里，我们使用 THREE.Raycaster 来确定哪些对象与从摄像机位置发出的鼠标位置相交。结果（相交，在前面的示例中）包含了所有与我们的鼠标相交的立方体，因为光线是从摄像机位置射出，一直延伸到摄像机范围的尽头。此数组中的第一个元素是我们正悬停其上的那个，而此数组中的其他值（如果有的话）则指向位于第一个网格后面的对象。THREE.Raycaster 还提供了关于你确切击中对象位置的其他信息：
+
+在这里，我们点击了`face`对象。`faceIndex` 指向所选网格的面。`distance` 值是从相机到所点击对象的距离，而point 是在网格上被点击的确切位置。最后，我们得到了 uv 值，它决定了在使用纹理时，所点击的点在 2D 纹理上的显示位置（范围从 0 到 1；有关 uv 的更多信息，请参阅第 10 章“加载与处理纹理”）。
 
 #### 拖动对象
 
-为了支持拖动对象，Three.js 使用了一种叫做 `DragControls` 的东西。
+除了选择对象之外，一个常见的需求是能够拖动并移动对象。Three.js 也为此提供了默认支持。如果你在浏览器中打开 dragging-objects.html 示例，你会看到与图 9.2 所示类似的场景:在这个时候，当你点击某个对象时，就可以将其拖动到场景中的任意位置了：
+
+为支持拖动对象，Three.js 使用了一种称为 `DragControls` 的东西。它负责处理所有相关事宜，并在拖动开始和结束时提供便捷的回调函数。实现这一功能的代码如下所示：
 
 ```js
 const orbit = new OrbitControls(camera, renderer.domElement)
@@ -1709,49 +2170,400 @@ controls.addEventListener('dragend', function (event) {
 return controls
 ```
 
-还有一个更高级的 `DragControls` 版本，称为 `TransformControls`。 我们不会详细介绍此控件，但它允许你使用简单的 UI 来转换网格的属性。 当你在浏览器中打开 `transform-controls-html` 时，你可以找到此控件的示例：
+就这么简单。在这里，我们添加了DragControls，并传入了可拖动的元素（在我们的例子中，就是所有随机放置的立方体）。然后，我们添加了两个事件监听器。第一个事件监听器dragstart，会在我们开始拖动立方体时触发；而dragend则会在我们停止拖动对象时触发。在这个示例中，当我们开始拖动时，我们会禁用OrbitControls（这样我们就可以用鼠标来环视场景），并改变所选对象的颜色。一旦我们停止拖动，就会将对象的颜色恢复原状，并重新启用OrbitControls。
 
+还有一个更高级的`DragControls`版本，名为`TransformControls`。我们不会详细介绍这个控件，但它允许您使用一个简单的UI来变换网格的属性。当您在浏览器中打开transform-controls-html时，可以找到该控件的一个示例：
 
+如果您单击此控件的各个部分，可以轻松地更改立方体的形状：
 
-**可以切换平移、旋转和缩放3种模式。**
+**该控件可以切换平移、旋转和缩放3种模式。**
 
-### 使用 Tween.js 制作动画
+对于本章的最后一个示例，我们将向您展示如何使用补间动画库以一种替代方式修改对象的属性（正如我们在本章的第一个示例中所看到的）。
+
+### 使用Tween.js进行动画处理
+
+Tween.js 是一个小型 JavaScript 库，您可以从 https://github.com/sole/tween.js/ 下载，并可轻松地定义属性在两个值之间的过渡。起始值和结束值之间的所有中间点都会为您计算出来。这一过程称为补间动画。例如，您可以使用此库将网格的 x 位置从 10 更改为 3，耗时 10 秒，如下所示：
+
+```js
+const tween = new TWEEN.Tween({ x: 10 }).to({ x: 3 }, 10000)
+  .easing(TWEEN.Easing.Elastic.InOut)
+  .onUpdate(function () {
+    // update the mesh
+  })
+```
+
+或者，您可以创建一个单独的对象，并将其传递给您想要处理的网格：
+
+```js
+const tweenData = {
+  x: 10
+}
+new TWEEN.Tween(tweenData)
+  .to({ x: 3 }, 10000)
+  .yoyo(true)
+  .repeat(Infinity)
+  .easing(TWEEN.Easing.Bounce.InOut)
+  .start()
+mesh.userData.tweenData = tweenData
+```
+
+在本示例中，我们创建了TWEEN.Tween。此补间动画将确保x属性在10,000毫秒内从10变为3。Tween.js还允许您定义该属性随时间变化的方式。这可以通过线性、二次或其他任何方式实现（请参阅http://sole.github.io/tween.js/examples/03_graphs.html以获取完整概述）。值随时间的变化称为缓动。使用Tween.js时，您可通过easing()函数进行配置。此库还提供了其他方法来控制缓动的执行方式。例如，我们可以设置缓动重复的频率(repeat(10))以及是否希望出现悠悠效果（这意味着在本示例中，我们将从10变到3，然后再回到10）。
+
+将此库与Three.js一起使用非常简单。如果您打开tween-animations.html示例，您会看到Tween.js库正在运行。以下截图显示了该示例的静态图像：
+
+在本示例中，我们采用了第7章中的点云，并创建了一个动画，其中所有点都缓慢地向中心移动。这些粒子的位置是通过使用Tween.js库创建的补间动画来设置的，如下所示：
+
+借助这段代码，我们创建了一个补间动画，它将一个值从1过渡到0，然后再返回。要使用补间动画中的值，我们有两种不同的选择：我们可以使用该库提供的onUpdate函数，每当补间动画更新时（通过调用TWEEN.update()实现），就调用一个带有更新后值的函数；或者，我们可以直接访问更新后的值。在本示例中，我们采用了后一种方法。
+
+在我们查看需要对渲染函数进行的更改之前，我们必须在加载模型后执行一个额外的步骤。我们希望在原始值与零之间进行补间动画，然后再恢复到原始值。为此，我们需要将顶点的原始位置存储起来。我们可以通过复制起始位置数组来实现这一点：
+
+```js
+geometry.setAttribute('originalPos', geometry.attributes['position'].clone())
+```
+
+有了这些步骤，补间库将负责在屏幕上定位各个点。正如你所见，使用这个库比自己管理过渡要容易得多。除了对对象进行动画处理和变换之外，我们还可以通过移动摄像机来为场景添加动画效果。在之前的章节中，我们曾多次手动更新摄像机位置来实现这一功能。Three.js 还提供了几种额外的更新摄像机的方法。
 
 ## 使用相机
 
 Three.js 有几个相机控件，你可以使用它来控制整个场景中的相机。 这些控件位于 Three.js 发行版中，可以在 examples/js/controls 目录中找到。 在本节中，我们将更详细地了解以下控件：
 
 - `ArcballControls`：一个广泛的控件，它提供了一个透明的覆盖层，你可以使用它轻松地四处移动相机。
-
 - `FirstPersonControls`：这些控件的行为类似于第一人称射击游戏中的控件。你可以使用键盘四处移动并使用鼠标环顾四周。
-
 - `FlyControls`：这些是类似飞行模拟器的控件。 你可以使用键盘和鼠标移动和操纵。
-
 - `OrbitControls`：这模拟了围绕特定场景在轨道上运行的卫星。 这使你可以使用鼠标和键盘四处移动。
-
 - `PointerLockControls`：这些类似于第一人称控件，但它们还将鼠标指针锁定在屏幕上，使其成为简单游戏的绝佳选择。
-
 - `TrackBallControls`：这些是最常用的控件，允许你使用鼠标（或轨迹球）轻松移动、平移和缩放场景。
+
+除了使用这些相机控件，您还可以通过设置其位置并使用 lookAt() 函数更改其指向的位置，自行移动相机。
+
+我们首先来看的控制是ArcballControls.
 
 ### ArcballControls
 
+解释ArcballControls工作原理最简单的方法就是看一个示例。如果你打开arcball-controls.html示例，你会看到一个简单的场景，如下所示：
+
+如果你仔细观察这个截图，会看到两条半透明的线横跨整个场景。这些线是由ArcballControls提供的，你可以用它们来旋转和移动场景。这些线被称为小工具。左键用于旋转场景，右键可用于平移，而滚轮则可以用来放大或缩小。
+
+除了此标准功能之外，此控件还允许您聚焦于所显示网格的特定部分。如果您双击场景，相机将聚焦于场景的该部分。要使用此控件，我们只需实例化它，并传入相机属性、渲染器使用的domElement属性以及我们正在查看的场景属性即可：
+
+```js
+import { ArcballControls } from 'three/examples/jsm/controls/ArcballControls'
+const controls = new ArcballControls(camera, renderer.domElement, scene)
+controls.update()
+```
+
+此控件功能非常灵活，可通过一组属性进行配置。在本示例中，您可使用右侧菜单探索其中的大部分属性。对于此特定控件，我们将更深入地探讨该对象提供的属性和方法，因为它是一个功能灵活的控件，也是希望为用户提供一种便捷方式来浏览场景时的理想选择。让我们先来概述一下此控件提供的属性和方法。首先，我们来看一下属性：
+
+此控件还提供若干方法，以进一步交互或配置它：
+
+ArcballControls 是 Three.js 中一个非常有用且相对较新的功能，它通过鼠标提供了对场景的高级控制。如果您正在寻找一种更简单的方法，可以使用 TrackBallControls。
+
 ### TrackBallControls
 
-左键旋转，右键平移，滚轮缩放。
+使用 TrackBallControls 的方法与我们之前看到的 ArcballControls 相同：
 
-`THREE.Clock` 对象可用于计算完成特定调用或渲染循环所用的时间。你可以通过调用 `clock.getDelta()` 函数来完成此操作。 该函数将返回本次调用与上一次调用 `getDelta()` 之间的经过时间。为此，我们可以使用 `THREE.Clock` 对象中的 `getDelta()` 函数。 你可能想知道为什么我们不直接将帧速率（1/60 秒）传递给更新函数。 原因是使用 `requestAnimationFrame`，我们可以期待 60 FPS，但这并不能保证。 根据各种外部因素，帧速率可能会发生变化。 为了确保相机转动和旋转顺畅，我们需要传入准确的经过时间。
+```js
+import { TrackBallControls } from 'three/examples/jsm/controls/TrackBallControls'
+const controls = new TrackBallControls(camera, renderer.domElement)
+```
+
+这一次，我们只需从渲染器中传入相机和 domeElement 属性。为了使轨道球控件正常工作，我们还需要添加一个 THREE.Clock 并更新渲染循环，如下所示：
+
+```js
+const clock = new THREE.Clock()
+function animate() {
+  requestAnimationFrame(animate)
+  renderer.render(scene, camera)
+  controls.update(clock.getDelta())
+}
+```
+
+在前面的代码片段中，我们可以看到一个新的Three.js对象，THREE.Clock。THREE.Clock对象可用于计算特定调用或渲染循环完成所花费的经过时间。你可以通过调用clock.getDelta()函数来实现这一点。该函数将返回从本次调用到上一次调用getDelta()之间的经过时间。要更新相机的位置，我们可以调用TrackBallControls.update()函数。在这个函数中，我们需要提供自上次调用update函数以来经过的时间。为此，我们可以使用THREE.Clock对象中的getDelta()函数。你可能会想：为什么我们不直接将帧率（1/60秒）传入update函数呢？原因在于，虽然借助requestAnimationFrame，我们能预期达到60 FPS，但这并不是绝对保证的。根据各种外部因素的不同，帧率可能会发生变化。为了确保相机能够平稳地转动和旋转，我们必须传入准确的经过时间。
+
+此功能的运行示例可在 trackball-controls-camera.html 中找到。以下屏幕截图显示了此示例的静态图像：
+
+您可以按以下方式控制相机：
+
+- 左键单击并移动：围绕场景旋转和滚动相机 
+- 滚轮：放大和缩小 
+- 中键并移动：放大和缩小 
+- 右键单击并移动：在场景中平移
+
+有一些属性可用于微调相机的行为。例如，您可以使用rotateSpeed属性设置相机旋转的速度，并通过将noZoom属性设置为true来禁用缩放功能。在本章中，我们不会详细介绍每个属性的具体作用，因为它们几乎不言自明。如需了解可能的完整概览，请查看 TrackBallControls.js 文件的源代码，其中列出了这些属性。
 
 ### FlyControls
 
+我们接下来要了解的控制是FlyControls。借助FlyControls，你可以使用飞行模拟器中也有的控件在场景中自由飞行。一个示例可在fly-controls-camera.html中找到。以下截图显示了该示例的静态图像：
+
+启用 FlyControls 的工作方式与其他控件相同：
+
+```js
+import { FlyControls } from 'three/examples/jsm/controls/FlyControls'
+const controls = new FlyControls(camera, renderer.domElement)
+const clock = new THREE.Clock()
+function animate() {
+  requestAnimationFrame(animate)
+  renderer.render(scene, camera)
+  controls.update(clock.getDelta())
+}
+```
+
+FlyControls 将相机和渲染器的 domElement 作为参数，并要求您在渲染循环中使用经过的时间调用 update() 函数。您可以按以下方式使用 THREE.FlyControls 控制相机：
+
+• 鼠标左键和中键：开始向前移动 
+
+• 右键：后退 • 鼠标移动：环顾四周 
+
+•  W：开始向前移动 
+
+•  S：向后移动 
+
+•  A：向左移动 
+
+•  D：向右移动 
+
+•  R：向上移动 
+
+•  F：向下移动 
+
+• 左、右、上、下箭头：分别向左、右、上、下看 
+
+•  G：向左滚动 
+
+•  E：向右滚动
+
+我们接下来要了解的控制是THREE.FirstPersonControls.
+
 ### FirstPersonControls  
 
+顾名思义，FirstPersonControls 允许您像第一人称射击游戏那样控制相机。鼠标用于环视，键盘用于四处走动。您可以在 07-first-person-camera.html 中找到一个示例。以下截图显示了此示例的静态图像：
+
 ### OrbitControls  
+
+OrbitControls 控件是一种很好的方式，可在场景中心的物体周围进行旋转和平移。这也是我们在其他章节中使用的控件，可为您提供一种简单的方法来探索所提供的示例中的模型。
+
+借助 orbit-controls-orbit-camera.html，我们提供了一个示例，展示了此控件的工作原理。以下屏幕截图显示了该示例的静态图像：
 
 左键旋转，右键平移，滚轮缩放。
 
 最常用的控件，点云预览用这个。
 
+以上就是有关相机及其移动的介绍。在本节中，我们了解了许多控件，这些控件可让您通过更改相机属性轻松地与场景交互并进行移动。在下一节中，我们将探讨更高级的动画方法：变形和蒙皮。
 
+## 变形和骨骼动画
+
+当您在外部程序（例如 Blender）中创建动画时，通常有两种主要选项来定义动画：
+
+• 形变目标：借助形变目标，您可以定义网格的变形版本——即关键位置。对于这个变形目标，所有顶点位置都会被存储下来。要对形状进行动画处理，您只需将所有顶点从一个位置移动到另一个关键位置，并重复此过程即可。以下截图展示了用于表现面部表情的各种形变目标（此截图由Blender基金会提供）：
+
+• 骨骼动画：另一种选择是使用骨骼动画。借助骨骼动画，您可以定义网格的骨架——即骨骼——并将顶点绑定到特定的骨骼上。现在，当您移动一个骨骼时，任何相连的骨骼也会相应地移动，而绑定的顶点则会根据骨骼的位置、运动和缩放进行移动和变形。以下截图再次由Blender基金会提供，展示了如何利用骨骼来移动和变形对象的示例:
+
+Three.js 支持这两种模式，但在想要使用基于骨架/骨骼的动画时，可能会遇到导出效果不佳的问题。为了获得最佳效果，您应将模型导出或转换为 glTF 格式，该格式正逐渐成为交换模型、动画和场景的默认格式，并且得到了 Three.js 的大力支持。
+
+在本节中，我们将探讨这两种选项，并了解 Three.js 支持的几种外部格式，这些格式可用于定义动画。
+
+### 带有变形目标的动画
+
+变形目标是定义动画最直接的方式。您为每个重要位置（也称为关键帧）定义所有顶点，并指示Three.js将顶点从一个位置移动到另一个位置。
+
+我们将通过两个示例向您展示如何使用变形目标。在第一个示例中，我们将让Three.js处理各个关键帧（或我们从现在起称之为“变形目标”）之间的过渡；在第二个示例中，我们将手动完成这一过程。请记住，我们只是触及了Three.js动画功能的冰山一角。正如您将在本节中看到的，Three.js对控制动画提供了出色的支持，支持动画同步，并提供了从一种动画平滑过渡到另一种动画的方法，仅此主题就足以写成一本专著。因此，在接下来的几节中，我们将向您介绍Three.js动画的基础知识，这些内容应能为您提供足够的信息，让您入门并探索更复杂的主题。
+
+### 使用混合器和变形目标的动画(Animation with a mixer and morph targets  )
+
+### 使用骨骼和蒙皮的动画
+
+正如我们在“使用混合器和变形目标的动画”一节中所看到的，变形动画非常简单直接。Three.js 知道所有目标顶点的位置，只需将每个顶点从一个位置过渡到下一个位置即可。而对于骨骼和蒙皮，情况就稍微复杂一些。当你使用骨骼进行动画时，你移动的是骨骼，而 Three.js 必须确定如何相应地转换附着的蒙皮（一组顶点）。在本示例中，我们将使用一个从 Blender 导出为 Three.js 格式的模型（models/blender-skeleton 文件夹中的 lpp-rigging.gltf）。这是一个人物模型，带有一组骨骼。通过移动这些骨骼，我们可以对整个模型进行动画处理。首先，让我们来看看我们是如何加载这个模型的：
+
+## 使用外部模型创建动画
+
+在第8章“创建和加载高级网格与几何体”中，我们了解了Three.js支持的几种3D格式。其中一些格式还支持动画。在本章中，我们将研究以下示例：
+
+• COLLADA 模型：COLLADA 格式支持动画。对于本示例，我们将从 COLLADA 文件加载一个动画，并使用 Three.js 进行渲染。
+
+• MD2模型：MD2模型是旧版Quake引擎中使用的一种简单格式。尽管该格式有些过时，但它仍然是存储角色动画的极佳格式。
+
+• glTF 模型：GL 传输格式（glTF）是一种专门用于存储 3D 场景和模型的格式。它专注于最小化资源大小，并力求在解包模型时尽可能高效。
+
+•  FBX 模型：FBX 是由 https://www.mixamo.com 上提供的 Mixamo 工具生成的格式。借助 Mixamo，您可以轻松地为模型设置骨骼并制作动画，而无需具备丰富的建模经验。
+
+•  BVH 模型：Biovision (BVH) 格式与其他加载器略有不同。使用此加载器时，您无需加载带有骨架的几何体或一组动画。采用 Autodesk MotionBuilder 使用的这种格式，您只需加载一个骨架，即可对其进行可视化，甚至将其附加到您的几何体上。
+
+我们将从 glTF 模型开始，因为这种格式正逐渐成为在不同工具和库之间交换模型的标准。
+
+### 使用gltfLoader
+
+最近越来越受关注的一种格式是glTF格式。您可以在https://github.com/KhronosGroup/glTF上找到关于这种格式的非常详尽的说明，它专注于优化大小和资源使用。使用glTFLoader与使用其他加载器类似：
+
+```js
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+// ...
+return loader.loadAsync('/assets/models/truffle_man/scene.gltf').
+  then((container) => {
+    container.scene.scale.setScalar(4)
+    container.scene.translateY(-2)
+    scene.add(container.scene)
+    const mixer = new THREE.AnimationMixer(container.scene);
+    const animationClip = container.animations[0];
+    const clipAction = mixer.clipAction(animationClip).
+      play();
+  })
+```
+
+此加载器还会加载完整场景，因此您可以将所有内容添加到组中，也可以选择子元素。对于本示例，您可以通过打开 load-gltf-anim.html 查看结果:
+
+对于下一个示例，我们将使用FBX模型。
+
+### 使用fbxLoader可视化捕获的模型运动
+
+Autodesk FBX格式已经存在一段时间了，而且使用起来非常简单。网上有一个很棒的资源，你可以在这里找到许多可以下载的动画：https://www.mixamo.com/。该网站提供了2,500个可供你使用和定制的动画：
+
+下载动画后，从Three.js中使用它非常简单：
+
+正如您在 load-fbx.html 中所看到的，生成的动画效果很棒：
+
+FBX 和 glTF 是现代格式，应用广泛，是交换模型和动画的不错方式。此外还有一些较旧的格式。一个有趣的格式是旧版第一人称射击游戏《雷神之锤》所使用的 MD2 格式。
+
+### 从Quake模型加载动画
+
+### 从COLLADA模型加载动画
+
+虽然标准的 COLLADA 模型未经过压缩（因此文件体积可能会非常大），但 Three.js 中也提供了 KMZLoader。这是一种经过压缩的 COLLADA 模型，因此当你遇到 KMZ（Keyhole Markup Language Zipped）格式的模型时，可以使用 KMZLoader 而非 ColladaLoader 来加载模型：
+
+### 使用BVHLoader可视化骨架
+
+BVHLoader 是一种与我们迄今所见的加载器略有不同的加载器。此加载器不会返回带有动画的网格或几何体；相反，它会返回一个骨架和一个动画。load-bvh.html 中展示了此类示例:
+
+为了可视化这一点，我们可以使用 THREE.SkeletonHelper，如这里所示。借助 THREE.SkeletonHelper，我们可以可视化网格的骨架。BVH 模型仅包含骨架信息，我们可以这样进行可视化：
+
+在较旧版本的Three.js中，曾支持其他类型的动画文件格式。其中大部分已过时，并随后从Three.js发行版中删除。如果您确实遇到一种想要展示动画的其他格式，可以查看较旧的Three.js版本，并可能重新使用那里的加载器。
+
+## 总结
+
+在本章中，我们探讨了为场景添加动画的不同方法。我们从一些基本的动画技巧开始，接着介绍了摄像机的移动与控制，最后讨论了如何使用变形目标和骨骼/骨骼动画来为模型添加动画。
+
+当您已搭建好渲染循环后，添加简单动画就非常容易了。只需更改网格的一个属性；在下一个渲染步骤中，Three.js 将会渲染更新后的网格。对于更复杂的动画，通常会在外部程序中进行建模，然后通过 Three.js 提供的加载器之一将其加载进来。
+
+在前面的章节中，我们探讨了可用于为对象添加材质的各种材料。例如，我们了解了如何更改这些材料的颜色、光泽度和不透明度。然而，我们尚未详细讨论的是，如何将外部图像（也称为纹理）与这些材料结合使用。借助纹理，我们可以轻松地创建看起来像是由木材、金属、石头等制成的物体。在第10章中，我们将深入探讨纹理的所有不同方面以及它们在Three.js中的使用方法。
+
+# 10 加载和使用纹理
+
+## 在材质中使用纹理
+
+在本示例中，您可以看到纹理很好地环绕着形状。当您在Three.js中创建几何体时，它会确保正确应用所使用的任何纹理。这是通过一种称为UV映射的技术实现的。借助UV映射，我们可以告诉渲染器应将纹理的哪一部分应用到特定的面。我们将在第13章“使用Blender和Three.js”中详细介绍UV映射，届时我们将向您展示如何轻松地使用Blender为Three.js创建自定义UV映射。
+
+除了我们能用 THREE.TextureLoader 加载的标准图像格式，Three.js 还提供了一些自定义加载器，可用于加载不同格式的纹理。如果你使用的是特定的图像格式，可以查看 Three.js 发行版中的 loaders 文件夹(https://github.com/mrdoob/three.js/tree/dev/examples/jsm/ loaders)，以确定该图像格式是否可由 Three.js 直接加载，或者是否需要手动转换。
+
+除了这些普通图像，Three.js 还支持 HDR 图像。
+
+### 将HDR图像加载为纹理
+
+HDR图像捕捉的亮度范围比标准图像更广，能够更贴近我们人眼所见。Three.js支持EXR和RGBE格式。如果你有一张HDR图像，可以微调Three.js渲染HDR图像的方式，因为HDR图像包含的亮度信息比显示器能显示的更多。这可以通过在THREE.WebGLRenderer中设置以下属性来实现:
+
+如果您想加载 EXR 或 RGBE 图像并将其用作纹理，可以使用 THREE.EXRLoader 或 THREE.RGBELoader。这与我们之前看到的 THREE.TextureLoader 的工作方式相同:
+
+在texture-basics.html示例中，我们向您展示了如何使用纹理将颜色应用到网格上。在下一节中，我们将探讨如何使用纹理通过向网格应用虚假的高度信息，使模型看起来更加精细。
+
+## 使用凹凸贴图向网格提供额外细节
+
+凹凸贴图用于为材质添加更多深度。您可以通过打开texture-bump-map.html来查看其效果:
+
+在本示例中，您可以看到该模型看起来更加精细，似乎也更有深度。这是通过在材质上设置一种额外的纹理，即所谓的凹凸贴图来实现的：
+
+```js
+const exrLoader = new EXRLoader()
+const colorMap = exrLoader.load('/assets/textures/brick-wall/brick_wall_001_diffuse_2k.exr', (texture) => {
+  texture.wrapS = THREE.RepeatWrapping
+  texture.wrapT = THREE.RepeatWrapping
+  texture.repeat.set(4, 4)
+})
+const bumpMap = new THREE.TextureLoader().load(
+  '/assets/textures/brick-wall/brick_wall_001_displacement_2k.png',
+  (texture) => {
+    texture.wrapS = THREE.RepeatWrapping
+    texture.wrapT = THREE.RepeatWrapping
+    texture.repeat.set(4, 4)
+  }
+)
+const material = new THREE.MeshPhongMaterial({
+  color:
+    0xffffff
+})
+material.map = colorMap
+material.bumpMap = bumpMap
+```
+
+在该代码中，您可以看到，除了设置`map`属性外，我们还将`bumpMap`属性设置为一种纹理。此外，通过上一个示例中的菜单可用的`bumpScale`属性，我们可以设置凹凸的高度（如果设置为负值，则表示深度）。本示例中使用的纹理如下所示：
+
+凹凸贴图是一种灰度图像，但你也可以使用彩色图像。像素的亮度决定了凹凸的高度。凹凸贴图仅包含像素的相对高度，而不会说明坡度的方向。因此，使用凹凸贴图所能达到的细节程度和深度感知是有限的。若要获得更精细的效果，可以使用法线贴图。
+
+## 使用法线贴图实现更精细的凹凸和皱纹
+
+在法线贴图中，不存储高度（位移），而是存储每个像素的法线方向。不赘述细节，借助法线贴图，你可以仅用少量顶点和面就创建出看起来非常精细的模型。例如，请查看texture-normal-map.html示例：
+
+在前面的截图中，您可以看到一个看起来非常精细的模型。随着模型的移动，您会发现纹理正在响应它所接收到的光线。这提供了一个非常逼真的模型，而且只需要一个非常简单的模型和几张贴图。以下代码片段展示了如何在Three.js中使用法线贴图：
+
+```js
+const colorMap = new THREE.TextureLoader().load('/assets/textures/red-bricks/red_bricks_04_diff_1k.jpg', (texture) => {
+  texture.wrapS = THREE.RepeatWrapping
+  texture.wrapT = THREE.RepeatWrapping
+  texture.repeat.set(4, 4)
+})
+const normalMap = new THREE.TextureLoader().load(
+  '/assets/textures/red-bricks/red_bricks_04_nor_gl_1k.jpg',
+  (texture) => {
+    texture.wrapS = THREE.RepeatWrapping
+    texture.wrapT = THREE.RepeatWrapping
+    texture.repeat.set(4, 4)
+  }
+)
+const material = new THREE.MeshPhongMaterial({
+  color:
+    0xffffff
+})
+material.map = colorMap
+material.normalMap = normalMap
+```
+
+这与我们用于凹凸贴图的方法相同。不过，这一次，我们将normalMap属性设置为法线纹理。我们还可以通过设置normalScale属性来定义凹凸效果的明显程度(mat.normalScale.set(1,1))。利用此属性，您可以沿X轴和Y轴进行缩放。不过，最好的方法是保持这些值不变。在本示例中，您可以随意调整这些值。
+
+然而，法线贴图的问题在于它们并不容易制作。你需要使用专门的工具，比如Blender或Photoshop。这些程序可以将高分辨率渲染图或纹理作为输入，并据此生成法线贴图。
+
+使用法线贴图或凹凸贴图时，您不会改变模型的形状；所有顶点都保持在相同的位置。这些贴图只是利用场景中的光源来创建虚假的深度和细节。不过，Three.js 提供了第三种方法，您可以使用贴图为模型添加细节，这种方法会改变顶点的位置。这是通过位移贴图实现的。
+
+## 使用位移贴图来改变顶点的位置
+
+Three.js 还提供了一种纹理，可用于更改模型顶点的位置。虽然凹凸贴图和法线贴图会营造出一种深度的错觉，但借助位移贴图，我们可根据纹理中的信息改变模型的形状。我们可以像使用其他贴图一样使用位移贴图：
+
+```js
+const colorMap = new THREE.TextureLoader().load('/assets/textures/displacement/w_c.jpg', (texture) => {
+  texture.wrapS = THREE.RepeatWrapping
+  texture.wrapT = THREE.RepeatWrapping
+})
+const displacementMap = new THREE.TextureLoader().load('/assets/textures/displacement/w_d.png', (texture) => {
+  texture.wrapS = THREE.RepeatWrapping
+  texture.wrapT = THREE.RepeatWrapping
+})
+const material = new THREE.MeshPhongMaterial({
+  color:
+    0xffffff
+})
+material.map = colorMap
+material.displacementMap = displacementMap
+```
+
+在前面的代码片段中，我们加载了一个位移贴图，其外观如下：
+
+颜色越亮，顶点的位移越大。当你运行texture-displacement.html示例时，你会看到位移贴图的结果是一个模型，该模型的形状会根据贴图中的信息而改变：
+
+除了设置位移贴图纹理外，我们还可以使用 displacementScale 和 displacementOffset 来控制位移的明显程度。关于使用位移贴图需要提及的一点是，只有当您的网格包含大量顶点时，才能获得良好的效果。否则，由于顶点数量太少，无法充分表现所需的位移，位移效果将与提供的贴图不一致。
+
+## 使用环境光遮蔽贴图添加微妙的阴影
+
+在前面的章节中，您学习了如何在Three.js中使用阴影。如果您设置了正确网格的castShadow和receiveShadow属性，添加了几盏灯光，并正确配置了灯光的阴影相机，Three.js 就会渲染出阴影。
+
+然而，渲染阴影是一项相当昂贵的操作，每次渲染循环都会重复进行。如果你的光源或物体在移动，这是必要的；但通常情况下，一些光源或模型是固定的，因此如果我们能计算一次阴影，然后重复使用它们，那就太好了。为此，Three.js 提供了两种不同的贴图：环境光遮蔽贴图和光照贴图。在本节中，我们将介绍环境光遮蔽贴图；在下一节中，我们将介绍光照贴图。
+
+环境光遮蔽是一种用于确定模型各部分在场景中受环境光照影响程度的技术。在Blender等工具中，环境光通常通过半球光源或定向光源（如太阳）来模拟。虽然模型的大部分区域都会接收到一些环境光，但并非所有区域接收到的环境光都相同。例如，如果你建模一个人物，头部上方会比手臂底部接收到更多的环境光。这种光照差异——即阴影——可以被渲染（烘焙，如以下截图所示）到一张纹理中，然后我们可以将该纹理应用到模型上，为它们添加阴影，而无需每次都重新计算阴影：
 
 # 13 使用 Blender 和 Three.js
 
