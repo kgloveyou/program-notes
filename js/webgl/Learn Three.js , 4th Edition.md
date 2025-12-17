@@ -376,6 +376,10 @@ helper.update();
 
 # 3、在Three.js中使用光源
 
+## 脑图
+
+​        ![img](https://darwin-controller-pro.oss-cn-hangzhou.aliyuncs.com/eb57b0dd6af6adc0a74bc3eca39e6b8e/mind/%E3%80%90%E8%84%91%E5%9B%BE%E3%80%91Learn%20Three.jpeg?Expires=1766044791&OSSAccessKeyId=LTAI5tBVMtznbk7xyCa56gof&Signature=aptXFqz79vvSTOfEQNwmQDrBmjE%3D)      
+
 **注意**
 
 WebGL本身并没有内置对光照的支持。如果没有Three.js，你将不得不编写特定的WebGL着色器程序来模拟这些类型的光照，这相当困难。你可以在https://developer.mozilla.org/en-US/docs/Web/WebGL/Lighting_in_WebGL找到一个很好的介绍，介绍了从头开始在WebGL中模拟光照的内容。
@@ -527,6 +531,10 @@ Three.js还提供了另一种LightProbe：THREE.HemisphereLightProbe。这种Lig
 你可能已经熟悉了镜头光晕。例如，当你直接拍摄太阳或其他明亮光源时，它们会出现。在大多数情况下，你希望避免这种情况，但对于游戏和3D生成的图像，它提供了一个很好的效果，使场景看起来更加真实。Three.js也支持镜头光晕，并且非常容易将它们添加到你的场景中。在本节中，我们将向场景添加一个镜头光晕，并创建以下截图中显示的输出；你可以通过打开lens-flare.html来自行查看：
 
 # 4、使用Three.js材质
+
+## 脑图
+
+​        ![img](https://darwin-controller-pro.oss-cn-hangzhou.aliyuncs.com/5bacd6bd5e5c361ba6bd56867ba84711/mind/%E3%80%90%E8%84%91%E5%9B%BE%E3%80%91Learn%20Three.jpeg?Expires=1766044944&OSSAccessKeyId=LTAI5tBVMtznbk7xyCa56gof&Signature=LaVPwchDlWFfDmrOgQQREo%2FY5Qc%3D)      
 
 在第3章《Three.js中的光源运用》中，我们初步探讨了材质。您了解到，材质与THREE.Geometry实例共同构成一个THREE.Mesh对象。材质就像物体的“皮肤”，它决定了几何体外表面的视觉呈现。例如，这层“皮肤”可以定义几何体看起来是金属质感、透明状态，还是以线框形式显示。最终生成的THREE.Mesh对象随后可被添加到场景中，由Three.js进行渲染。
 
@@ -946,6 +954,10 @@ Three.js 提供了多种材质，可用于为几何体赋予外观。这些材�
 
 # 5、学习使用几何体
 
+## 脑图
+
+​        ![img](https://darwin-controller-pro.oss-cn-hangzhou.aliyuncs.com/96ef5cbacd88735fbd002e263a13da4d/mind/%E3%80%90%E8%84%91%E5%9B%BE%E3%80%91Learn%20Three.jpeg?Expires=1766045212&OSSAccessKeyId=LTAI5tBVMtznbk7xyCa56gof&Signature=vSgFn1q5oTNg3KTvV2tropr2YI4%3D)            
+
 在本章中，我们将了解以下几何体：
 • THREE.CircleGeometry
 • THREE.RingGeometry
@@ -1164,6 +1176,10 @@ Three.js 提供的最后一个多面体几何体是 THREE.DodecahedronGeometry�
 本章我们主要介绍了简单直接的网格。Three.js 还提供了创建复杂几何体的方法，我们将在第 6 章中介绍。
 
 # 6、探索高级几何
+
+## 脑图
+
+​        ![img](https://darwin-controller-pro.oss-cn-hangzhou.aliyuncs.com/6664544e20ac6c0d490dadcc3f6ce899/mind/%E3%80%90%E8%84%91%E5%9B%BE%E3%80%91Learn%20Three.jpeg?Expires=1766045456&OSSAccessKeyId=LTAI5tBVMtznbk7xyCa56gof&Signature=iPd%2BfqX4y%2FOC0smelvOqYTesvAg%3D)      
 
 在第5章《学习使用几何体》中，我们展示了Three.js提供的所有基础几何体。除了这些基础几何体，Three.js还提供了一系列更高级和专用的几何对象。在本章中，我们将向您展示这些高级几何体：
 
@@ -1442,6 +1458,10 @@ scene.add(troikaText)
 
 # 7、点和精灵
 
+## 脑图
+
+​        ![img](https://darwin-controller-pro.oss-cn-hangzhou.aliyuncs.com/34af7383596ff3be65ba0e09b276e46f/mind/%E3%80%90%E8%84%91%E5%9B%BE%E3%80%91Learn%20Three.jpeg?Expires=1766045614&OSSAccessKeyId=LTAI5tBVMtznbk7xyCa56gof&Signature=XrQtQniDQCQ6qvGdj4MtxR3uNis%3D)      
+
 在前几章中，我们已经探讨了Three.js提供的核心概念、对象和API。本章将深入讲解此前唯一未涉及的主题：点（Points）和精灵（Sprites）。通过THREE.Points（有时也称为精灵），可以轻松创建大量始终面向相机的小矩形，用于模拟雨、雪、烟雾等特效。例如，您可以将独立几何体以点集形式渲染，并分别控制这些点。本章将系统介绍Three.js中与点及精灵相关的各项功能。
 
 具体来说，本章将涵盖以下主题：
@@ -1638,6 +1658,10 @@ renderer.render(sceneOrtho, cameraOrtho)
 到目前为止，我们基于 Three.js 提供的几何体创建了网格。这对于简单模型（如球体和立方体）效果很好，但当需要创建复杂 3D 模型时，这并不是最佳方法。对于这些模型，通常需要使用 3D 建模应用程序，例如 Blender 或 3D Studio Max。在下一章中，您将学习如何加载和显示由这类 3D 建模应用程序创建的模型。
 
 # 8、创建和加载高级网格和几何体
+
+## 脑图
+
+​        ![img](https://darwin-controller-pro.oss-cn-hangzhou.aliyuncs.com/939a5a609042046fe41c4026e0e43bce/mind/%E3%80%90%E8%84%91%E5%9B%BE%E3%80%91Learn%20Three.jpeg?Expires=1766044108&OSSAccessKeyId=LTAI5tBVMtznbk7xyCa56gof&Signature=R4KMDZHEcomQF6Sr5PGDw8dVnVM%3D)      
 
 ## 几何体分组和合并
 
@@ -2060,6 +2084,10 @@ Three.js 支持大量外部格式。在使用这些格式加载器时，最好�
 
 # 9、动画与摄像机移动
 
+## 脑图
+
+​        ![img](https://darwin-controller-pro.oss-cn-hangzhou.aliyuncs.com/76368aff66cfb53dcdb487010f575c15/mind/%E3%80%90%E8%84%91%E5%9B%BE%E3%80%91Learn%20Three.jpeg?Expires=1766044300&OSSAccessKeyId=LTAI5tBVMtznbk7xyCa56gof&Signature=MZsMcLyPVFogBlBdZHYWikIpfSE%3D)      
+
 在之前的章节中，我们看到了一些简单的动画，但并没有涉及太复杂的内容。在第1章“使用Three.js创建你的第一个3D场景”中，我们介绍了基本的渲染循环；在接下来的几章中，我们利用这个循环旋转了一些简单的物体，并展示了一些其他基本的动画概念。
 
 在本章中，我们将更详细地探讨Three.js如何支持动画。我们将涉及以下四个主题：
@@ -2447,6 +2475,10 @@ BVHLoader 是一种与我们迄今所见的加载器略有不同的加载器。�
 
 # 10 加载和使用纹理
 
+## 脑图
+
+​        ![img](https://darwin-controller-pro.oss-cn-hangzhou.aliyuncs.com/76368aff66cfb53dcdb487010f575c15/mind/%E3%80%90%E8%84%91%E5%9B%BE%E3%80%91Learn%20Three.jpeg?Expires=1766044300&OSSAccessKeyId=LTAI5tBVMtznbk7xyCa56gof&Signature=MZsMcLyPVFogBlBdZHYWikIpfSE%3D)      
+
 ## 在材质中使用纹理
 
 在本示例中，您可以看到纹理很好地环绕着形状。当您在Three.js中创建几何体时，它会确保正确应用所使用的任何纹理。这是通过一种称为UV映射的技术实现的。借助UV映射，我们可以告诉渲染器应将纹理的哪一部分应用到特定的面。我们将在第13章“使用Blender和Three.js”中详细介绍UV映射，届时我们将向您展示如何轻松地使用Blender为Three.js创建自定义UV映射。
@@ -2463,7 +2495,7 @@ HDR图像捕捉的亮度范围比标准图像更广，能够更贴近我们人�
 
 在texture-basics.html示例中，我们向您展示了如何使用纹理将颜色应用到网格上。在下一节中，我们将探讨如何使用纹理通过向网格应用虚假的高度信息，使模型看起来更加精细。
 
-## 使用凹凸贴图向网格提供额外细节
+### 使用凹凸贴图向网格提供额外细节
 
 凹凸贴图用于为材质添加更多深度。您可以通过打开texture-bump-map.html来查看其效果:
 
@@ -2496,7 +2528,7 @@ material.bumpMap = bumpMap
 
 凹凸贴图是一种灰度图像，但你也可以使用彩色图像。像素的亮度决定了凹凸的高度。凹凸贴图仅包含像素的相对高度，而不会说明坡度的方向。因此，使用凹凸贴图所能达到的细节程度和深度感知是有限的。若要获得更精细的效果，可以使用法线贴图。
 
-## 使用法线贴图实现更精细的凹凸和皱纹
+### 使用法线贴图实现更精细的凹凸和皱纹
 
 在法线贴图中，不存储高度（位移），而是存储每个像素的法线方向。不赘述细节，借助法线贴图，你可以仅用少量顶点和面就创建出看起来非常精细的模型。例如，请查看texture-normal-map.html示例：
 
@@ -2530,7 +2562,7 @@ material.normalMap = normalMap
 
 使用法线贴图或凹凸贴图时，您不会改变模型的形状；所有顶点都保持在相同的位置。这些贴图只是利用场景中的光源来创建虚假的深度和细节。不过，Three.js 提供了第三种方法，您可以使用贴图为模型添加细节，这种方法会改变顶点的位置。这是通过位移贴图实现的。
 
-## 使用位移贴图来改变顶点的位置
+### 使用位移贴图来改变顶点的位置
 
 Three.js 还提供了一种纹理，可用于更改模型顶点的位置。虽然凹凸贴图和法线贴图会营造出一种深度的错觉，但借助位移贴图，我们可根据纹理中的信息改变模型的形状。我们可以像使用其他贴图一样使用位移贴图：
 
@@ -2557,7 +2589,7 @@ material.displacementMap = displacementMap
 
 除了设置位移贴图纹理外，我们还可以使用 displacementScale 和 displacementOffset 来控制位移的明显程度。关于使用位移贴图需要提及的一点是，只有当您的网格包含大量顶点时，才能获得良好的效果。否则，由于顶点数量太少，无法充分表现所需的位移，位移效果将与提供的贴图不一致。
 
-## 使用环境光遮蔽贴图添加微妙的阴影
+### 使用环境光遮蔽贴图添加微妙的阴影（Adding subtle shadows with an ambient occlusion map）
 
 在前面的章节中，您学习了如何在Three.js中使用阴影。如果您设置了正确网格的castShadow和receiveShadow属性，添加了几盏灯光，并正确配置了灯光的阴影相机，Three.js 就会渲染出阴影。
 
@@ -2565,7 +2597,677 @@ material.displacementMap = displacementMap
 
 环境光遮蔽是一种用于确定模型各部分在场景中受环境光照影响程度的技术。在Blender等工具中，环境光通常通过半球光源或定向光源（如太阳）来模拟。虽然模型的大部分区域都会接收到一些环境光，但并非所有区域接收到的环境光都相同。例如，如果你建模一个人物，头部上方会比手臂底部接收到更多的环境光。这种光照差异——即阴影——可以被渲染（烘焙，如以下截图所示）到一张纹理中，然后我们可以将该纹理应用到模型上，为它们添加阴影，而无需每次都重新计算阴影：
 
-# 13 使用 Blender 和 Three.js
+一旦你有了环境光遮挡贴图，就可以将其分配给材质的aoMap属性，Three.js会在应用和计算场景中灯光应照射到模型特定部分的程度时考虑这一信息。以下代码片段展示了如何设置aoMap属性：
+
+```js
+const aoMap = new THREE.TextureLoader().load('/assets/gltf/material_ball_in_3d-coat/aoMap.png')
+const material = new THREE.MeshPhongMaterial({
+  color:
+    0xffffff
+})
+material.aoMap = aoMap
+material.aoMap.flipY = false
+```
+
+与其他类型的纹理贴图一样，我们只需使用 THREE.TextureLoader 加载纹理，并将其分配给材质的正确属性。与许多其他贴图一样，我们还可以通过设置 aoMapIntenisty 属性来调整贴图对模型光照的影响程度。在本示例中，您还会发现，我们需要将 aoMap 的 flipY 属性设置为 false。有时，外部程序存储的材质在纹理中的排列方式与 Three.js 的预期略有不同。借助此属性，我们可以翻转纹理的方向。通常，在处理模型时，您会通过反复试验注意到这一点。
+
+要使环境光遮挡贴图正常工作，我们（通常）需要额外执行一步。我们之前已经提到了UV映射（存储在uv属性中）。这些映射定义了纹理的哪一部分被映射到模型的特定面上。对于环境光遮挡贴图，以及接下来示例中的光照贴图，Three.js使用了一组单独的UV映射（存储在uv2属性中），因为其他纹理往往需要以不同于阴影和光照贴图的方式应用。对于我们的示例，我们只是简单地复制了模型中的UV映射；请记住，当我们使用aoMap属性或lightMap属性时，Three.js会使用uv2属性的值，而不是uv属性。如果加载的模型中没有这个属性，大多数情况下，直接复制uv映射属性也行，因为我们并未对环境光遮挡贴图进行优化，而优化可能需要一组不同的UV映射：
+
+```js
+const k = mesh.geometry
+const uv1 = k.getAttribute('uv')
+const uv2 = uv1.clone()
+k.setAttribute('uv2', uv2)
+```
+
+我们将提供两个使用环境光遮蔽贴图的示例。在第一个示例中，我们展示了图10.9中的模型，并应用了aoMap (texture-ao-map-model.html):
+
+您可以使用右侧的菜单来设置aoMapIntensity。该值越高，从加载的aoMap纹理中看到的阴影就越多。正如您所见，拥有一个环境光遮挡贴图确实非常有用，因为它能为模型提供丰富的细节，使模型看起来更加逼真。我们在本章中已经见过的一些纹理也提供了额外的aoMap，您可以加以利用。如果您打开texture-ao-map.html，您将得到一种简单的砖块状纹理，但这一次还添加了aoMap：
+
+虽然环境光遮挡贴图会改变模型某些部分接收到的光照量，但Three.js也支持光照贴图，其作用正好相反（大致如此），通过指定一张贴图来为模型的某些部分添加额外的光照。
+
+### 使用光照贴图创建假光源
+
+在本节中，我们将使用光照贴图。光照贴图是一种纹理，其中包含场景中的光源将如何影响模型的信息。换句话说，光源的效果被烘焙到纹理中。光照贴图是在Blender等3D软件中烘焙的，包含模型每个部分的光照值：
+
+我们在本示例中将使用的光照贴图如图10.12所示。编辑窗口的右侧显示了地面平面的烘焙光照贴图。您可以看到，整个地面平面都以白光照明，而部分区域接收到的光线较少，因为场景中还有一个模型。使用光照贴图的代码与环境光遮挡贴图的代码类似：
+
+```js
+const textureLoader = new THREE.TextureLoader()
+const colorMap = textureLoader.load('/assets/textures/wood/abstract-antique-backdrop-164005.jpg')
+const lightMap = textureLoader.load('/assets/gltf/material_ball_in_3d-coat/lightMap.png')
+const material = new THREE.MeshBasicMaterial({
+  color:
+    0xffffff
+})
+material.map = colorMap
+material.lightMap = lightMap
+material.lightMap.flipY = false
+```
+
+我们再次需要为 Three.js 提供一组额外的 UV 坐标，称为 uv2（代码中未显示），并且必须使用 THREE.TextureLoader 来加载纹理——在本例中，使用了一个简单的纹理来表示地板的颜色，以及在 Blender 中为此示例创建的光照贴图（lightmap）。最终效果如下所示（texture-light-map.html）：
+
+如果你查看前面的示例，就会发现来自光照贴图的信息被用来创建一个外观非常精美的阴影，这个阴影似乎是由模型投射出来的。重要的是要记住，烘焙阴影、灯光和环境光遮挡在静态场景中与静态对象配合使用效果极佳。一旦物体或光源发生变化或开始移动，你就必须实时计算阴影了。
+
+### 金属度和粗糙度贴图
+
+在讨论Three.js中可用的材质时，我们提到一个不错的默认材质是THREE.MeshStandardMaterial。你可以用它来创建闪亮的、类似金属的材质，也可以通过应用粗糙度，让网格看起来更像木材或塑料。通过使用材质的金属度和粗糙度属性，我们可以配置材质以呈现我们想要的材质效果。除了这两个属性之外，你还可以通过使用一个纹理。因此，如果我们有一个粗糙的物体，并且希望指定该物体的某个部分是光亮的，我们可以设置 THREE.MeshStandardMaterial 的 metalnessMap 属性；如果希望表明网格的某些部分应显示为划痕或更粗糙，我们可以设置 roughnessMap 属性。当您使用这些贴图时，模型特定部分的纹理值会分别与粗糙度属性或金属度属性相乘，从而决定该特定像素的渲染方式。首先，我们来看一下 texture-metalness-map.html 中的金属度属性：
+
+在本示例中，我们略过了部分步骤，还使用了环境贴图，这使我们能够将环境中的反射效果渲染到物体表面。金属度高的物体反射更多，而粗糙度高的物体则会更多地散射反射光。对于此模型，我们使用了metalnessMap；你可以看到，当纹理中的金属度属性较高时，物体本身显得很亮；而在纹理中金属度属性较低的部分，则显得较为粗糙。查看roughnessMap时，我们会发现几乎相同的效果，只是颜色反转了：
+
+正如您所见，根据提供的纹理，模型的某些部分比其他部分更粗糙或有更多划痕。对于metalnessMap，材质的值会乘以材质的metalness属性；对于roughnessMap，情况相同，只不过此时该值会乘以材质的roughness属性。
+
+加载这些纹理并将其设置到材质中，可以按如下方式进行：
+
+```js
+const metalnessTexture = new THREE.TextureLoader().load(
+  '/assets/textures/engraved/Engraved_Metal_003_ROUGH.jpg',
+  (texture) => {
+    texture.wrapS = THREE.RepeatWrapping
+    texture.wrapT = THREE.RepeatWrapping
+    texture.repeat.set(4, 4)
+  }
+)
+const material = new THREE.MeshStandardMaterial({
+  color:
+    0xffffff
+})
+material.metalnessMap = metalnessTexture
+...
+const roughnessTexture = new THREE.TextureLoader().load(
+  '/assets/textures/marble/marble_0008_roughness_2k.jpg',
+  (texture) => {
+    texture.wrapS = THREE.RepeatWrapping
+    texture.wrapT = THREE.RepeatWrapping
+    texture.repeat.set(2, 2)
+  }
+)
+const material = new THREE.MeshStandardMaterial({
+  color:
+    0xffffff
+})
+material.roughnessMap = roughnessTexture
+```
+
+接下来是阿尔法贴图。借助阿尔法贴图，我们可以使用纹理来改变模型部分的透明度。
+
+### 使用 alpha  贴图创建透明模型
+
+alpha  贴图是一种控制曲面不透明度的方法。如果贴图的值为黑色，则模型的该部分将完全透明；如果为白色，则完全不透明。在我们查看纹理及其应用方法之前，先来看一下示例(texture-alpha-map.html):
+
+在本示例中，我们渲染了一个立方体，并设置了材质的alphaMap属性。如果您打开此示例，请务必把材质的透明度属性设为true。您可能会注意到，您只能看到立方体的正面部分，而与前面的截图不同，您可以在立方体中透视并看到另一面。原因是，默认情况下，所用材质的side属性被设置为THREE.FrontSide。要渲染通常隐藏的那一面，我们必须将材质的side属性设置为THREE.DoubleSide；您会发现，立方体的渲染效果如前面的截图所示。
+
+我们在本示例中使用的纹理非常简单：
+
+要加载它，我们必须使用与其他纹理相同的方法：
+
+```js
+const alphaMap = new THREE.TextureLoader().load('/assets/textures/alpha/partial-transparency.png', (texture) => {
+  texture.wrapS = THREE.RepeatWrapping
+  texture.wrapT = THREE.RepeatWrapping
+  texture.repeat.set(4, 4)
+})
+const material = new THREE.MeshPhongMaterial({
+  color:
+    0xffffff
+})
+material.alphaMap = alphaMap
+material.transparent = true
+```
+
+在这一段代码中，您还可以看到我们设置了纹理的wrapS、wrapT和repeat属性。我们将在本章稍后更详细地介绍这些属性，但这些属性可用于确定我们希望在网格上重复纹理的频率。如果设置为(1, 1)，则整个纹理在应用于网格时不会重复；如果设置为更高的值，则纹理会缩小并多次重复。在本例中，我们在两个方向上各重复了四次。
+
+### 为会发光的模型使用自发光贴图（Using an emissive map for models that glow）
+
+> “emissive map” 的标准中文术语是 自发光贴图，有时也简称为 发光贴图，但在技术文档或 three.js 相关语境中，推荐使用 自发光贴图 以避免与光照贴图（lightmap）等其他贴图混淆。
+
+自发光贴图是一种可用于使模型的某些部分发光的纹理，就像发光属性对整个模型的作用一样。与发光属性类似，使用自发光贴图并不意味着该物体正在发光——它只是让应用了此纹理的模型部分看起来像在发光。通过查看一个示例，这一点就更容易理解了。如果您在浏览器中打开texture-emissive-map.html示例，您会看到一个类似熔岩的物体：
+
+不过，当你仔细观察时，可能会发现，尽管这些物体似乎会发光，但它们本身并不会发出光线。这意味着你可以利用这一点来增强物体的视觉效果，但这些物体本身并不会对场景的光照产生贡献。在本示例中，我们使用了一张发射贴图，其外观如下：
+
+要加载并使用自发光贴图，我们可以使用 THREE.TextureLoader 加载一个，并将其分配给 emissiveMap 属性（同时搭配其他一些贴图，以获得图 10.18 所示的模型）：
+
+```js
+const emissiveMap = new THREE.TextureLoader().load
+  ('/assets/textures/lava/lava.png', (texture) => {
+    texture.wrapS = THREE.RepeatWrapping
+    texture.wrapT = THREE.RepeatWrapping
+    texture.repeat.set(4, 4)
+  })
+const roughnessMap = new THREE.TextureLoader().load
+  ('/assets/textures/lava/lava-smoothness.png', (texture) => {
+    texture.wrapS = THREE.RepeatWrapping
+    texture.wrapT = THREE.RepeatWrapping
+    texture.repeat.set(4, 4)
+  })
+const normalMap = new THREE.TextureLoader().load
+  ('/assets/textures/lava/lava-normals.png', (texture) => {
+    texture.wrapS = THREE.RepeatWrapping
+    texture.wrapT = THREE.RepeatWrapping
+    texture.repeat.set(4, 4)
+  })
+const material = new THREE.MeshPhongMaterial({
+  color:
+    0xffffff
+})
+material.normalMap = normalMap
+material.roughnessMap = roughnessMap
+material.emissiveMap = emissiveMap
+material.emissive = new THREE.Color(0xffffff)
+material.color = new THREE.Color(0x000000)
+```
+
+由于自发光贴图（emissiveMap）的颜色会与材质的 emissive 属性进行调制，因此请确保将材质的 emissive 属性设置为非黑色的值。
+
+### 使用高光贴图（specular map）来确定 shininess（光泽度/高光强度）
+
+在之前的示例中，我们主要使用了 `THREE.MeshStandardMaterial` 以及该材质所支持的各种贴图。当你需要一种材质时，`THREE.MeshStandardMaterial` 通常是最佳选择，因为它可以轻松配置，以表现大量不同类型的现实世界材质。在 Three.js 的旧版本中，你必须使用 `THREE.MeshPhongMaterial` 来表现有光泽的材质，而使用 `THREE.MeshLambertMaterial` 来表现无光泽的材质。本节中使用的高光贴图（specular map）只能与 `THREE.MeshPhongMaterial` 配合使用。通过高光贴图，你可以定义模型的哪些部分应该具有光泽，哪些部分应该显得粗糙（这类似于我们之前介绍过的 `metalnessMap`（金属度贴图）和 `roughnessMap`（粗糙度贴图））。
+
+在 `texture-specular-map.html` 示例中，我们渲染了地球，并使用高光贴图使海洋区域比陆地区域更具光泽：
+
+通过右上角的菜单，你可以调整高光颜色（specular color）和光泽度（shininess）进行尝试。如你所见，这两个属性会影响海洋对光线的反射效果，但不会改变陆地的光泽度。这是因为我们使用了以下高光贴图（specular map）：
+
+在这张贴图中，黑色表示对应区域的光泽度为 0%，而白色表示光泽度为 100%。
+要使用高光贴图（specular map），我们必须使用 `THREE.TextureLoader` 加载该贴图，并将其赋值给 `THREE.MeshPhongMaterial` 的 `specularMap` 属性：
+
+```js
+const colorMap = new THREE.TextureLoader().load
+  ('/assets/textures/specular/Earth.png')
+const specularMap = new THREE.TextureLoader().load
+  ('/assets/textures/specular/EarthSpec.png')
+const normalMap = new THREE.TextureLoader().load
+  ('/assets/textures/specular/EarthNormal.png')
+const material = new THREE.MeshPhongMaterial({
+  color:
+    0xffffff
+})
+material.map = colorMap
+material.specularMap = specularMap
+material.normalMap = normalMap
+```
+
+通过使用高光贴图，我们已经讨论了可用于为你的模型添加深度、颜色、透明度或额外光照效果的大部分基本纹理。在接下来的两个部分中，我们将介绍另一种类型的贴图，它将允许你为模型添加环境反射效果。
+
+### 使用环境贴图创建伪反射效果
+
+计算环境反射非常消耗 CPU 资源，通常需要采用光线追踪（ray tracer）的方法。如果你希望在 Three.js 中使用反射效果，仍然可以实现，但需要采用“伪造”的方式：即创建一个物体所处环境的纹理，并将其应用到该物体上。
+
+首先，我们先展示一下期望实现的效果（参见 `texture-environment-map.html`，如下图所示）：
+
+在前面的截图中，你可以看到球体反射了周围环境。如果你移动鼠标，还会发现反射效果与你所见环境的相机角度相匹配。
+
+要创建这个示例，请执行以下步骤：
+
+1. 创建一个 `CubeTexture` 对象。`CubeTexture` 是一组可以应用到立方体每个面上的六个纹理。
+2. 设置天空盒（skybox）。当我们有了 `CubeTexture` 后，我们可以将其设置为场景的背景。这样做时，实际上我们创建了一个非常大的盒子，摄像机和物体都被放置在这个盒子内部，这样当我们移动摄像机时，场景的背景也会相应地正确变化。或者，我们也可以创建一个非常大的立方体，应用 `CubeTexture`，并手动将其添加到场景中。
+3. 将 `CubeTexture` 对象设置为材质 `cubeMap` 属性的纹理。用于模拟环境的同一个 `CubeTexture` 对象应该被用作网格上的纹理。Three.js 会确保它看起来像是对环境的反射。
+
+一旦你有了原始素材，创建 `CubeTexture` 就相当简单了。你需要准备六张图像，它们共同构成一个完整的环境。具体来说，你需要以下六张图片：
+
+- 朝前看（正 Z 方向，posz）  
+- 朝后看（负 Z 方向，negz）  
+- 朝上看（正 Y 方向，posy）  
+- 朝下看（负 Y 方向，negy）  
+- 朝右看（正 X 方向，posx）  
+- 朝左看（负 X 方向，negx）
+
+Three.js 会将这些图像拼接在一起，生成一张无缝的环境贴图。有许多网站可以下载全景图像，但这些图像通常采用球形等距柱状投影（equirectangular）格式，看起来如下所示：
+
+这类贴图有两种使用方式。第一种方法是将其转换为由六个独立文件组成的立方体贴图（cube map）格式。你可以通过以下网站在线完成这一转换：https://jaxry.github.io/panorama-to-cubemap/。  
+
+另一种方法是采用不同的方式将这种纹理直接加载到 Three.js 中，我们将在本节稍后部分进行演示。
+
+要从六个独立的文件加载 `CubeTexture`，我们可以使用 `THREE.CubeTextureLoader`，如下所示：
+
+```js
+const cubeMapFlowers = new THREE.CubeTextureLoader().load([
+  '/assets/textures/cubemap/flowers/right.png',
+  '/assets/textures/cubemap/flowers/left.png',
+  '/assets/textures/cubemap/flowers/top.png',
+  '/assets/textures/cubemap/flowers/bottom.png',
+  '/assets/textures/cubemap/flowers/front.png',
+  '/assets/textures/cubemap/flowers/back.png'
+])
+const material = new THREE.MeshPhongMaterial({
+  color:
+    0x777777
+})
+material.envMap = cubeMapFlowers
+material.mapping = THREE.CubeReflectionMapping
+```
+
+在这里，你可以看到我们从多张不同的图像中加载了一个 `cubeMap`（立方体贴图）。加载完成后，我们将该纹理赋值给材质的 `envMap` 属性。最后，我们还需要告诉 Three.js 要使用哪种映射方式。
+
+如果你是通过 `THREE.CubeTextureLoader` 加载纹理的，可以使用 `THREE.CubeReflectionMapping` 或 `THREE.CubeRefractionMapping`：使用 `THREE.CubeReflectionMapping` 时，你的物体会根据所加载的 `cubeMap` 显示反射效果；而使用 `THREE.CubeRefractionMapping` 时，模型会呈现出类似半透明玻璃的效果，并根据 `cubeMap` 中的信息对光线产生轻微的折射。
+
+我们也可以将这个 cubeMap  设置为场景的背景，如下所示：
+
+```js
+scene.background = cubeMapFlowers
+```
+
+当你只有一张图像时，处理过程并不会有很大的不同：
+
+```js
+const cubeMapEqui = new THREE.TextureLoader().load
+  ('/assets/equi.jpeg')
+const material = new THREE.MeshPhongMaterial({
+  color:
+    0x777777
+})
+material.envMap = cubeMapEqui
+material.mapping = THREE.EquirectangularReflectionMapping
+scene.background = cubeMapFlowers
+```
+
+这一次，我们使用了普通的纹理加载器（normal texture loader），但通过指定不同的映射方式，可以告诉 Three.js 如何渲染该纹理。采用这种方法时，你可以将映射方式设置为 `THREE.EquirectangularRefractionMapping` 或 `THREE.EquirectangularReflectionMapping`。
+
+这两种方法所得到的效果都是：场景看起来仿佛我们置身于一个开阔的户外环境中，而其中的网格模型会反射周围的环境。侧边的菜单允许你调整材质的各项属性：
+
+除了反射之外，Three.js 还允许您使用立方体贴图对象进行折射（类似玻璃的物体）。以下屏幕截图展示了这一点（您可以使用右侧的菜单自行测试）：
+
+要实现这种效果，我们只需将 `cubeMap` 的 `mapping` 属性设置为 `THREE.CubeRefractionMapping`（默认值为反射模式，也可以通过显式指定 `THREE.CubeReflectionMapping` 来手动设置）：
+
+```js
+cubeMap.mapping = THREE.CubeRefractionMapping
+```
+
+在本例中，我们为网格使用了静态的环境贴图。换句话说，我们只能看到环境的反射，而看不到环境中其他网格对象的反射。在下面的截图中可以看到，只需稍加处理，我们也可以实现对其他物体的反射效果：
+
+为了同时显示场景中其他物体的反射效果，我们需要使用一些其他的 Three.js 组件。其中第一个组件是一个额外的摄像机，称为 `THREE.CubeCamera`：
+
+```js
+const cubeRenderTarget = new THREE.WebGLCubeRenderTarget
+  (128, {
+    generateMipmaps: true,
+    minFilter: THREE.LinearMipmapLinearFilter
+  })
+
+const cubeCamera = new THREE.CubeCamera(0.1, 10, cubeRenderTarget)
+
+cubeCamera.position.copy(mesh.position);
+scene.add(cubeCamera);
+```
+
+我们将使用 `THREE.CubeCamera` 对包含所有物体的场景进行快照，并将该快照用作立方体贴图（cubeMap）。前两个参数定义了摄像机的近裁剪面（near）和远裁剪面（far）属性。因此，在本例中，摄像机仅渲染距离在 0.1 到 1.0 范围内的内容。  最后一个参数是我们要渲染纹理的目标。为此，我们创建了一个 `THREE.WebGLCubeRenderTarget` 的实例。其第一个参数是渲染目标的尺寸：值越高，反射效果就越精细。另外两个属性用于控制当你缩放时，纹理如何进行放大或缩小（即纹理的过滤方式）。
+
+你需要确保将该摄像机精确放置在你希望显示动态反射效果的 `THREE.Mesh` 的位置上。在本例中，我们从网格对象复制了其位置信息，以确保摄像机被正确放置。
+
+现在我们已经正确设置了 `CubeCamera`，接下来需要确保 `CubeCamera` 所“看到”的内容被应用为我们示例中立方体的纹理。为此，我们必须将材质的 `envMap` 属性设置为 `cubeCamera.renderTarget`：
+
+```js
+cubeMaterial.envMap = cubeRenderTarget.texture;
+```
+
+现在，我们必须确保 `cubeCamera` 渲染场景，以便将其输出用作立方体的输入纹理。为此，我们需要按如下方式更新渲染循环（如果场景不发生变化，也可以只调用一次）：
+
+### 重复平铺（Repeat Wrapping）
+
+当您将纹理应用到由Three.js创建的几何体时，Three.js会尽可能以最佳方式应用该纹理。例如，对于立方体，这意味着每一面都会显示完整的纹理；而对于球体，完整的纹理会被包裹在球体表面。然而，在某些情况下，您可能不希望纹理覆盖整个面或整个几何体，而是希望纹理能够重复显示。Three.js提供了相应的功能来控制这一行为。一个可以尝试调整重复属性的示例位于texture-repeat-mapping.html。以下截图展示了该示例：
+
+在该属性产生预期效果之前，你需要确保将纹理的包裹方式（wrapping）设置为 `THREE.RepeatWrapping`，如下列代码片段所示：
+
+```js
+mesh.material.map.wrapS = THREE.RepeatWrapping;
+mesh.material.map.wrapT = THREE.RepeatWrapping;
+```
+
+`wrapS` 属性定义了纹理在其 X 轴方向上的平铺方式，而 `wrapT` 属性则定义了纹理在其 Y 轴方向上的平铺方式。Three.js 为此提供了以下三种选项：
+
+- `THREE.RepeatWrapping`：允许纹理重复平铺；
+- `THREE.MirroredRepeatWrapping`：允许纹理重复平铺，但每次重复都是镜像翻转的；
+- `THREE.ClampToEdgeWrapping`：默认设置，纹理整体不会重复，仅边缘的像素会被延伸重复。
+
+在本示例中，你可以尝试各种不同的重复设置以及 `wrapS` 和 `wrapT` 选项。一旦选定了平铺类型，我们就可以设置 `repeat` 属性，如下列代码片段所示：
+
+```js
+mesh.material.map.repeat.set(repeatX, repeatY);
+```
+
+`repeatX` 变量定义了纹理在其 X 轴方向上重复的次数，`repeatY` 变量则定义了 Y 轴方向上的重复次数。  如果这些值设为 1，纹理将不会重复；  如果设置为大于 1 的值，你会看到纹理开始重复；  也可以使用小于 1 的值，此时会放大（“拉近”）纹理；  如果将 repeat 值设为负数，纹理将会被镜像翻转。
+
+当你修改 `repeat` 属性时，Three.js 会自动更新纹理并以新设置进行渲染。但如果你将平铺模式从 `THREE.RepeatWrapping` 更改为 `THREE.ClampToEdgeWrapping`（或反之），则需要显式地通知 Three.js 更新纹理，方法是设置：
+
+```javascript
+mesh.material.map.needsUpdate = true;
+```
+
+## 渲染到画布并将其用作纹理
+
+在本节中，我们将介绍两个不同的示例。首先，我们将介绍如何使用画布创建一个简单的纹理并将其应用到网格上；之后，我们将更进一步，创建一个可用作凹凸贴图的画布，该画布采用随机生成的图案。
+
+### 将画布用作颜色图
+
+在第一个示例中，我们将把分形渲染到一个 HTML Canvas 元素上，并将其用作网格的颜色映射。以下截图显示了此示例 (texture-canvas-as-color-map.html):
+
+首先，我们来看一下渲染分形所需的代码：
+
+### 将画布用作凹凸贴图
+
+正如你在本章前面所看到的，我们可使用凹凸贴图向模型添加高度。此贴图中像素的强度越高，褶皱就越高。由于凹凸贴图只是简单的黑白图像，因此我们完全可以将其绘制在画布上，并将该画布用作凹凸贴图的输入。
+
+在以下示例中，我们将使用画布生成基于 Perlin 噪声的灰度图像，并将该图像用作应用于立方体的凹凸贴图的输入。请参阅 texture-canvas-as-bump-map.html 示例。以下屏幕截图显示了此示例：
+
+
+
+> **使用 THREE.DataTexture 作为动态纹理**
+>
+> 在本示例中，我们使用 HTML canvas 元素渲染了 Perlin 噪声。Three.js 还提供了一种动态创建纹理的替代方法：您可以创建一个 THREE.DataTexture 纹理，然后传入一个 Uint8Array，在其中直接设置 RGB 值。有关如何使用 THREE.DataTexture 的更多信息，请参阅此处：https://threejs.org/docs/#api/en/textures/DataTexture.
+
+我们用于纹理的最后一种输入源是另一个 HTML 元素：HTML5 的视频元素（video element）。
+
+### 使用视频的输出作为纹理
+
+如果你阅读了前面关于渲染到 Canvas 的章节，可能会想到将视频渲染到 Canvas 上，然后将其用作纹理的输入。这是一种可行的方法，但 Three.js 已经原生支持直接使用 HTML5 视频元素（通过 WebGL）作为纹理源。请查看 `texture-canvas-as-video-map.html` 示例：
+
+将视频用作纹理的输入很容易，就像使用 canvas 元素一样。首先，我们需要一个 video 元素来播放视频：
+
+```js
+const videoString = `
+<video
+id="video"
+src="/assets/movies/Big_Buck_Bunny_small.ogv"
+controls="true"
+</video>
+`
+const div = document.createElement('div')
+div.style = 'position: absolute'
+document.body.append(div)
+div.innerHTML = videoString
+```
+
+这会通过将 HTML 字符串直接设置为 div 元素的 innerHTML 属性，创建一个基本的 HTML5 视频元素。虽然这种方法非常适合测试，但框架和库通常会为此提供更好的选项。接下来，我们可以配置 Three.js，使其将视频用作纹理的输入，如下所示：
+
+```js
+const video = document.getElementById('video')
+const texture = new THREE.VideoTexture(video)
+const material = new THREE.MeshStandardMaterial({
+  color: 0xffffff,
+  map: texture
+})
+```
+
+效果可以在 `texture-canvas-as-video-map.html` 示例中看到。
+
+## 总结
+
+至此，我们完成了本章关于纹理的内容。正如你所见，Three.js 提供了多种类型的纹理，每种都有不同的用途。你可以使用 PNG、JPG、GIF、TGA、DDS、PVR、KTX、EXR 或 RGBE 格式的任意图像作为纹理。这些图像的加载是异步进行的，因此请务必使用渲染循环，或在加载纹理时添加回调函数。借助这些丰富的纹理类型，即使使用低多边形（low-poly）模型，你也能创建出视觉效果出色的物体。
+
+借助 Three.js，还可以轻松创建动态纹理——只需使用 HTML5 的 Canvas 元素或视频（video）元素作为输入来定义纹理，并在需要更新纹理时将 `needsUpdate` 属性设为 `true` 即可。
+
+随着本章的结束，我们基本上已经涵盖了 Three.js 的所有重要概念。不过，我们尚未介绍 Three.js 提供的一项有趣功能：后期处理（postprocessing）。通过后期处理，你可以在场景渲染完成后为其添加各种特效。例如，你可以对场景进行模糊处理、着色，或者使用扫描线（scan lines）来实现类似老式电视的效果。在第 11 章《渲染后期处理》中，我们将深入探讨后期处理技术，以及如何将其应用到你的场景中。
+
+# 11 渲染后处理
+
+## 脑图
+
+​        ![img](https://darwin-controller-pro.oss-cn-hangzhou.aliyuncs.com/30438dc66a8fd73f6bb6dd33efaf86c9/mind/%E3%80%90%E8%84%91%E5%9B%BE%E3%80%91Learn%20Three.jpeg?Expires=1765958399&OSSAccessKeyId=LTAI5tBVMtznbk7xyCa56gof&Signature=NvVzr0hXdvX5sIUicnyKibl4Cqk%3D)      
+
+在本章中，我们将介绍Three.js的一个主要功能，而我们之前尚未涉及：渲染后处理。借助渲染后处理，您可以在场景渲染完成后为其添加额外的效果。例如，您可以添加一种效果，使场景看起来像是在老式电视机上显示的，或者您可以添加模糊和泛光效果。
+
+本章我们将讨论的主要内容如下：
+
+•  为后处理设置Three.js
+
+•  Three.js 提供的一些基本后处理通道，例如 BloomPass 和 FilmPass
+
+•  使用蒙版将效果应用于场景的某一部分
+
+•  使用ShaderPass添加更多基本的后期处理效果，例如棕褐色滤镜、镜像效果和颜色调整
+
+•  使用ShaderPass实现各种模糊效果和更高级的滤镜
+
+•  通过编写一个简单的着色器来创建自定义后处理效果
+
+在第1章“使用Three.js创建你的第一个3D场景”的“介绍requestAnimationFrame”部分，我们设置了一个贯穿全书的渲染循环，以便渲染和动画化我们的场景。对于后处理，我们需要对这一设置做几处改动，以使Three.js能够对最终渲染进行后处理。在第一部分，我们将探讨如何实现这一点。
+
+## 为后处理设置Three.js
+
+### 创建 THREE.EffectComposer
+
+### 为后期处理配置 THREE.EffectComposer
+
+### 更新渲染循环
+
+我们只需对渲染循环稍作修改，即可使用 composer 来替代 `THREE.WebGLRenderer`：
+
+```js
+const render = () => {
+  requestAnimationFrame(render);
+  composer.render();
+}
+```
+
+我们所做的唯一修改是移除了 `renderer.render(scene, camera)`，并将其替换为 `composer.render()`。这会调用 `EffectComposer` 的渲染函数，而该函数内部会使用传入的 `THREE.WebGLRenderer`，最终将处理后的结果呈现在屏幕上：
+
+> 在应用渲染通道（render pass）之后使用控制器
+>
+> 你仍然可以使用常规的控制器在场景中移动。本章中你将看到的所有后期处理效果，都是在场景渲染完成之后才应用的。有了这一基础设置，我们将在接下来的几节中介绍可用的各种后期处理通道（postprocessing passes）。
+
+## 后处理通道
+
+Three.js 提供了多种后处理通道（postprocessing passes），你可以直接与 `THREE.EffectComposer` 配合使用。
+
+> 使用简单的 GUI 进行实验
+> 本章展示的大多数着色器（shaders）和后期处理通道（passes）都是可配置的。当你想自己应用其中某一个时，通常最简单的方法是添加一个简易的用户界面（UI），让你可以方便地调整各项属性。这样，你就能直观地找到最适合你具体场景的参数设置。
+
+以下列表展示了 Three.js 中所有可用的后期处理通道（postprocessing passes）：
+
+- **AdaptiveToneMappingPass**：此渲染通道会根据场景中可用光线的多少，动态调整场景的亮度（luminosity）。
+- **BloomPass**：该效果使较亮区域“溢出”到较暗区域，模拟相机因强光过曝而产生的泛光效果。
+- **BokehPass**：为场景添加景深（bokeh）效果，使场景前景清晰对焦，其余部分则失焦模糊。
+- **ClearPass**：此通道用于清空当前的纹理缓冲区。
+- **CubeTexturePass**：可用于在场景中渲染天空盒（skybox）。
+- **DotScreenPass**：在屏幕上叠加一层黑色圆点，以点阵形式表现原始图像。
+- **FilmPass**：通过添加扫描线和失真效果，模拟老式电视机或胶片的画面风格。
+- **GlitchPass**：以随机时间间隔在屏幕上显示电子故障（glitch）效果。
+- **HalfTonePass**：为场景添加半色调（halftone）效果，将画面渲染为一系列不同大小的彩色符号（如圆形、方形等）。
+- **LUTPass**：可在场景渲染完成后应用颜色校正（使用查找表 LUT），本章未展示此功能。
+- **MaskPass**：允许为当前图像设置遮罩，后续的后期处理通道仅作用于遮罩区域。
+- **OutlinePass**：渲染场景中物体的轮廓线。
+- **RenderPass**：根据提供的场景和相机渲染整个场景。
+- **SAOPass**：提供实时环境光遮蔽（Screen Space Ambient Occlusion）效果。  
+- **SMAAPass**：为场景添加 SMAA（Subpixel Morphological Anti-Aliasing）抗锯齿效果。  
+- **SSAARenderPass**：通过屏幕空间多重采样（SSAA）为场景添加抗锯齿效果。  
+- **SSAOPass**：提供另一种实现运行时环境光遮蔽（SSAO）的方式。  
+- **SSRPass**：该通道可用于创建具有屏幕空间反射（Screen Space Reflections）效果的物体。  
+- **SavePass**：执行此通道时，会复制当前渲染步骤的结果以供后续使用。但在实际应用中用处不大，我们的示例中也不会使用它。  
+- **ShaderPass**：允许你传入自定义着色器，用于实现高级或定制化的后期处理效果。  
+- **TAARenderPass**：通过时间性抗锯齿（Temporal Anti-Aliasing, TAA）为场景添加抗锯齿效果。  
+- **TexturePass**：将当前 `EffectComposer` 的状态保存到一个纹理中，该纹理可作为其他 `EffectComposer` 实例的输入。  
+- **UnrealBloomPass**：与 `THREE.BloomPass` 类似，但其泛光效果模仿了虚幻（Unreal）3D 引擎中使用的风格。
+
+### 简单的后期处理通道
+
+对于简单的后期处理通道，我们将探讨 `FilmPass`、`BloomPass` 和 `DotScreenPass` 能实现哪些效果。我们提供了一个示例（`multi-passes.html`），你可以通过它尝试这些通道，并观察它们对原始渲染结果产生的不同影响。下图展示了该示例的效果：
+
+### 在同一屏幕上显示多个渲染器的输出
+
+### 其他简单通道
+
+## 使用遮罩的高级 EffectComposer 流程
+
+在前面的示例中，我们将后期处理通道应用到了整个屏幕。然而，Three.js 也支持仅对特定区域应用这些通道。在本节中，我们将执行以下步骤：
+
+1. 创建一个场景作为背景图像；  
+2. 创建一个包含类似地球的球体的场景；  
+3. 创建一个包含类似火星的球体的场景；  
+4. 创建一个 `EffectComposer`，将这三个场景合成到一张图像中；  
+5. 对渲染为火星的球体应用着色（colorify）效果；  
+6. 对渲染为地球的球体应用棕褐色（sepia）效果。
+
+这听起来可能有些复杂，但实际上实现起来却出乎意料地简单。首先，让我们看看在 `masks.html` 示例中我们希望达到的效果。下图展示了上述步骤的最终结果：
+
+我们首先需要做的是设置我们将要渲染的各种场景：
+
+```javascript
+const sceneEarth = new THREE.Scene();
+const sceneMars = new THREE.Scene();
+const sceneBG = new THREE.Scene();
+```
+
+为了创建地球和火星的球体，我们只需使用正确的材质和纹理创建这些球体，并将它们添加到各自对应的场景中。对于背景场景，我们加载一张纹理并将其设置为 `sceneBG` 的背景。以下是相关代码（`addEarth` 和 `addMars` 只是辅助函数，用于保持代码清晰；它们通过 `THREE.SphereGeometry` 创建简单的 `THREE.Mesh`，生成一些光源并将它们全部添加到 `THREE.Scene` 中）： 
+
+```js
+sceneBG.background = new THREE.TextureLoader().load
+  ('/assets/textures/bg/starry-deep-outer-space-galaxy.jpg')
+const earthAndLight = addEarth(sceneEarth)
+sceneEarth.translateX(-16)
+sceneEarth.scale.set(1.2, 1.2, 1.2)
+const marsAndLight = addMars(sceneMars)
+sceneMars.translateX(12)
+sceneMars.translateY(6)
+sceneMars.scale.set(0.2, 0.2, 0.2)
+```
+
+在这个例子中，我们使用了一个场景的背景属性来添加星空背景。还有另一种创建背景的方法，那就是使用 `THREE.OrthographicCamera`（正交相机）。使用 `THREE.OrthographicCamera` 时，被渲染对象的大小不会随着它与相机之间距离的改变而变化，因此，通过将一个 `THREE.PlaneGeometry` 对象直接放置在 `THREE.OrthographicCamera` 正前方，我们同样可以创建出背景。 
+
+现在我们已经准备好了三个场景，可以开始设置后期处理通道和 `EffectComposer` 了。我们先来看一下完整的通道链，然后再逐一分析各个通道：
+
+### 高级通道——景深（Bokeh）
+
+通过 `BokehPass`，你可以为场景添加景深（bokeh）效果。在景深效果中，只有场景的一部分处于焦点范围内，其余部分则呈现模糊状态。要查看这一效果的实际演示，可以打开 `bokeh.html` 示例：
+
+### 高级通道——环境光遮蔽（Ambient Occlusion）
+
+在第 10 章《加载和使用纹理》中，我们讨论过使用预烘焙的环境光遮蔽贴图（aoMap），根据环境光照直接应用阴影。环境光遮蔽（Ambient Occlusion）指的是物体表面因各部分接收到的环境光量不同而产生的阴影和明暗变化。除了在材质上使用 `aoMap` 外，还可以通过 `EffectComposer` 中的后期处理通道来实现类似的效果。如果你打开 `ambient-occlusion.html` 示例，就能看到使用 `SSAOPass` 后的效果：
+
+## 使用 `THREE.ShaderPass` 实现自定义效果
+
+通过 `THREE.ShaderPass`，我们可以向场景中应用大量额外的效果，只需传入自定义的着色器即可。Three.js 自带了一组可与 `THREE.ShaderPass` 配合使用的内置着色器，本节将列出这些着色器。我们将本节内容分为三个部分进行介绍。
+
+如果你浏览 Three.js 发行版中的 `Shaders` 目录，可能会注意到一些本章未列出的其他着色器。这些着色器——如 `FresnelShader`、`OceanShader`、`ParallaxShader` 和 `WaterRefractionShader`——并不是用于后期处理的着色器，而是应与我们在第 4 章《使用 Three.js 材质》中介绍过的 `THREE.ShaderMaterial` 对象配合使用。
+
+接下来，我们将从几个简单的着色器开始介绍。
+
+### 简单的着色器
+
+### 模糊着色器
+
+在本节中，我们同样不会深入讲解代码，而只展示各种模糊着色器的效果。你可以通过 `shaders-blur.html` 示例来亲自尝试这些效果。前两个展示的着色器是 `HorizontalBlurShader`（水平模糊着色器）和 `VerticalBlurShader`（垂直模糊着色器）：
+
+## 创建自定义后期处理着色器
+
+在本节中，你将学习如何创建可用于后期处理的自定义着色器。我们将创建两个不同的着色器：第一个着色器会将当前图像转换为灰度图；第二个着色器则通过减少可用颜色数量，将图像转换为 8 位风格（即色彩量化效果）。
+
+> **顶点着色器与片元着色器**
+>
+> 创建顶点着色器（vertex shader）和片元着色器（fragment shader）是一个非常广泛的主题。在本节中，我们仅简要介绍这些着色器的基本工作原理以及它们所能实现的功能。若想深入了解，你可以参考 WebGL 官方规范：http://www.khronos.org/webgl/。另一个充满实例的优秀资源是 Shadertoy（[https://www.shadertoy.com](https://www.shadertoy.com/)），以及《The Book of Shaders》（https://thebookofshaders.com/）。
+
+### 自定义灰度着色器
+
+要为 Three.js（以及其他 WebGL 库）创建自定义着色器，你需要编写两个组成部分：顶点着色器（vertex shader）和片元着色器（fragment shader）。  顶点着色器用于修改各个顶点的位置；  片元着色器则用于确定每个像素的颜色。对于后期处理着色器而言，我们通常只需要实现片元着色器，而可以沿用 Three.js 提供的默认顶点着色器。
+
+在查看代码之前，有一个重要概念需要了解：GPU 支持多条着色器流水线并行执行。这意味着顶点着色器会同时在多个顶点上并行运行，片元着色器也是如此——它们会在大量像素上并行处理。
+
+我们先来看一下为图像应用灰度效果的着色器完整源代码（`custom-shader.js`）：
+
+> **定义着色器的另一种方式**
+>
+> 在第 4 章中，我们展示了如何将着色器代码定义在独立的文件中。而在 Three.js 中，大多数着色器都采用前一段代码所示的结构。这两种方法都可以用来定义着色器的代码。
+
+如前一段代码所示，这并不是 JavaScript。编写着色器时，使用的是 OpenGL 着色语言（GLSL），其语法与 C 语言非常相似。有关 GLSL 的更多信息，请参见：http://www.khronos.org/opengles/sdk/docs/manglsl/。
+
+首先，我们来看一下顶点着色器：
+
+```js
+  vertexShader: [
+    'varying vec2 vUv;',
+
+    'void main() {',
+
+    'vUv = uv;',
+    'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
+
+    '}'
+  ].join('\n'),
+```
+
+对于后期处理而言，这个着色器实际上并不需要做任何特殊操作。上述代码是 Three.js 实现顶点着色器的标准方式：它结合了相机的投影矩阵（`projectionMatrix`）和模型视图矩阵（`modelViewMatrix`，用于将对象的位置转换到世界空间），从而确定顶点在屏幕上的渲染位置。在后期处理的上下文中，这段代码中唯一值得关注的部分是：纹理坐标（`uv` 值，用于指示从纹理中读取哪个纹素）通过 `varying vec2 vUv` 变量传递给了片元着色器。
+
+这可以用来在片元着色器中获取需要处理的像素。接下来，我们来看片元着色器，了解其中的代码具体做了什么。我们先从以下变量声明开始：
+
+```js
+'uniform float rPower;',
+'uniform float gPower;',
+'uniform float bPower;',
+'uniform sampler2D tDiffuse;',
+'varying vec2 vUv;',
+```
+
+在这里，我们可以看到四个 `uniform`（一致变量）的声明。`uniform` 变量的值由 JavaScript 传入着色器，并且在处理每个片元时都保持相同。在本例中，我们传入了三个 `float` 类型的值（用于确定各颜色通道在最终灰度图像中的混合比例），以及一个名为 `tDiffuse` 的纹理（类型为 `sampler2D`）。该纹理包含了来自 `EffectComposer` 实例上一处理步骤的图像结果。Three.js 会确保当 uniform 变量命名为 `tDiffuse` 时，自动将对应的纹理传递给此着色器。此外，我们也可以通过 JavaScript 手动设置其他 uniform 变量的值。但在 JavaScript 中使用这些 uniform 之前，我们需要先在着色器文件顶部明确声明哪些 uniform 属性要暴露给 JavaScript。声明方式如下：
+
+```js
+uniforms: {
+"tDiffuse": { type: "t", value: null },
+"rPower": { type: "f", value: 0.2126 },
+"gPower": { type: "f", value: 0.7152 },
+"bPower": { type: "f", value: 0.0722 }
+},
+```
+
+此时，我们就可以从 Three.js 接收配置参数，并获取当前渲染的输出结果。接下来看一下将每个像素转换为灰度像素的代码：
+
+```js
+"void main() {",
+"vec4 texel = texture2D( tDiffuse, vUv );",
+"float gray = texel.r*rPower + texel.g*gPower + texel.b*bPower;", 
+"gl_FragColor = vec4( vec3(gray),texel.w );"
+```
+
+这里所做的操作是：从传入的纹理中获取正确的像素。我们通过调用 `texture2D` 函数来实现这一点，该函数接收当前图像（`tDiffuse`）和要采样的像素位置（`vUv`）作为参数。返回的结果是一个纹素（texel，即纹理中的一个像素），其中包含颜色信息和透明度（`texel.w`）。接着，我们利用该纹素的 `r`、`g` 和 `b` 分量计算出一个灰度值，并将该灰度值赋给 `gl_FragColor` 变量——这个变量最终会被显示在屏幕上。至此，我们就完成了一个自定义着色器！它的使用方式与本章前面多次展示的方法一致。首先，我们需要像下面这样设置 `EffectComposer`：
+
+```js
+const effectCopy = new ShaderPass(CopyShader)
+effectCopy.renderToScreen = true
+const grayScaleShader = new ShaderPass(CustomGrayScaleShader)
+const gammaCorrectionShader = new ShaderPass(GammaCorrectionShader)
+const composer = new EffectComposer(renderer)
+composer.addPass(new RenderPass(scene, camera))
+composer.addPass(grayScaleShader)
+composer.addPass(gammaCorrectionShader)
+composer.addPass(effectCopy)
+```
+
+我们在渲染循环中调用 `composer.render()`。如果希望在运行时动态修改该着色器的属性，只需更新我们之前定义的 `uniforms` 属性即可，如下所示：
+
+```js
+shaderPass.uniforms.rPower.value = ...;
+shaderPass.uniforms.gPower.value = ...;
+shaderPass.uniforms.bPower.value = ...;
+```
+
+效果可以在 `custom-shaders-scene.html` 中查看。下图展示了该示例：
+
+### 创建自定义位着色器
+
+通常，颜色是以24位值表示的，这给我们提供了大约1600万种不同的颜色。在计算技术的早期，这是不可能实现的，颜色往往以8位或16位来表示。使用这个着色器，我们可以自动将24位输出转换为4位颜色深度（或者任何你想要的深度）。
+
+## 小结
+
+在本章中，我们探讨了多种后期处理选项。正如你所见，创建 `EffectComposer` 并将多个通道（passes）串联起来实际上非常简单，但需要注意以下几点：并非所有通道都会直接输出到屏幕上。如果你需要将结果渲染到屏幕，可以始终使用带有 `CopyShader` 的 `ShaderPass`。向 `EffectComposer` 中添加通道的顺序非常重要，因为效果会按照该顺序依次应用。如果你想复用某个 `EffectComposer` 实例的渲染结果，可以使用 `TexturePass`。当你的 `EffectComposer` 中包含多个 `RenderPass` 时，请务必将除第一个之外的其他 `RenderPass` 的 `clear` 属性设为 `false`；否则，你只会看到最后一个 `RenderPass` 的输出。如果只想对特定对象应用某种效果，可以使用 `MaskPass`；完成遮罩操作后，记得使用 `ClearMaskPass` 清除遮罩。除了 Three.js 提供的标准通道外，还有大量内置的标准着色器可供使用，它们可与 `ShaderPass` 配合使用。使用 Three.js 的标准方法创建用于后期处理的自定义着色器非常简单——通常你只需编写一个片元着色器（fragment shader）即可。
+
+至此，我们已经涵盖了 Three.js 核心部分几乎所有需要了解的内容。在第 12 章《为场景添加物理效果和声音》中，我们将介绍一个名为 Rapier.js 的库，你可以用它来为 Three.js 场景添加物理功能，例如碰撞检测、重力以及约束等效果。
+
+# 12 向场景中添加物理效果和声音
+
+## 脑图
+
+​        ![img](https://darwin-controller-pro.oss-cn-hangzhou.aliyuncs.com/a636d3c4fa7a7521e616705c08ff56fa/mind/%E3%80%90%E8%84%91%E5%9B%BE%E3%80%91Learn%20Three.jpeg?Expires=1765963579&OSSAccessKeyId=LTAI5tBVMtznbk7xyCa56gof&Signature=29fYyNEYqPPoiihaPQVFul3Rzig%3D)      
+
+## 总结
+
+在本章中，我们探讨了如何通过添加物理效果来扩展Three.js的基本3D功能。为此，我们使用了Rapier库，它允许你为场景和物体添加重力，使物体之间相互作用并在碰撞时反弹，并利用关节限制物体之间的相对运动。
+
+此外，我们还向您展示了Three.js如何支持3D声音。我们创建了一个场景，您可以在其中使用THREE.PositionalAudio和THREE.AudioListener对象添加位置声。
+
+尽管我们现已涵盖了Three.js提供的所有核心功能，但仍有两章专门介绍一些可与Three.js配合使用的外部工具和库。在下一章中，我们将深入探讨Blender，并了解如何利用Blender的功能，例如烘焙阴影、编辑UV贴图以及在Blender和Three.js之间交换模型。
+
+# 13 使用Blender和Three.js进行工作
+
+## 脑图
+
+​        ![img](https://darwin-controller-pro.oss-cn-hangzhou.aliyuncs.com/2faed3799c9a011adf897f5f4133150c/mind/%E3%80%90%E8%84%91%E5%9B%BE%E3%80%91Learn%20Three.jpeg?Expires=1766044528&OSSAccessKeyId=LTAI5tBVMtznbk7xyCa56gof&Signature=1%2FGSybuSIezT2WquvqUCzV6xs9g%3D)      
 
 Baking lightmaps and ambient occlusion maps in Blender，
 
@@ -2573,16 +3275,179 @@ Baking lightmaps and ambient occlusion maps in Blender，
 
 # 14 Three.js 与 React、TypeScript 和 Web-XR 一起使用
 
-## 14.1 将 Three.js 与 TypeScript 结合使用
+## 脑图
+
+​        ![img](https://darwin-controller-pro.oss-cn-hangzhou.aliyuncs.com/c8fee48771477bea33085fbdcb86e392/mind/%E3%80%90%E8%84%91%E5%9B%BE%E3%80%91Learn%20Three.jpeg?Expires=1766019724&OSSAccessKeyId=LTAI5tBVMtznbk7xyCa56gof&Signature=0OkBZH6kgGAjbj%2Ff8ZfYesOn0Kk%3D)      
+
+## 将 Three.js 与 TypeScript 结合使用
+
+TypeScript 是一种带有类型系统的语言，可以编译（转译）为 JavaScript。这意味着你可以用它来开发网站，并且生成的代码在浏览器中运行起来与普通 JavaScript 完全一样。配置 TypeScript 项目的方式有很多，其中最简单的一种是由 Vite（https://vitejs.dev/）提供的。
+Vite 提供了一个集成的构建环境，某种程度上可视为 webpack 的替代方案（我们在常规章节示例中使用的是 webpack）。
 
 ```bash
 $ yarn add three
 $ yarn add -D @types/three
 ```
 
-## 14.2 使用 Three.js 和 React 与 TypeScript
+## 使用 Three.js 和 React 与 TypeScript
 
-## 14.3 使用 Three.js 和 React Three Fiber
+创建项目
+
+```bash
+yarn create react-app lts-tf --template TypeScript
+
+// or
+yarn create vite lts-tf --template react-ts
+```
+
+在前面的示例中，我们实现了 React 与 Three.js 的简单集成。虽然这种方式可行，但以编程方式描述 Three.js 场景仍显得有些奇怪，因为在 React 中，通常采用声明式的方式通过组件来定义应用。我们可以像 ThreeCanvas 组件那样封装现有的 Three.js 组件，但很快就会变得复杂起来。幸运的是，Three.js fibers 项目已经完成了这项繁重的工作：https://r3f.docs.pmnd.rs/getting-started/introduction。在下一节中，我们将探讨借助这个项目，Three.js 和 React 能多么轻松地实现集成。
+
+src\ThreeCanvas.tsx
+
+```tsx
+import { useCallback, useState } from 'react'
+import * as THREE from 'three'
+
+const initThreeJsScene = (node: HTMLDivElement) => {
+  const scene = new THREE.Scene()
+  const camera = new THREE.PerspectiveCamera(75, 500 / 500, 0.1, 1000)
+
+  const renderer = new THREE.WebGLRenderer()
+  renderer.setClearColor(0xffffff)
+  renderer.setSize(500, 500)
+  node.appendChild(renderer.domElement)
+
+  camera.position.z = 5
+
+  const geometry = new THREE.BoxGeometry()
+  const material = new THREE.MeshNormalMaterial()
+  const cube = new THREE.Mesh(geometry, material)
+
+  scene.add(cube)
+
+  const animate = () => {
+    requestAnimationFrame(animate)
+    cube.rotation.x += 0.01
+    cube.rotation.y += 0.01
+    renderer.render(scene, camera)
+  }
+
+  animate()
+}
+
+export const ThreeCanvas = () => {
+  const [initialized, setInitialized] = useState(false)
+
+  const threeDivRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (node !== null && !initialized) {
+        initThreeJsScene(node)
+        setInitialized(true)
+      }
+    },
+    [initialized]
+  )
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh'
+      }}
+      ref={threeDivRef}
+    ></div>
+  )
+}
+```
+
+在initThreeJsScene中，你可以找到使用TypeScript初始化一个简单Three.js场景的标准代码。要将这个Three.js场景连接到React，我们可以使用ThreeCanvas函数式React组件中的代码。我们希望在div元素被附加到其父节点时初始化Three.js场景。为此，我们可以使用useCallback函数。该函数仅在该节点被附加到父节点时调用一次，即使父节点的某个属性发生变化，也不会重新运行。在我们的例子中，我们还会添加另一个isInitialized状态，以确保即使开发服务器重新加载应用程序的部分内容，我们也只初始化一次Three.js场景。
+
+> **useRef 或 useCallback**
+>
+> 你可能会想在这里使用useRef。在https:// reactjs.org/docs/hooks-faq.html#how-can-i-measure-a-dom-node 上有一篇很好的解释，说明了为什么在这种情况下，你应该使用useCallback而不是useRef，以避免不必要的重新渲染。
+
+如何测量一个 DOM 节点？
+
+一种基本的测量 DOM 节点位置或尺寸的方法是使用回调 ref（callback ref）。每当该 ref 被挂载到不同的节点上时，React 都会调用这个回调函数。下面是一个小示例：
+
+```jsx
+function MeasureExample() {
+  const [height, setHeight] = useState(0);
+
+  const measuredRef = useCallback(node => {
+    if (node !== null) {
+      setHeight(node.getBoundingClientRect().height);
+    }
+  }, []);
+
+  return (
+    <>
+      <h1 ref={measuredRef}>Hello, world</h1>
+      <h2>上方标题的高度为 {Math.round(height)} 像素</h2>
+    </>
+  );
+}
+```
+
+在这个例子中，我们没有选择使用 `useRef`，因为对象形式的 ref 不会在当前 ref 值发生变化时通知我们。而使用回调 ref 可以确保：即使子组件稍后才渲染出被测量的节点（例如响应一次点击事件），父组件仍然能收到通知，并更新测量结果。
+
+注意，我们在 `useCallback` 中传入了空依赖数组 `[]`。这可以确保我们的 ref 回调函数在组件重新渲染之间不会发生变化，从而避免 React 不必要地多次调用它。
+
+在此示例中，回调 ref 仅在组件挂载和卸载时被调用，因为所渲染的 `<h1>` 元素在整个重新渲染过程中始终存在。如果你希望在组件尺寸发生变化时都能收到通知，可以考虑使用 `ResizeObserver`，或者基于它构建的第三方 Hook。
+
+如果你愿意，还可以将上述逻辑提取为一个可复用的自定义 Hook：
+
+```jsx
+function MeasureExample() {
+  const [rect, ref] = useClientRect();
+  return (
+    <>
+      <h1 ref={ref}>Hello, world</h1>
+      {rect !== null &&
+        <h2>上方标题的高度为 {Math.round(rect.height)} 像素</h2>
+      }
+    </>
+  );
+}
+
+function useClientRect() {
+  const [rect, setRect] = useState(null);
+  const ref = useCallback(node => {
+    if (node !== null) {
+      setRect(node.getBoundingClientRect());
+    }
+  }, []);
+  return [rect, ref];
+}
+```
+
+**问题：为什么运行时，浏览器页面中有两个相同的canvas呢？**
+
+在开发模式下，React 的 <StrictMode> 会故意渲染组件两次（包括其副作用，如初始化 Three.js 场景），以帮助检测潜在的不纯副作用。这导致 initThreeJsScene 函数被调用两次，从而在页面上创建了两个相同的 canvas。
+
+要解决这个问题，你可以移除 <StrictMode> 包装器（在 main.tsx 中），但请注意，这可能会隐藏一些开发时的警告。在生产环境中，StrictMode 不会导致双重渲染。
+
+如果你需要保留 StrictMode，可以在 initThreeJsScene 中添加检查，确保只初始化一次，即使在 StrictMode 下。
+
+## 使用 Three.js 和 React Three Fiber
+
+在之前的示例中，我们自己设置了 React 和 Three.js 之间的集成。虽然这种方法可行，但它与 React 的工作方式并未紧密集成。为了实现这些框架之间的良好集成，我们可以使用 React Three Fiber。我们将再次从设置一个项目开始。
+
+为此，请运行以下命令：
+
+```bash
+yarn create vite lts-r3f --template react
+```
+
+安装依赖
+
+```bash
+yarn add three @react-three/fiber @react-three/drei
+```
+
+
 
 https://docs.pmnd.rs/react-three-fiber/getting-started/introduction
 
@@ -2592,4 +3457,22 @@ https://github.com/pmndrs/drei
 
 `'@react-three/drei'`
 
-## 14.4 Three.js 和 VR
+API文档：https://drei.docs.pmnd.rs/getting-started/introduction
+
+
+
+React Three Fiber 和 drei 库提供了与普通 Three.js 库几乎完全相同的所有功能（甚至还提供了一些普通 Three.js 库中没有的功能）。如果你正在使用 React 并且需要集成 Three.js，这是一种很棒的使用 Three.js 的方式。即使你并不一定在构建 React 应用程序，React Three Fiber 提供的声明式场景、组件和交互定义方式也非常直观。React Three Fiber 为你想要创建的任何 Three.js 可视化效果提供了一个绝佳的替代方案。
+
+## Three.js 和 VR
+
+## Three.js 和 AR
+
+## 总结
+
+在本章中，我们探讨了与Three.js相关的一些技术。我们向您展示了将Three.js与TypeScript和React集成的不同方法，还向您展示了如何创建一些基本的AR和VR场景。
+
+通过使用 Three.js TypeScript 绑定，您可以轻松地从您的 TypeScript 项目访问所有 Three.js 功能。此外，通过 React Three Fiber 库，将 Three.js 与 React 集成变得轻而易举。
+
+在Three.js中使用VR和AR也非常简单。只需向主渲染器添加几个属性，就能快速将任何场景转换为VR或AR场景。别忘了使用浏览器插件，以便轻松测试你的场景，而无需实际的VR和AR设备。
+
+至此，本书就到此结束了。希望你喜欢阅读本书，并乐于尝试书中的示例。祝你实验愉快！
