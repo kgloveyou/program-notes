@@ -90,7 +90,12 @@ Three.js 应用可以针对移动设备进行优化，从而在智能手机和�
 ### 动效设计工具  
 正如我们已经了解的，向页面中插入对象有多种方式。但如果我们需要创建动画呢？使用Three.js时，我们需要手动编写运动轨迹和相机控制代码。那么有没有像Blender这类桌面应用一样，能通过可视化界面实现动画制作的工具呢？答案是肯定的。这个解决方案就是TheatreJS库（图1.13），它支持通过导入3D对象来创建华丽的动画效果。您可以通过以下网址获取：[https://www.theatrejs.com/](https://www.theatrejs.com/)  
 
+### 基于3D网络的视觉游戏引擎
+
+作为最后一个例子，我们将讨论用于创建游戏、视觉演示和工业应用的Web 3D引擎(图1.14)。在本书中，我们将在创建界面时依赖于该引擎提供的各种功能。尽管该引擎非常适合工业应用场景，但它的主要重心还是放在游戏开发上。因此，许多功能可能并不会被使用到，尤其是在受到应用特定场景需求限制的情况下。这种情况常常导致大量本可以用纯JavaScript创建的3D对象出现，这些对象同样会占用你电脑的资源。该引擎可从https://playcanvas.com/下载，它被称为PlayCanvas。
+
 ## 结论  
+
 本章深入探讨了工业应用领域的广阔图景，揭示了这些应用在各行各业中的关键价值及其面临的复杂挑战。随后，我们追溯了Three.js与Next.js的技术演进历程，展现了它们对Web开发与3D图形领域带来的变革性影响。  
 
 随着论述的展开，重点自然转向工业可视化这一核心领域——正是Three.js与Next.js的强强联合在此大放异彩。本章着重阐述了这种动态协同效应如何赋能沉浸式3D可视化的构建，为工业流程分析、仿真模拟及原型设计提供重要洞见。  
@@ -208,7 +213,16 @@ Three.js使您能够在PWA中创建类原生应用的交互体验。用户可以
 
 # 第3章  工具介绍
 
+## Three.js 库简介
+
+- **对象的四元数（Quaternion）**：这是对象修改中最有趣的部分。四元数是对三维对象进行数学上正确的旋转。四元数有助于避免万向锁问题，这是欧拉角的一个局限性，即某些方向会导致旋转自由度损失一维。四元数可以表示任意三维旋转而不会遇到万向锁。我们将在下一章讨论万向锁，因为它在三维图形中是一个重要部分。
+
+## Next.js 概述及其功能
+
+
+
 ## 其他工具  
+
 由于我们将使用 Next.js 进行开发，因此需要一些额外工具来结合 React 和 Three.js 进行工作。我们需要一个名为 React Three Fiber 的 Three.js 封装库，以及一个为 Three.js 对象提供无障碍访问支持的库——React Three A11y。下面让我们深入了解一下这些库。  
 
 ### React Three Fiber  
@@ -254,6 +268,30 @@ React Three Fiber（简称 R3F）是一个 JavaScript 库，用于弥合 React �
   - **描述性链接**：为 3D 场景中的可交互元素提供清晰的文本说明，提升导航体验。  
 
   通过这些工具，我们不仅能创建出色的 WebGL 应用，还能让它们适用于包括残障用户在内的更广泛人群。
+
+## 了解 AWS Amplify
+
+## 探索 Storybook 的优势
+
+## Tailwind CSS 简介
+
+# 第4章  设置所有工具以快速启动开发
+
+运行示例代码前需要安装依赖：
+
+```bash
+npm install --save three vite
+```
+
+本地运行
+
+```bash
+npm run dev
+```
+
+## 设置 AWS Amplify CLI 工具
+
+应用地址：https://us-east-2.console.aws.amazon.com/amplify/apps/d23ng94q2hnis0/overview
 
 # 第5章  3D 开发入门
 
@@ -301,10 +339,15 @@ React Three Fiber（简称 R3F）是一个 JavaScript 库，用于弥合 React �
 
 在交互式3D应用程序中，通常提供相机控制功能，允许用户改变相机的位置和朝向。这可能包括平移、缩放、环绕和相机切换等功能。
 
-一些3D应用程序使用多个相机来提供不同的视角或实现特定效果。例如，游戏可能会为后视镜使用单独的相机，而安防摄像头系统可能会使用多个相机来监控
-不同区域。
+一些3D应用程序使用多个相机来提供不同的视角或实现特定效果。例如，游戏可能会为后视镜使用单独的相机，而安防摄像头系统可能会使用多个相机来监控不同区域。
 
-# 第6章 Three.js入门
+# 第6章 开始使用Three.js
+
+此后，我们将无法再看到该对象。我们看不到该对象，是因为在当前设置中，我们的相机并未朝向该对象。默认情况下，相机被创建于坐标 (0,0,0) 处，与新创建的对象位置相同。稍后我们会讨论相机的特殊设置。目前，我们只需稍微移动一下相机，以便能够看到一些东西。要解决这个问题，请将代码清单 6.7 中所示的一行代码添加到您的代码中：
+
+```js
+camera.position.z = 5;
+```
 
 ## 调试和故障排除
 
@@ -313,6 +356,16 @@ React Three Fiber（简称 R3F）是一个 JavaScript 库，用于弥合 React �
 - [Tweakpane](https://github.com/cocopon/tweakpane)。Tweakpane is a compact pane library for fine-tuning parameters and monitoring value changes, inspired by [dat.GUI](https://github.com/dataarts/dat.gui).
 - Control-panel: (https://github.com/freeman-lab/control-panel)
 - Lil-gui(https://lil-gui.georgealways.com/ ). 
+
+### 安装并实施Lil-gui
+
+```bash
+npm install lil-gui
+```
+
+### Orbit controls  
+
+另一个有用的补充功能是轨道控件。我们场景中看到的一切都来自摄像机。如果我们需要围绕场景旋转，但同时保持摄像机在最初创建用于调试的位置不动，我们可以创建一个轨道控件对象并将其连接到摄像机。这将允许我们通过鼠标移动来操作摄像机。请使用代码清单6.15更新您的代码，以添加轨道控件：
 
 # 第7章  几何体与材质
 
@@ -325,7 +378,7 @@ React Three Fiber（简称 R3F）是一个 JavaScript 库，用于弥合 React �
 
 ### BoxGeometry  
 
-用于创建具有指定宽度、高度和深度的矩形长方体。使用此几何体创建长方体时，它会自动以原点为中心，并且每条边都与坐标轴之一完美对齐。
+BoxGeometry 用于创建具有指定宽度、高度和深度的矩形长方体。当我们使用此几何体创建长方体时，它会自动以原点为中心，并且其每条边都与一个坐标轴完全对齐。
 
 ### CapsuleGeometry  
 
@@ -548,6 +601,8 @@ animate();
 •  户外场景（Outdoor Scenes）：  
 在户外环境中，环境光有助于防止阴影区域显得过于黑暗。这种微妙的照明确保即便在没有直接受到其他光源照射的区域，整个场景仍保持良好的可见度。
 
+代码：Chapter 08\ambient-lights.js
+
 #### 半球光（Hemisphere Light）  
 
 半球光是Three.js中的一种光源，用于提供环境光和间接照明。它模拟了现实世界中光线散射的方式——通常天空作为主光源，地面则反射光线。半球光由两个核心部分组成：  
@@ -559,6 +614,32 @@ animate();
 对应地面或接收间接光照的其他表面的颜色，用于增强光线反弹产生的间接照明效果。  
 
 天空颜色贡献场景的整体环境光氛围，而地面颜色则强化光线经表面反射后的柔和间接光。半球光能显著提升3D场景的深度感和真实感，通过更自然的阴影过渡和复杂的光照交互，使画面更加生动细腻。  
+
+代码：Chapter 08\lights.js
+
+#### 定向光（Directional light）
+
+为了整合这种光照，我们需要对代码进行更多修改。方向光由两部分组成：光源位置和目标点。之所以这样设计，是因为我们使用的是基于向量的光源。想象一下三维空间中的这条线，它有两个端点：起点和终点。这就是方向光的工作原理。目标点是产生光照的部分，因此每次移动向量时，我们都必须关注目标点。为了更直观地展示这种类型的光照，我们将引入一种特殊的对象，它能帮助我们更好地理解光照的工作方式。这个对象被称为辅助器（**helper**）。辅助器会在场景中生成可视化的线条，向我们展示方向光的起始位置以及其配置的方向。我们接下来要介绍的另一个工具是**归一化**。我们将在后续章节中详细介绍归一化，但在这里我们需要先简单介绍一下，因为方向光是一种基于向量的元素。
+
+代码：Chapter 08\directional-light.js
+
+#### 点光源（PointLight）
+
+#### 聚光灯（Spot light）
+
+在Three.js中，MathUtils类提供了一种简单直接的度数到弧度的转换方法。要使用此方法，只需按照代码清单8.10所示的方式应用MathUtils中的转换函数即可。这可确保基于度数的角度无缝集成到Three.js环境中。
+
+```js
+const radians = THREE.MathUtils.degToRad(<YOUR-DEGREE-NUMBER>)
+```
+
+#### 矩形区域光（RectAreaLight）
+
+RectAreaLight 是 Three.js 中的一种光源，用于模拟矩形区域光源。这些光源从一个矩形表面均匀地发射光线，与仅从单个点或特定方向发射光线的点光源或聚光灯不同。这使得 RectAreaLight 非常适合模拟荧光灯、LED 面板，甚至建筑可视化中的窗户开口等光源。它们通常用于在 3D 场景中创建均匀而柔和的照明。以下说明了 RectAreaLight 的参数：
+
+为了正确渲染这种类型的光源，我们还需要一个名为**RectAreaLightUniformsLib**的实用类。它是Three.js库的一部分，提供专为RectAreaLight设计的uniform（着色器输入变量）定义和初始化。这是必要的，因为3D图形中的光照是一个复杂的过程，通常涉及着色器——这些程序在GPU上运行，用于计算场景中每个像素的最终颜色。这些着色器需要各种参数，包括描述光源特征的参数，比如RectAreaLight。
+
+我们还需要添加一个来自Three.js插件的辅助工具，名为**RectAreaLightHelper**。我们需要它，因为集成的辅助工具已经不再起作用了。由于RectAreaLight比其他光源更强大，因此需要更多关注。
 
 ### 创建逼真的阴影  
 
@@ -608,7 +689,7 @@ Three.js生成阴影的默认方法是使用阴影贴图(Shadow Maps)。当我�
 }
 ```
 
-#### 阴影映射技术
+#### 阴影映射（Shadow mapping）
 
 阴影映射是Three.js及其他3D渲染引擎中用于模拟3D场景内阴影投射与接收效果的技术。该技术在创建逼真且具有沉浸感的3D环境中起着关键作用。
 
@@ -647,6 +728,8 @@ Three.js生成阴影的默认方法是使用阴影贴图(Shadow Maps)。当我�
 第一种类型是透视相机。在3D世界中，这种相机模拟了我们在现实中感知深度的方式。
 
 透视相机会让远处的物体看起来比近处的物体更小，就像地平线上的山脉看起来比近处的山峰更渺小一样。
+
+我们还可以了解一下摄像机的lookAt参数。该参数会将摄像机的视角固定到目标物体的位置上。作为参数，它会获取坐标值；以球体位置为例，无论我们选择什么位置，摄像机都会跟随球体移动。将其添加到矩阵更新之前，如代码清单9.2所示，当位置发生变化时，摄像机就会旋转到球体所在的位置：
 
 ```js
 const positionFolder = gui.addFolder( 'Position' );
@@ -702,10 +785,10 @@ deltaKeysAsArray.forEach(delta => {
 
 （参数共同定义了一个长方体视锥体，只有位于这个长方体内的物体才会被正交相机渲染）
 
-我们使用不同的方法来更新相机，原因是为了更新相机的不同参数：
+我们使用不同的方法来更新相机。之所以使用这些方法，是为了更新相机的不同参数：
 
-- updateProjectionMatrix 是专门用于相机的方法，更新基于相机属性的投影矩阵。
-- updateMatrix 是一个更通用的对象方法，更新基于位置、旋转或缩放变化的本地矩阵。
+- `updateProjectionMatrix` 是专用于相机的方法，它会根据相机的属性更新投影矩阵。
+- `updateMatrix` 是一个更通用的对象方法，它会根据位置、旋转或缩放的变化来更新局部矩阵。
 
 ### 立体相机（Stereo Camera）
 
@@ -820,8 +903,8 @@ arrayCamera.position.z = 3;
 
 这对于相机阵列特别重要，因为每个子相机需要准确知道它在全局空间中的位置和方向，以正确渲染场景的不同部分。
 
-## 配置相机控制与交互  
-在Three.js中，配置相机控制与交互涉及设置允许用户操纵相机位置、朝向及其他属性的机制。这对于创建引人入胜的3D场景和应用程序至关重要。  
+## 配置相机控件与交互  
+在Three.js中，配置相机控件与交互涉及设置允许用户操纵相机位置、朝向及其他属性的机制。这对于创建引人入胜的3D场景和应用程序至关重要。  
 
 Three.js提供了各种相机控制库，例如：  
 - **OrbitControls**：用于围绕目标环绕相机  
@@ -829,7 +912,7 @@ Three.js提供了各种相机控制库，例如：
 
 这些库简化了常见相机交互和用户输入的实现。  
 
-配置控制涉及定义用户如何与场景交互，可以包括鼠标移动、点击、触摸手势或键盘输入。  
+配置控件涉及定义用户如何与场景交互，可以包括鼠标移动、点击、触摸手势或键盘输入。  
 
 例如，**OrbitControls**允许用户通过拖动鼠标来旋转相机，通过鼠标滚轮进行放大和缩小，以及通过右键单击并拖动来进行平移。
 
@@ -853,6 +936,15 @@ Three.js提供了各种相机控制库，例如：
 - **细节层次（LOD）**
   我们可以根据对象与相机的距离来添加对象的细节层次，从而提升性能。通过引入代码清单9.14中的代码，可以管理对象的细节层次。
 
+  ```js
+  const lod = new THREE.LOD();
+  
+  // Add different levels of detail for an object
+  lod.addLevel(simpleObject, distance1);
+  lod.addLevel(detailedObject, distance2);
+  scene.add(lod);
+  ```
+  
 - **相机裁剪（Camera Clipping）**  
 
   调整相机的近裁剪面（near）和远裁剪面（far），以控制相机可见的距离范围。这有助于剔除指定范围之外的对象。我们引入代码清单9.15中的代码来管理近裁剪面和远裁剪面。这些数值没有固定规则，每个项目都需要找到所需的平衡点：  
@@ -882,13 +974,63 @@ renderer.setPixelRatio(window.devicePixelRatio);
 
 有各种网站提供现成的免费纹理。我们将从以下网址获取一个：https://www.poliigon.com/zh
 
+
+
+难点在于 JavaScript 语言本身的特性。如果我们像下面这样直接使用纹理加载：
+
+```javascript
+const texture = new THREE.TextureLoader().load(<some-texture>);
+```
+
+就必须确保以下几点：
+
+1. 尽可能使用体积（以 MB 为单位）最小的纹理；
+2. 确保图像的加载速度要快于其他代码的执行速度。
+
+为了解决这一问题，我们必须采用之前的做法：通过回调函数来加载纹理，该回调函数会在纹理加载完成后被触发。一旦纹理加载完成，就可以将其应用到网格上。代码清单 10.1 是一个正确使用加载器的良好示例：
+
+更新代码后，我们将看到一个带有石材质感的球体对象，如图 10.1 所示：
+
+在Three.js中使用单张图像纹理是一种简单直接的方法，可简化为3D对象添加表面细节的过程。这种方法的主要优势在于其简单性。你只需加载一个图像文件，将其作为纹理应用到对象上，你的对象便会立即呈现出更丰富的细节效果。这使得它成为性能和实现便捷性优先的场景中的高效选择。为了解决这个问题，我们可以采用一种称为基于物理的渲染（PBR）的特殊技术。
+
+### PBR 纹理的组成部分
+
+PBR（基于物理的渲染）使用多种纹理贴图来模拟逼真的材质属性和光照交互。这些纹理定义了表面细节，例如粗糙度、金属光泽和反射效果，使得 3D 模型在各种光照条件下都能呈现出高度写实的效果。下面我们来详细解析构成 PBR 纹理的关键组成部分：
+
+- **Albedo（基础颜色）贴图**  
+  - **用途**：表示物体本身固有的颜色。  
+  - 通常也称为“基础颜色贴图”（Base Color map），用于定义材质的基本颜色。
+- **Metalness（金属度）贴图**  
+  - **用途**：确定物体的哪些部分是金属，哪些部分是电介质（非金属）。  
+  - 这是一张灰度图，其中白色代表金属区域，黑色代表非金属区域。
+- **Roughness（粗糙度）贴图**  
+  - **用途**：定义材质微表面的粗糙程度。  
+  - 同样是一张灰度图，白色表示粗糙表面，黑色表示光滑表面。
+- **Normal（法线）贴图**  
+  - **用途**：通过扰动法线方向来提供额外的表面细节。  
+  - 用于在不增加几何复杂度的前提下，模拟表面的精细凹凸细节。
+- **Ambient Occlusion（环境光遮蔽，AO）贴图**  
+  - **用途**：表示物体上接收较少环境光的区域。  
+  - 通过加深缝隙和角落的阴影，增强着色的真实感。
+- **Emissive（自发光）贴图**  
+  - **用途**：指定材质中会发光的区域。  
+  - 用于为材质添加自发光元素。
+
+在诸如 https://3dtextures.me/ 这类资源网站上，我们可以找到各种逼真的 PBR 纹理包。接下来我们将以其中一个纹理包为例进行演示。
+
 ### LoadingManager的关键特性
 
-虽然纹理加载器可以处理单个图像，但使用以下工具管理多个纹理效率更高：LoadingManager. 此工具简化了一次加载多个图像的过程，优化了性能和资产管理。
+虽然纹理加载器（TextureLoader）可以处理单张图像，但在管理多个纹理时，使用 `LoadingManager` 会更加高效。该工具能够简化多张图像的同时加载过程，从而优化性能和资源管理。
+
+- **进度跟踪**：`LoadingManager` 允许我们跟踪多个加载操作的进度。在资源加载过程中，管理器会以百分比形式记录整体加载进度。
+- **回调处理**：我们可以注册回调函数，在加载过程中的特定事件发生时执行，例如当某个资源、所有资源加载完成，或发生错误时。
+- **依赖管理**：该管理器支持依赖关系的概念，确保某些资源在其他资源之前完成加载。这在某个资源依赖于另一个资源加载完成的情况下非常有用。
 
 ## 纹理映射技术和UV坐标
 
-### PBR
+PBR 与 UV 映射使得二维纹理能够精确地应用到三维模型上，决定颜色、图案和细节如何覆盖模型的每一个面。在接下来的内容中，我们将深入探讨 UV 映射的细微之处——这些坐标精妙地定义了纹理如何无缝地包裹在三维物体的轮廓之上。
+
+### PBR(Physically based render)
 
 在处理纹理映射时，我们需要加载多个文件。
 
@@ -927,19 +1069,141 @@ UV 贴图是一种在 3D 计算机图形学中使用的技术，用于将 2D 纹
 
 UV 坐标是一对值 (u, v)，分配给 3D 模型的每个顶点。这些坐标决定了 2D 纹理如何应用于模型的表面。(0, 0)点对应于纹理的左下角，(1, 1)点对应于右上角。
 
+## 用于各种效果的纹理滤镜
+
+在 Three.js 中，纹理滤镜（texture filters）是控制纹理在 3D 对象上显示效果的重要工具。这些滤镜会影响纹理的细节表现。由于在场景中通常难以直观察觉它们的作用，为了更好地演示，我们需要使用一些具有明显细节的简单图像。在此，我们将采用 Three.js 示例中包含彩色矩形的一张图像。
+
+这些滤镜控制着纹理的采样方式、显示效果以及插值行为。以下是一些常用的纹理滤镜及其效果：
+
+### Nearest filter
+
+此滤镜使用最近像素的颜色值。它会产生一种块状、像素化的外观，适合复古或低分辨率的美学风格。
+
+```js
+// Put your code here
+const texture = new THREE.TextureLoader().load('assets/low-poly-texture.png');
+texture.magFilter = THREE.NearestFilter; // Initiation of the filter
+texture.minFilter = THREE.NearestFilter; // Initiation of the filter
+
+const geometry = new THREE.BoxGeometry(1, 1, 1);
+const material = new THREE.MeshBasicMaterial( { map: texture } );
+const cube = new THREE.Mesh( geometry, material );
+scene.add( cube );
+
+const textureNonFiltered = new THREE.TextureLoader().load('assets/low-poly-texture.png');
+const nonFilteredGeometry = new THREE.BoxGeometry(1, 1, 1);
+const materialNonFiltered = new THREE.MeshBasicMaterial( { map: textureNonFiltered } );
+const cubeNoneFiltered = new THREE.Mesh( nonFilteredGeometry, materialNonFiltered );
+cubeNoneFiltered.position.set(...[2, 0, 0]);
+
+scene.add( cubeNoneFiltered );
+```
+
+### Linear filter
+
+此滤镜对周围像素取加权平均值，从而在像素之间实现更平滑的过渡。它能带来更具视觉吸引力和更逼真的效果。
+
+```js
+texture.magFilter = THREE.LinearFilter;
+texture.minFilter = THREE.LinearFilter;
+```
+
+### MipMap filter
+
+MipMapping涉及创建一系列预先缩放的纹理版本。它用于防止锯齿状伪影，并在不同距离下提高渲染质量，适用于在不同视角场景中提升纹理质量。
+
+```js
+texture.magFilter = THREE.LinearFilter;
+texture.minFilter = THREE.LinearMipMapLinearFilter;
+```
+
+### Anisotropic（各向异性） filter
+
+各向异性过滤可提高斜视下的纹理清晰度。它可改善锐角表面上的纹理外观，有助于在各种视角下保持纹理质量。
+
+```js
+texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+```
+
+### Wrapping
+
+纹理的**包裹方式**（Wrapping）决定了当 UV 坐标超出原始纹理范围时，纹理是重复还是被限制在边缘：
+
+- **RepeatWrapping**：创建平铺重复的图案。  
+- **MirroredRepeatWrapping**：以镜像方式平铺纹理。  
+- **ClampToEdgeWrapping**：将纹理在边缘处进行钳制（即边缘像素向外延伸，不再重复）。
+
+我们使用代码清单 10.13 中的代码来添加包裹（wrapping）滤镜。我们将采用重复包裹（repeat wrapping）方式，以展示如何改变盒子内部的图案。结果如图 10.16 所示：
+
+```js
+texture.wrapS = THREE.RepeatWrapping;
+texture.wrapT = THREE.RepeatWrapping;
+
+const timesToRepeatHorizontally = 4;
+const timesToRepeatVertically = 2;
+
+texture.repeat.set(timesToRepeatHorizontally, timesToRepeatVertically);
+```
+
+这段代码的作用是：
+
+- 设置纹理在水平（S）和垂直（T）方向上重复；
+- 指定水平重复 4 次，垂直重复 2 次。
+
+### Custom filters
+
+可以使用着色器实现自定义滤镜。它们可实现更高级、更量身定制的视觉效果。着色器使开发人员能够创建独特而复杂的纹理操作。
+
+要在实际中使用此着色器，我们采用代码列表10.14中的代码。我们必须牢记，这是着色器的基本用法。我们可以在https://thebookofshaders.com/上了解更多关于着色器的信息。
+
+```js
+const geometry = new THREE.BoxGeometry(1, 1, 1, 10, 10, 10);
+const texture =  new THREE.TextureLoader().load('assets/uv_mapping.jpg');
+const uniforms = {
+  "tex": { value: texture }   
+};
+const vertexShader = `
+varying vec2 vUv;
+void main() {
+  vUv = uv;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}
+`;
+
+const customFilterShader = `
+varying vec2 vUv;
+uniform sampler2D tex;
+
+void main()
+{
+    vec4 color = texture2D(tex, vUv);
+    gl_FragColor = color;
+}
+`;
+
+const material = new THREE.ShaderMaterial({
+  uniforms,
+  fragmentShader: customFilterShader,
+  vertexShader: vertexShader
+});
+
+const cube = new THREE.Mesh( geometry, material ); 
+scene.add( cube );
+```
+
+
+
 # 第11章 交互与用户输入
 
 ## 通过鼠标和触摸事件处理用户交互
 
 用户交互是编织数字体验的丝线。鼠标和触摸事件如同画笔笔触，让用户能够导航和参与3D场景。这些交互为虚拟世界注入生命力，带来更优质的用户体验。
 
+由于我们将在 Canvas 中使用 3D 对象，因此无法直接将事件绑定到对象上。为了在 Three.js 中实现这一功能，我们引入了射线投射器（**raycaster**）。
 
+在 Three.js 中，射线投射器是一个强大的工具，能够实现对 3D 场景的精确交互。你可以将其想象成一条从相机延伸进入场景的虚拟光束。它允许我们发射射线并检测与场景中对象的相交情况，从而成为处理用户交互（例如拾取或点击对象）的核心组件。
 
-在Canvas中使用3D对象时，我们不能直接对对象进行事件对齐。为了在Three.js中实现这种功能，我们需要使用光线投射器（raycaster）。  
-
-在Three.js中，**光线投射器（raycaster）** 是一个强大的工具，它能在3D场景中实现精准的交互。可以把它想象成从相机延伸到场景中的一束虚拟光束，它能让我们发射光线并检测与对象的交点，是处理用户交互（比如选中或点击对象）的基础组件。  
-
-其工作原理如下：  
+其工作原理如下：
 
 - **原点（Origin）**：光线投射器从一个指定的原点开始发射，通常是相机的位置。  
 - **方向（Direction）**：它具有一个明确的方向，该方向由相机的朝向决定。  
@@ -954,6 +1218,12 @@ UV 坐标是一对值 (u, v)，分配给 3D 模型的每个顶点。这些坐标
 
 • **简单易用**：这是一种直接关联数据到对象的简便方法。存储的数据可以是任意类型，因而能灵活适配多种使用场景。  
 
+
+
+正如在初始代码中那样，我们有一个用于生成随机颜色的函数。我们将利用该函数来实现点击（on-click）功能：每当用户点击立方体对象时，我们就改变它的颜色。
+
+要将这一用户事件添加到你的代码中，我们需要将**代码清单 11.1**中的代码插入到预期放置事件监听器代码的位置：
+
 ```js
     cube.userData.onClick = function (object) {
         // Your click event logic here
@@ -962,7 +1232,9 @@ UV 坐标是一对值 (u, v)，分配给 3D 模型的每个顶点。这些坐标
     };
 ```
 
+当我们使用对象作为函数参数时，会将立方体以对象的形式传入其中。这种逻辑是必要的，因为在 `userData` 部分，我们无法直接访问对象本身，只能附加额外的参数。
 
+在点击事件的处理函数中，我们将使用**代码清单 11.2**中的代码：
 
 ```js
 // Handle mouse click
@@ -973,13 +1245,13 @@ function onMouseClick(event) {
         - ( event.clientY / props.height) * 2 + 1 );
 
     // Check for intersections
-    // const intersects = raycaster.intersectObjects([cube], false);
-    // if (intersects.length > 0) {
-    //     mod = !mod;
-    //     delta = 0.01 * (mod? 1: -1);
-    //     startAnimation = true;
-    // }
-    // controls.lock();
+    // We need an array of objects that will intersect
+    const intersects = raycaster.intersectObjects([cube], false); 
+    if (intersects.length > 0) {
+        // Trigger the click event
+        intersects[0].object.userData.onClick(intersects[0].object);
+        render();
+    }
 }
 ```
 
@@ -1002,19 +1274,36 @@ function onMouseClick(event) {
 
 ---
 
-最后，别忘了检测鼠标点击是否与对象相交！  
+最后但同样重要的是，我们需要在点击时检查鼠标是否与任何对象相交。难点在于，我们不能像在传统 DOM 中那样直接将点击事件绑定到对象上，而必须主动检测鼠标是否与目标对象相交。
 
-这里有个关键点：我们不能像传统DOM那样直接把点击事件“对齐”到某个对象上，而是必须通过检测鼠标是否与目标对象产生交集来判断交互。  
+正如你所见，在代码的这一部分，我们指定了用于检测相交的对象：
 
-正如你在这段代码中看到的，我们通过以下方式设置用于检测交集的对象：  
 ```javascript
 const intersects = raycaster.intersectObjects([cube], false);
 ```
-因为这里我们只处理一个对象（比如一个立方体 `cube`），所以可以采用简单的逻辑：取出交集数组中的第一个对象（如果有的话），然后调用相应的函数。  
 
-检测完毕后，我们还需要**重新渲染场景**，这样才能把交互后的变化反映出来。  
+由于此处只有一个对象，我们可以使用简单的逻辑：取相交结果数组中的第一个对象（如果存在），并调用相应函数。之后，我们需要重新渲染场景。
 
-> 注意：本例中我们没有使用动画循环函数，因此必须手动调用场景的重新渲染，以确保画面更新。
+在本示例中，我们不会使用动画循环（animation loop），因此必须手动重新渲染场景。
+
+如果你启动项目并尝试点击立方体，什么也不会发生，而且相交结果数组将为空，如图 11.1 所示：
+
+
+
+这是因为，在每次鼠标移动时，我们并未获得经过归一化处理的鼠标坐标。正如我们在初始代码中所见，我们还有一个 `onMouseMove` 函数。在该函数中，我们将放入**代码清单 11.3**中的代码：
+
+```js
+function onMouseMove( event ) {
+    mouse.set(
+        ( event.clientX / props.width ) * 2 - 1,
+        - ( event.clientY / props.height ) * 2 + 1
+    );
+    // The raycaster is required here to align the mouse to the camera
+    raycaster.setFromCamera( mouse, camera );
+}
+```
+
+完成上述步骤后，我们就可以尝试点击立方体了。每次点击都会改变场景中立方体的颜色，从而实现将点击事件绑定到场景中的任意对象上。
 
 ## 实现相机运动控制
 
@@ -1024,9 +1313,173 @@ const intersects = raycaster.intersectObjects([cube], false);
 
 ### OrbitControl  
 
+还有一种行为略有不同的类似控制器，称为 `TrackballControls`。
+
+`TrackballControls` 允许用户以自由形式对 3D 场景进行旋转、缩放和平移操作。它支持无限制的相机运动，提供自然流畅的探索体验，非常适合需要完全交互自由度的应用场景，例如科学可视化或游戏。
+
+与 `OrbitControls` 的对比：
+
+- **旋转方式**：`TrackballControls` 支持自由且无约束的旋转；而 `OrbitControls` 将旋转限制在特定的极角范围内。  
+- **易用性**：`OrbitControls` 更加简单直观、用户友好；`TrackballControls` 因其高度自由，使用起来可能略显复杂。  
+- **适用场景**：`TrackballControls` 适用于需要无限制探索的场景，而 `OrbitControls` 更适合围绕特定对象进行定向观察。
+
+请根据练习要求动手尝试使用它。
+
 ### FlyControls  
 
+Three.js 中的 `FlyControls` 是一种控制方案，它使相机能够像飞行一样移动，提供第一人称视角，并支持在所有方向上自由移动。我们按照**代码清单 11.9**将其添加到场景中：
+
+当场景重新启动时，我们可以使用鼠标和键盘在场景中飞行。我们可以使用WSAD键（就像在电子游戏中一样）来移动相机，使用Q和E键来旋转相机。鼠标移动将与相机视角对齐，单击鼠标则会使相机向前或向后移动。
+
 ### PointerLockControls  
+
+PointerLockControls通过将鼠标光标锁定到画布上，可实现沉浸式的第一人称导航体验。这对于希望提供 FPS 风格导航的应用程序尤其有用。
+
+## 注意事项
+
+- 有一系列控制器的工作方式与本章介绍的类似。请参考练习部分进行尝试。完整列表如下：
+  - `ArcballControls`  
+  - `TrackballControls`  
+  - `OrbitControls`  
+  - `DragControls`  
+  - `FlyControls`  
+  - `MapControls`  
+  - `PointerLockControls`
+- Three.js 目前**没有对移动端事件（如触摸和设备方向）提供完善的原生支持**。在最近一次更新中，相关功能已被完全移除。这是因为在不同设备上使用这些功能时出现了大量兼容性问题。不幸的是，针对每种具体场景，我们都必须根据设备需求自行实现相应的解决方案。
+
+### 上述控件的作用
+
+在 Three.js 中，这些控件（Controls）用于简化用户与 3D 场景的交互。以下是各控件的核心作用和典型使用场景：
+
+------
+
+### 1. **OrbitControls**（轨道控制器）
+
+- **作用**：允许相机围绕一个目标点（通常是场景中心）进行旋转、缩放和平移。
+
+- 特点
+
+  ：
+
+  - 旋转被限制在极角范围内（可配置），避免“翻转”。
+  - 常用于产品展示、模型查看等需要稳定环绕视角的场景。
+
+- **交互方式**：鼠标拖拽旋转、滚轮缩放、右键/中键平移。
+
+------
+
+### 2. **TrackballControls**（轨迹球控制器）
+
+- **作用**：提供更自由的相机运动，模拟一个虚拟的轨迹球，支持任意方向的旋转。
+
+- 特点
+
+  ：
+
+  - 无极角限制，可实现全自由度旋转（包括上下翻转）。
+  - 相机不固定于某一轨道，运动更“物理”但可能不够直观。
+
+- **适用场景**：科学可视化、自由探索型应用。
+
+> ⚠️ 注意：`TrackballControls` 已从 Three.js 核心库中移除，需从 `three/examples/jsm/controls/TrackballControls.js` 单独引入。
+
+------
+
+### 3. **ArcballControls**（弧形球控制器）
+
+- **作用**：改进版的轨道控制，基于“弧形球”数学模型，提供更自然、稳定的旋转体验。
+
+- 特点
+
+  ：
+
+  - 避免万向节死锁（gimbal lock）。
+  - 支持约束旋转轴、平滑过渡等高级功能。
+  - 比 `OrbitControls` 更适合高精度交互（如 CAD、医疗成像）。
+
+- **状态**：相对较新，也在 `examples` 中提供。
+
+------
+
+### 4. **DragControls**（拖拽控制器）
+
+- **作用**：允许用户通过鼠标拖拽场景中的特定 3D 对象（而非移动相机）。
+
+- 特点
+
+  ：
+
+  - 通常配合射线投射（Raycaster）使用。
+  - 适用于需要直接操作物体的场景，如布局编辑器、拼图游戏等。
+
+- **注意**：仅控制对象位置，不控制相机。
+
+------
+
+### 5. **FlyControls**（飞行控制器）
+
+- **作用**：模拟第一人称飞行或行走视角，相机可在三维空间中自由前进、后退、上升、下降、左右平移和转向。
+
+- 特点
+
+  ：
+
+  - 类似 FPS（第一人称射击）游戏的移动方式。
+  - 常用于虚拟漫游、建筑可视化、游戏原型。
+
+- **交互**：通常使用 WASD 键 + 鼠标控制方向。
+
+------
+
+### 6. **MapControls**（地图控制器）
+
+- **作用**：专为俯视视角（如地图、2.5D 场景）设计的相机控制器。
+
+- 特点
+
+  ：
+
+  - 禁用垂直旋转（锁定俯仰角），只允许水平旋转和平移。
+  - 缩放行为针对地图优化（如保持朝上方向）。
+
+- **适用场景**：GIS 应用、城市建模、策略游戏。
+
+------
+
+### 7. **PointerLockControls**（指针锁定控制器）
+
+- **作用**：启用指针锁定（Pointer Lock API），将鼠标隐藏并持续捕获相对移动，用于第一人称视角控制。
+
+- 特点
+
+  ：
+
+  - 鼠标不会离开画布，适合沉浸式体验。
+  - 通常与自定义移动逻辑（如键盘控制）结合使用。
+
+- **典型应用**：Web 上的 FPS 游戏、VR 预览。
+
+------
+
+### 总结对比表：
+
+| 控件名称              | 相机运动方式         | 典型用途                | 是否控制物体 |
+| --------------------- | -------------------- | ----------------------- | ------------ |
+| `OrbitControls`       | 围绕目标点旋转       | 模型查看、产品展示      | ❌            |
+| `TrackballControls`   | 自由球面旋转         | 科学可视化、自由探索    | ❌            |
+| `ArcballControls`     | 弧形球旋转（防死锁） | 高精度交互（CAD、医疗） | ❌            |
+| `DragControls`        | —                    | 拖拽场景中的对象        | ✅            |
+| `FlyControls`         | 第一人称自由飞行     | 虚拟漫游、游戏          | ❌            |
+| `MapControls`         | 俯视平面操作         | 地图、2.5D 场景         | ❌            |
+| `PointerLockControls` | 锁定鼠标的第一人称   | FPS 游戏、沉浸式体验    | ❌（需配合）  |
+
+> 💡 所有控件均位于 `three/examples/jsm/controls/` 目录下，需单独导入使用。
+
+如需进一步实践，建议参考 Three.js 官方示例（https://threejs.org/examples/）。
+
+# 第12 章 动画和粒子系统
+
+
 
 # 第13章 Next.js 与 Three.js 集成入门
 
