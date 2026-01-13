@@ -2539,3 +2539,29 @@ yarn add @react-three/test-renderer --save-dev
 ## 模型模式与设计
 
 # 第22章 使用 AWS Amplify 实现实时功能
+
+## 设置实时功能
+
+## 实现实时评论系统
+
+# 第23章 使用 Storybook 创建 UI 设计系统
+
+## UI设计系统的介绍
+
+##  Storybook 中的可重用 3D UI 组件
+
+要添加所有必需的插件，我们需要运行此命令：
+
+```bash
+yarn add @storybook/addon-controls @storybook/addon-backgrounds @storybook/addon-a11y --save-dev
+```
+
+# 第24章 最终要求和建议
+
+## 项目推荐、版本和软件包
+
+1.  为每个页面创建UI原型。我们建议使用Vercel的v0服务。可以使用此链接https://v0.dev/。
+
+## 生成式 AI 功能
+
+在本节中，我们将对前面提到的v0服务进行实验。在图24.1中，我们可以看到提示字段，我们可以在其中输入所需UI的说明：
