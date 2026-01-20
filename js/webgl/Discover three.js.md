@@ -369,6 +369,39 @@ euler.z; // 0
 
 我们不会在这里进一步讨论旋转顺序。通常，您需要更改顺序的唯一时候是在处理来自另一个应用程序的旋转数据时。即便如此，这通常也是由three.js加载器处理。现在，如果您愿意，可以简单地将`Euler`视为`Vector3`. 在您开始创建动画或执行涉及旋转的复杂数学运算之前，您不太可能遇到任何问题。
 
+### *另一个* 旋转类：四元数Quaternions[#](https://discoverthreejs.com/zh/book/first-steps/transformations/#_另一个_-旋转类四元数quaternions)
+
+我们在上面提到，three.js有两个表示旋转的类。第二个，我们在这里只是顺便提一下，是 [`Quaternion`类](https://threejs.org/docs/#api/en/math/Quaternion)。与`Euler`一起，每当我们创建新的场景对象（例如网格）时，都会为我们创建一个`Quaternion`并存储在属性`.quaternion`中：
+
+*对象的旋转存储为`Euler`角中*
+
+```js
+// when we create a mesh
+const mesh = new Mesh();
+
+// ... internally, three.js creates an Euler for us:
+mesh.rotation = new Euler();
+
+// .. AND a Quaternion:
+mesh.quaternion = new Quaternion();
+```
+
+我们可以互换使用**四元数**和**欧拉角**。当我们更改`mesh.rotation`时，`mesh.quaternion`属性会自动更新，反之亦然。这意味着我们可以在欧拉角适用时使用欧拉角，并在四元数适用时切换到四元数。
+
+欧拉角有几个缺点，在创建动画或进行涉及旋转的数学时会变得很明显。特别是，我们不能将两个欧拉角相加（更著名的是，它们还存在一种叫做 [万向锁](https://en.wikipedia.org/wiki/Gimbal_lock)的问题）。四元数没有这些缺点。另一方面，它们比欧拉角更难使用，所以现在我们将坚持使用更简单的`Euler`类。
+
+现在，请记下这两种旋转对象的方法：
+
+1. **使用欧拉角，使用`Euler`类表示并存储在`.rotation`属性中。**
+2. **使用四元数，使用`Quaternion`类表示并存储在`.quaternion`属性中。**
+
+### 关于旋转对象的重要事项[#](https://discoverthreejs.com/zh/book/first-steps/transformations/#关于旋转对象的重要事项)
+
+尽管我们在本节中强调了一些问题，但旋转对象通常很直观。以下是一些需要注意的重要事项：
+
+1. 并非所有对象都可以旋转。比如 [我们上一章介绍的`DirectionalLight`](https://discoverthreejs.com/zh/book/first-steps/physically-based-rendering/#introducing-the-directionallight)就不能旋转。灯光从某个位置照射到目标，灯光的角度是根据目标的位置而不是`.rotation`属性计算得出的。
+2. three.js中的角度是使用弧度而不是度数指定的。唯一的例外是 [`PerspectiveCamera.fov`](https://threejs.org/docs/#api/en/cameras/PerspectiveCamera.fov)属性使用度数来匹配真实世界摄影惯例的。
+
 # 使我们的场景具有响应性（以及处理锯齿）
 
 # 动画循环
